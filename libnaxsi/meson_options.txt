@@ -1,0 +1,2 @@
+option('use_system_pcre', type: 'boolean', value: true, description: 'Set to false when you want to use libpcre2 from the subproject')
+option('enable_tests', type: 'boolean', value: true, description: 'Build unit tests in test/')

@@ -1,0 +1,32 @@
+name: "Licenses reuse & code lint"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  licenses:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v1.1
+
+  code:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Install wget, software-properties-common, lsb-release (dependencies of LLVM install script)
+      run: sudo apt --assume-yes install wget software-properties-common lsb-release
+    - name: Install automatic LLVM 13
+      run: wget https://apt.llvm.org/llvm.sh -O /tmp/llvm-install.sh; chmod +x /tmp/llvm-install.sh; sudo /tmp/llvm-install.sh 13
+    - name: Install clang-format-13
+      run: sudo apt --assume-yes install clang-format-13
+    - name: Install gitpython
+      run: sudo pip install gitpython
+    - name: Run Unit Tests
+      run: python clang-format.py --verbose --check
