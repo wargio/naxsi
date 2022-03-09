@@ -87,7 +87,7 @@ pcre2_posix_lib = library('pcre2-posix', ['src/pcre2posix.c', 'src/pcre2posix.h'
   c_args: config_h_defs + ['-DHAVE_CONFIG_H', '-DPCRE2_CODE_UNIT_WIDTH=8'],
   install: true)
 
-libpcre2_posix = declare_dependency(link_with: pcre2_posix_lib,
-  include_directories: includes)
+libpcre2_8 = declare_dependency(link_with: pcre2_8_lib, include_directories: includes)
+libpcre2_posix = declare_dependency(link_with: pcre2_posix_lib, include_directories: includes)
 
 install_headers([pcre2_h, 'src' / 'pcre2posix.h'])

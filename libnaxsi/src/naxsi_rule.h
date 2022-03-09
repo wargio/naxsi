@@ -5,6 +5,8 @@
 #define NAXSI_RULE_H
 
 #include <naxsi_types.h>
+#include "naxsi_str.h"
+#include "naxsi_regex.h"
 #include "naxsi_vector.h"
 
 #define naxsi_rule_has_flag(f, y) (f & y)

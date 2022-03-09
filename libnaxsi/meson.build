@@ -13,7 +13,9 @@ libnaxsi_src = [
   'src' / 'naxsi_config.c',
   'src' / 'naxsi_list.c',
   'src' / 'naxsi_mem.c',
+  'src' / 'naxsi_regex.c',
   'src' / 'naxsi_rule.c',
+  'src' / 'naxsi_str.c',
   'src' / 'naxsi_utils.c',
 ]
 libnaxsi_includes = [
@@ -26,12 +28,17 @@ pcre_sys = get_option('use_system_pcre')
 pcre2_dep = dependency('libpcre2-posix', required: false)
 pcre_dep = dependency('libpcre', required: false)
 if pcre_sys and pcre2_dep.found()
+  libnaxsi_deps += dependency('libpcre2-8', required: true)
   libnaxsi_deps += pcre2_dep
+  libnaxsi_c_args += '-DUSE_PCRE2'
 elif pcre_sys and pcre_dep.found()
   libnaxsi_deps += pcre_dep
+  libnaxsi_c_args += '-DUSE_PCRE1'
 else
   libpcre2_proj = subproject('pcre2', default_options: ['default_library=static'])
   libnaxsi_deps += libpcre2_proj.get_variable('libpcre2_posix')
+  libnaxsi_deps += libpcre2_proj.get_variable('libpcre2_8')
+  libnaxsi_c_args += '-DUSE_PCRE2'
 endif
 
 libinjection_proj = subproject('libinjection', default_options: ['default_library=static'], required: true)
@@ -58,16 +65,18 @@ libnaxsi_dep = declare_dependency(
 
 if get_option('enable_tests') and not meson.is_subproject()
   tests_src_c = [
-    'utils',
-    'mem',
     'list',
+    'mem',
+    'regex',
+    'str',
+    'utils',
   ]
   tests_includes = [
     'include',
     'src',
     'test',
   ]
-  test_dependencies = []
+  test_dependencies = [] + libnaxsi_deps
   if get_option('b_sanitize').contains('address')
     test_dependencies += cc.find_library('asan')
   endif
