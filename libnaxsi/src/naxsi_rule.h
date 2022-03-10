@@ -9,6 +9,20 @@
 #include "naxsi_regex.h"
 #include "naxsi_vector.h"
 
+#define NAXSI_MAIN_RULE_ID_WEIRD_REQUEST         (1) // not really used anywhere, added for historic reasons.
+#define NAXSI_MAIN_RULE_ID_TOO_BIG_REQUEST       (2)
+#define NAXSI_MAIN_RULE_ID_INVALID_HEX           (10)
+#define NAXSI_MAIN_RULE_ID_UNKNOWN_CONTENT_TYPE  (11)
+#define NAXSI_MAIN_RULE_ID_INVALID_FORMATTED_URL (11)
+#define NAXSI_MAIN_RULE_ID_INVALID_POST_FORMAT   (13)
+#define NAXSI_MAIN_RULE_ID_INVALID_POST_BOUNDARY (14)
+#define NAXSI_MAIN_RULE_ID_INVALID_JSON          (15)
+#define NAXSI_MAIN_RULE_ID_EMPTY_POST            (16)
+#define NAXSI_MAIN_RULE_ID_LIBINJECTION_SQL      (17)
+#define NAXSI_MAIN_RULE_ID_LIBINJECTION_XSS      (18)
+#define NAXSI_MAIN_RULE_ID_NO_GENERIC_RULES      (19)
+#define NAXSI_MAIN_RULE_ID_BAD_UTF8              (20)
+
 #define naxsi_rule_has_flag(f, y) (f & y)
 
 typedef enum {
@@ -72,7 +86,9 @@ typedef struct naxsi_rule {
 	bool negate; ///< negates the match result, so matching becomes not matching; example: negative
 } naxsi_rule_t;
 
+#define naxsi_rule_new(memory) naxsi_mem_new0(memory, naxsi_rule_t)
 void naxsi_rule_free(const naxsi_mem_t *memory, naxsi_rule_t *rule);
+#define naxsi_whitelist_new(memory) naxsi_mem_new0(memory, naxsi_rule_t)
 void naxsi_whitelist_free(const naxsi_mem_t *memory, naxsi_whitelist_t *whitelist);
 
 #endif /* NAXSI_RULE_H */

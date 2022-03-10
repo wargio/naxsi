@@ -15,8 +15,7 @@
 extern ngx_module_t ngx_http_naxsi_module;
 
 static ngx_int_t ngx_http_naxsi_post_configuration(ngx_conf_t *cf);
-static void *ngx_http_naxsi_create_main_configuration(ngx_conf_t *cf);
-static void *ngx_http_naxsi_create_local_configuration(ngx_conf_t *cf);
+static void *ngx_http_naxsi_create_configuration(ngx_conf_t *cf);
 
 static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_http_naxsi_basic_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
@@ -120,11 +119,11 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
 static ngx_http_module_t ngx_http_naxsi_module_context = {
 	NULL, /* preconfiguration */
 	ngx_http_naxsi_post_configuration, /* postconfiguration */
-	ngx_http_naxsi_create_main_configuration, /* create main configuration */
+	ngx_http_naxsi_create_configuration, /* create main configuration */
 	NULL, /* init main configuration */
 	NULL, /* create server configuration */
 	NULL, /* merge server configuration */
-	ngx_http_naxsi_create_local_configuration, /* create location configuration */
+	ngx_http_naxsi_create_configuration, /* create location configuration */
 	NULL /* merge location configuration */
 };
 
@@ -179,14 +178,9 @@ static ngx_int_t ngx_http_naxsi_post_configuration(ngx_conf_t *cf) {
 	return NGX_OK;
 }
 
-static void *ngx_http_naxsi_create_main_configuration(ngx_conf_t *cf) {
+static void *ngx_http_naxsi_create_configuration(ngx_conf_t *cf) {
 	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
-	return naxsi_config_new(&mem, true);
-}
-
-static void *ngx_http_naxsi_create_local_configuration(ngx_conf_t *cf) {
-	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
-	return naxsi_config_new(&mem, false);
+	return naxsi_config_new(&mem);
 }
 
 static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {

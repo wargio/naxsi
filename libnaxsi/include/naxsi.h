@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory, bool defaults_rules);
+NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory);
 NAXSI_API void naxsi_config_free(const naxsi_mem_t *memory, naxsi_config_t *nctx);
 
 #ifdef __cplusplus

@@ -9,8 +9,8 @@
 #include "naxsi_rule.h"
 
 typedef struct naxsi_config {
-	naxsi_list_t /*<naxsi_rule_t>*/ *rules;
-	naxsi_list_t /*<naxsi_whitelist_t>*/ *whitelist;
+	naxsi_list_t /*<naxsi_rule_t*>*/ *rules;
+	naxsi_list_t /*<naxsi_whitelist_t*>*/ *whitelist;
 } naxsi_config_t;
 
 #endif /* NAXSI_CONFIG_H */

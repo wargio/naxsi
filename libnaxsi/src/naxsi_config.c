@@ -4,19 +4,14 @@
 #include "naxsi_config.h"
 #include "naxsi_mem.h"
 
-static bool naxsi_config_add_defaults(naxsi_config_t *config) {
-	return true;
-}
-
 /**
  * @brief      Allocates and initializes a naxsi_config_t structure
  *
- * @param      memory          The naxsi_mem_t structure to use for handling memory
- * @param      defaults_rules  When enabled, adds the default rules into the configuration
+ * @param      memory  The naxsi_mem_t structure to use for handling memory
  *
  * @return     NULL if fails to allocate, otherwise non NULL.
  */
-NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory, bool defaults_rules) {
+NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory) {
 	if (!memory) {
 		return NULL;
 	}
@@ -29,11 +24,6 @@ NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory, bool defau
 	cfg->rules = naxsi_list_new(memory, (naxsi_free_t)&naxsi_rule_free);
 	cfg->whitelist = naxsi_list_new(memory, (naxsi_free_t)&naxsi_whitelist_free);
 	if (!cfg->rules || !cfg->whitelist) {
-		naxsi_config_free(memory, cfg);
-		return NULL;
-	}
-
-	if (defaults_rules && !naxsi_config_add_defaults(cfg)) {
 		naxsi_config_free(memory, cfg);
 		return NULL;
 	}
