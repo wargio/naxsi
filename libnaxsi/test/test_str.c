@@ -24,14 +24,14 @@ bool test_naxsi_str(void) {
 
 	/* verify the string is not copied */
 	ptr = (char *)"some string";
-	str = naxsi_mem_new2(&mem, ptr, false);
+	str = naxsi_str_new2(&mem, ptr, false);
 	mu_assert_notnull(str, "naxsi_str_new2(&mem, \"some string\", false) shall NOT return NULL");
 	mu_assert_ptreq(str->data, ptr, "str->data shall be ptr");
 	naxsi_str_free(&mem, str, false); // should not crash
 
 	/* verify the string is not copied */
 	ptr = (char *)"some string";
-	str = naxsi_mem_new2(&mem, ptr, true);
+	str = naxsi_str_new2(&mem, ptr, true);
 	mu_assert_notnull(str, "naxsi_str_new2(&mem, \"some string\", true) shall NOT return NULL");
 	mu_assert_ptrneq(str->data, ptr, "str->data shall NOT be ptr");
 	naxsi_str_free(&mem, str, true); // should free str->data

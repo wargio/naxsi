@@ -11,6 +11,7 @@ libnaxsi_deps = []
 libnaxsi_src = [
   'src' / 'naxsi.c',
   'src' / 'naxsi_config.c',
+  'src' / 'naxsi_inet.c',
   'src' / 'naxsi_list.c',
   'src' / 'naxsi_mem.c',
   'src' / 'naxsi_regex.c',
@@ -65,6 +66,7 @@ libnaxsi_dep = declare_dependency(
 
 if get_option('enable_tests') and not meson.is_subproject()
   tests_src_c = [
+    'inet',
     'list',
     'mem',
     'regex',

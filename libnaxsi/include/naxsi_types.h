@@ -19,6 +19,11 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
+#define U64_MAX (0xfffffffffffffffful)
+#define U32_MAX (0xffffffffu)
+#define U16_MAX (0xffffu)
+#define U8_MAX  (0xffu)
+
 typedef struct naxsi_str {
 	char *data;
 	size_t length;
