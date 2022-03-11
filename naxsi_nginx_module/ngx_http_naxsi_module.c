@@ -12,7 +12,7 @@
 
 typedef char *(*cmd_set_cb)(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
-#define ngx_naxsi_return_val_if(x, y) \
+#define ngx_naxsi_return_val_on_fail(x, y) \
 	do { \
 		if (!(x)) { \
 			return (y); \
@@ -78,7 +78,7 @@ static char *ngx_http_naxsi_denied_url(ngx_conf_t *cf, ngx_command_t *cmd, naxsi
 }
 
 static char *ngx_http_naxsi_ignore_ip_request(ngx_conf_t *cf, ngx_command_t *cmd, naxsi_t *naxsi_loc) {
-	ngx_naxsi_return_val_if(cf && naxsi_loc, NGX_CONF_ERROR);
+	ngx_naxsi_return_val_on_fail(cf && naxsi_loc, NGX_CONF_ERROR);
 
 	ngx_str_t *value = cf->args->elts;
 	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
@@ -92,7 +92,7 @@ static char *ngx_http_naxsi_ignore_ip_request(ngx_conf_t *cf, ngx_command_t *cmd
 }
 
 static char *ngx_http_naxsi_ignore_cidr_request(ngx_conf_t *cf, ngx_command_t *cmd, naxsi_t *naxsi_loc) {
-	ngx_naxsi_return_val_if(cf && naxsi_loc, NGX_CONF_ERROR);
+	ngx_naxsi_return_val_on_fail(cf && naxsi_loc, NGX_CONF_ERROR);
 
 	ngx_str_t *value = cf->args->elts;
 	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
