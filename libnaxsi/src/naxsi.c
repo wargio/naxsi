@@ -17,7 +17,7 @@ typedef struct naxsi {
 /**
  * @brief      Allocates and initializes a naxsi_t structure
  *
- * @param      memory  The naxsi_mem_t structure to use for handling memory
+ * @param[in]  memory  The naxsi_mem_t structure to use for handling memory
  *
  * @return     NULL if fails to allocate, otherwise non NULL.
  */
@@ -46,7 +46,7 @@ NAXSI_API naxsi_t *naxsi_new(const naxsi_mem_t *memory) {
 /**
  * @brief      Finalize and frees a naxsi_t pointer.
  *
- * @param      memory  The naxsi_mem_t structure to use for handling memory
+ * @param[in]  memory  The naxsi_mem_t structure to use for handling memory
  * @param      nxs     The naxsi_t to free.
  */
 NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs) {
@@ -60,6 +60,15 @@ NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs) {
 	naxsi_mem_free(memory, nxs);
 }
 
+/**
+ * @brief      Adds an IP address to the ignore ip list (i.e. whitelisting IP addresses)
+ *
+ * @param[in]  memory  The naxsi_mem_t structure to use for handling memory
+ * @param      nxs         The naxsi_t struct to use
+ * @param      ip_address  The ip address to whitelist
+ *
+ * @return     On success returns true, on error false.
+ */
 NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_address) {
 	if (!memory || !nxs || !ip_address) {
 		return false;
@@ -72,6 +81,15 @@ NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_st
 	return true;
 }
 
+/**
+ * @brief      Adds an CIDR range to the ignore subnet list (i.e. whitelisting CIDR ranges)
+ *
+ * @param[in]  memory  The naxsi_mem_t structure to use for handling memory
+ * @param      nxs     The naxsi_t struct to use
+ * @param      cidr    The ip address to whitelist
+ *
+ * @return     On success returns true, on error false.
+ */
 NAXSI_API bool naxsi_ignore_cidr(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *cidr) {
 	if (!memory || !nxs || !cidr) {
 		return false;
