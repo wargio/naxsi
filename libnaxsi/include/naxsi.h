@@ -11,8 +11,11 @@
 extern "C" {
 #endif
 
-NAXSI_API naxsi_config_t *naxsi_config_new(const naxsi_mem_t *memory);
-NAXSI_API void naxsi_config_free(const naxsi_mem_t *memory, naxsi_config_t *nctx);
+NAXSI_API naxsi_t *naxsi_new(const naxsi_mem_t *memory);
+NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs);
+
+NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_address);
+NAXSI_API bool naxsi_ignore_cidr(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_cidr);
 
 #ifdef __cplusplus
 }

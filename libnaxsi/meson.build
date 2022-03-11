@@ -10,7 +10,6 @@ libnaxsi_c_args = []
 libnaxsi_deps = []
 libnaxsi_src = [
   'src' / 'naxsi.c',
-  'src' / 'naxsi_config.c',
   'src' / 'naxsi_inet.c',
   'src' / 'naxsi_list.c',
   'src' / 'naxsi_mem.c',

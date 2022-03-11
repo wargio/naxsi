@@ -10,19 +10,30 @@
 #include <ngx_http_core_module.h>
 #include <naxsi.h>
 
+#define ngx_naxsi_return_val_if(x, y) \
+	do { \
+		if (!(x)) { \
+			return (y); \
+		} \
+	} while (0)
+
+#define ngx_naxsi_error(fmt, ...) ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "naxsi: " fmt, ##__VA_ARGS__)
+#define ngx_naxsi_arg(s) \
+	{ (char *)s.data, s.len }
 #define ngx_naxsi_memory(ppool) naxsi_memory(ppool, &nginx_naxsi_free, &nginx_naxsi_malloc, &nginx_naxsi_calloc)
 
 extern ngx_module_t ngx_http_naxsi_module;
 
 static ngx_int_t ngx_http_naxsi_post_configuration(ngx_conf_t *cf);
-static void *ngx_http_naxsi_create_configuration(ngx_conf_t *cf);
+static void *ngx_http_naxsi_create_naxsi(ngx_conf_t *cf);
 
-static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_naxsi_basic_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_naxsi_denied_url(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_naxsi_ignore_request(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_naxsi_check_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_http_naxsi_flags(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_basic_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_denied_url(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_ignore_ip_request(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_ignore_cidr_request(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_check_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
+static char *ngx_http_naxsi_flags(ngx_conf_t *cf, ngx_command_t *cmd, void *local);
 
 static ngx_command_t ngx_http_naxsi_commands[] = {
 	/* MainRule */
@@ -52,7 +63,7 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
 	/* IgnoreIP */
 	{ ngx_string(NAXSI_KEYWORD_IGNORE_IP),
 		NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-		ngx_http_naxsi_ignore_request,
+		ngx_http_naxsi_ignore_ip_request,
 		NGX_HTTP_LOC_CONF_OFFSET,
 		0,
 		NULL },
@@ -60,7 +71,7 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
 	/* IgnoreCIDR */
 	{ ngx_string(NAXSI_KEYWORD_IGNORE_CIDR),
 		NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-		ngx_http_naxsi_ignore_request,
+		ngx_http_naxsi_ignore_cidr_request,
 		NGX_HTTP_LOC_CONF_OFFSET,
 		0,
 		NULL },
@@ -119,11 +130,11 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
 static ngx_http_module_t ngx_http_naxsi_module_context = {
 	NULL, /* preconfiguration */
 	ngx_http_naxsi_post_configuration, /* postconfiguration */
-	ngx_http_naxsi_create_configuration, /* create main configuration */
+	ngx_http_naxsi_create_naxsi, /* create main configuration */
 	NULL, /* init main configuration */
 	NULL, /* create server configuration */
 	NULL, /* merge server configuration */
-	ngx_http_naxsi_create_configuration, /* create location configuration */
+	ngx_http_naxsi_create_naxsi, /* create location configuration */
 	NULL /* merge location configuration */
 };
 
@@ -178,31 +189,57 @@ static ngx_int_t ngx_http_naxsi_post_configuration(ngx_conf_t *cf) {
 	return NGX_OK;
 }
 
-static void *ngx_http_naxsi_create_configuration(ngx_conf_t *cf) {
+static void *ngx_http_naxsi_create_naxsi(ngx_conf_t *cf) {
 	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
-	return naxsi_config_new(&mem);
+	return naxsi_new(&mem);
 }
 
-static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
+static char *ngx_http_naxsi_main_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
 	return NGX_CONF_ERROR;
 }
 
-static char *ngx_http_naxsi_basic_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
+static char *ngx_http_naxsi_basic_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
 	return NGX_CONF_ERROR;
 }
 
-static char *ngx_http_naxsi_denied_url(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
+static char *ngx_http_naxsi_denied_url(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
 	return NGX_CONF_ERROR;
 }
 
-static char *ngx_http_naxsi_ignore_request(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
+static char *ngx_http_naxsi_ignore_ip_request(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
+	ngx_naxsi_return_val_if(cf && local, NGX_CONF_ERROR);
+
+	ngx_str_t *value = cf->args->elts;
+	naxsi_t *naxsi = (naxsi_t *)local;
+	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
+	naxsi_str_t ip_address = ngx_naxsi_arg(value[1]);
+
+	if (!naxsi_ignore_ip(&mem, naxsi, &ip_address)) {
+		ngx_naxsi_error("invalid " NAXSI_KEYWORD_IGNORE_IP " value: %s", (const char *)value[1].data);
+		return NGX_CONF_ERROR;
+	}
+	return NGX_OK;
+}
+
+static char *ngx_http_naxsi_ignore_cidr_request(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
+	ngx_naxsi_return_val_if(cf && local, NGX_CONF_ERROR);
+
+	ngx_str_t *value = cf->args->elts;
+	naxsi_t *naxsi = (naxsi_t *)local;
+	naxsi_mem_t mem = ngx_naxsi_memory(cf->pool);
+	naxsi_str_t cidr = ngx_naxsi_arg(value[1]);
+
+	if (!naxsi_ignore_cidr(&mem, naxsi, &cidr)) {
+		ngx_naxsi_error("invalid " NAXSI_KEYWORD_IGNORE_CIDR " value: %s", (const char *)value[1].data);
+		return NGX_CONF_ERROR;
+	}
+	return NGX_OK;
+}
+
+static char *ngx_http_naxsi_check_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
 	return NGX_CONF_ERROR;
 }
 
-static char *ngx_http_naxsi_check_rule(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
-	return NGX_CONF_ERROR;
-}
-
-static char *ngx_http_naxsi_flags(ngx_conf_t *cf, ngx_command_t *cmd, void *conf) {
+static char *ngx_http_naxsi_flags(ngx_conf_t *cf, ngx_command_t *cmd, void *local) {
 	return NGX_CONF_ERROR;
 }

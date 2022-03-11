@@ -46,7 +46,7 @@ typedef struct naxsi_mem {
 #define naxsi_memory(puser, pfree, pmalloc, pcalloc) \
 	{ (void *)puser, (naxsi_mem_free_t)pfree, (naxsi_mem_malloc_t)pmalloc, (naxsi_mem_calloc_t)pcalloc }
 
-typedef struct naxsi_config naxsi_config_t;
+typedef struct naxsi naxsi_t;
 
 #ifdef NAXSI_API
 #undef NAXSI_API
