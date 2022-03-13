@@ -16,6 +16,7 @@ NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs);
 
 NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_address);
 NAXSI_API bool naxsi_ignore_cidr(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_cidr);
+NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size_t argc, naxsi_str_t **argv);
 
 #ifdef __cplusplus
 }

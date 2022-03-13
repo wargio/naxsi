@@ -23,7 +23,39 @@
 #define NAXSI_MAIN_RULE_ID_NO_GENERIC_RULES      (19)
 #define NAXSI_MAIN_RULE_ID_BAD_UTF8              (20)
 
-#define naxsi_rule_has_flag(f, y) (f & y)
+#define NAXSI_RULE_PREFIX_IDENTIFIER   "id:"
+#define NAXSI_RULE_PREFIX_DESCRIPTION  "msg:"
+#define NAXSI_RULE_PREFIX_MATCH_STRING "str:"
+#define NAXSI_RULE_PREFIX_MATCH_REGEX  "rx:"
+#define NAXSI_RULE_PREFIX_MATCHZONE    "mz:"
+#define NAXSI_RULE_PREFIX_SCORES       "s:"
+#define NAXSI_RULE_PREFIX_WHITELIST    "wl:"
+#define NAXSI_RULE_NEGATIVE            "negative"
+#define NAXSI_RULE_LIBINJECTION_XSS    "d:libinj_xss"
+#define NAXSI_RULE_LIBINJECTION_SQL    "d:libinj_sql"
+#define NAXSI_RULE_SCORE_BLOCK         "BLOCK"
+#define NAXSI_RULE_SCORE_ALLOW         "ALLOW"
+#define NAXSI_RULE_SCORE_DROP          "DROP"
+#define NAXSI_RULE_SCORE_LOG           "LOG"
+/* Matchzone modifier for BODY, HEADERS, ARGS */
+#define NAXSI_RULE_MATCHZONE_MOD_NAME "NAME"
+/* Matchzone global */
+#define NAXSI_RULE_MATCHZONE_ARGS     "ARGS"
+#define NAXSI_RULE_MATCHZONE_BODY     "BODY"
+#define NAXSI_RULE_MATCHZONE_FILE_EXT "FILE_EXT"
+#define NAXSI_RULE_MATCHZONE_HEADERS  "HEADERS"
+#define NAXSI_RULE_MATCHZONE_RAW_BODY "RAW_BODY"
+#define NAXSI_RULE_MATCHZONE_URL      "URL"
+/* Matchzone specific case-insensitive string */
+#define NAXSI_RULE_MATCHZONE_ARGS_S    "$ARGS_VAR:"
+#define NAXSI_RULE_MATCHZONE_BODY_S    "$BODY_VAR:"
+#define NAXSI_RULE_MATCHZONE_HEADERS_S "$HEADERS_VAR:"
+#define NAXSI_RULE_MATCHZONE_URL_S     "$URL:"
+/* Matchzone specific case-insensitive regex */
+#define NAXSI_RULE_MATCHZONE_ARGS_X    "$ARGS_VAR_X:"
+#define NAXSI_RULE_MATCHZONE_BODY_X    "$BODY_VAR_X:"
+#define NAXSI_RULE_MATCHZONE_HEADERS_X "$HEADERS_VAR_X:"
+#define NAXSI_RULE_MATCHZONE_URL_X     "$URL_X:"
 
 typedef enum {
 	NAXSI_MATCH_TYPE_STRING /**/ = (1 << 0), ///< matches case-insensitive strings when "str:foo" is set
@@ -40,11 +72,12 @@ typedef enum {
 } naxsi_mz_type_t;
 
 typedef enum {
-	NAXSI_RULE_ACTION_SCORE /**/ = (0 << 0), ///< increments the scores when the rules matches
-	NAXSI_RULE_ACTION_BLOCK /**/ = (1 << 0), ///< directly blocks the request when the rule matches and is not in learning mode
-	NAXSI_RULE_ACTION_ALLOW /**/ = (1 << 1), ///< directly allows the request when the rule matches
-	NAXSI_RULE_ACTION_DROP /* */ = (1 << 2), ///< directly drop the request when the rule matches, regardless of the current mode
-	NAXSI_RULE_ACTION_LOG /*  */ = (1 << 3), ///< directly logs the request when the rule matches
+	NAXSI_RULE_ACTION_UNSET /**/ = (0 << 0), ///< used for invalid action
+	NAXSI_RULE_ACTION_SCORE /**/ = (1 << 0), ///< increments the scores when the rules matches
+	NAXSI_RULE_ACTION_BLOCK /**/ = (1 << 1), ///< directly blocks the request when the rule matches and is not in learning mode
+	NAXSI_RULE_ACTION_ALLOW /**/ = (1 << 2), ///< directly allows the request when the rule matches
+	NAXSI_RULE_ACTION_DROP /* */ = (1 << 3), ///< directly drop the request when the rule matches, regardless of the current mode
+	NAXSI_RULE_ACTION_LOG /*  */ = (1 << 4), ///< directly logs the request when the rule matches
 } naxsi_action_t;
 
 typedef struct naxsi_score {
@@ -55,14 +88,17 @@ typedef struct naxsi_score {
 naxsi_svector(scores, naxsi_score_t); // naxsi_svector_t<naxsi_score_t>
 
 typedef struct naxsi_matchzone {
+	bool name; ///< describes the NAME modifier for the matchzone
+
 	u8 args; ///< naxsi_mz_type_t which describes ARGS, $ARGS_VAR or $ARGS_VAR_X matchzone
 	u8 body; ///< naxsi_mz_type_t which describes BODY matchzone
 	u8 file_ext; ///< naxsi_mz_type_t which describes FILE_EXT matchzone
-	u8 headers; ///< naxsi_mz_type_t which describes ARGS, $ARGS_VAR or $ARGS_VAR_X matchzone
+	u8 headers; ///< naxsi_mz_type_t which describes HEADERS, $HEADERS_VAR or $HEADERS_VAR_X matchzone
 	u8 raw_body; ///< naxsi_mz_type_t which describes RAW_BODY matchzone
 	u8 url; ///< naxsi_mz_type_t which describes URL, $URL or $URL_X matchzone
 
 	void *args_val; ///< describes $ARGS_VAR:string or $ARGS_VAR_X:regex matchzone value
+	void *body_val; ///< describes $BODY_VAR:string or $BODY_VAR_X:regex matchzone value
 	void *headers_val; ///< describes $ARGS_VAR:string or $ARGS_VAR_X:regex matchzone value
 	void *url_val; ///< describes $URL:string or $URL_X:regex matchzone value
 } naxsi_matchzone_t;
@@ -83,10 +119,10 @@ typedef struct naxsi_rule {
 	void *match; ///< describes a case-insensitive of string to match, or a regex or the libinjection XSS/SQL; example: "rx:^[a-zA-Z\d-]+$" or "str:/.git/"
 	naxsi_mtype_t mtype; ///< describes the type of match in the rule
 	naxsi_matchzone_t matchzone; ///< describes the matchzone of the rule, example: "mz:URL|BODY|ARGS"
-	bool negate; ///< negates the match result, so matching becomes not matching; example: negative
+	bool negative; ///< negates the match result, so matching becomes not matching; example: negative
 } naxsi_rule_t;
 
-#define naxsi_rule_new(memory) naxsi_mem_new0(memory, naxsi_rule_t)
+naxsi_rule_t *naxsi_rule_new(const naxsi_mem_t *memory, naxsi_str_t *id_s, naxsi_str_t *descr_s, naxsi_str_t *match_s, naxsi_str_t *matchzone_s, naxsi_str_t *scores_s, bool negative);
 void naxsi_rule_free(const naxsi_mem_t *memory, naxsi_rule_t *rule);
 #define naxsi_whitelist_new(memory) naxsi_mem_new0(memory, naxsi_rule_t)
 void naxsi_whitelist_free(const naxsi_mem_t *memory, naxsi_whitelist_t *whitelist);

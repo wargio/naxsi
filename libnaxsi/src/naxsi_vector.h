@@ -12,11 +12,12 @@
 	typedef struct naxsi_##name##_s { \
 		type *data; \
 		size_t length; \
+		size_t capacity; \
 	} naxsi_##name##_t; \
 \
-	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t length); \
+	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t capacity); \
 	void naxsi_##name##_free(const naxsi_mem_t *memory, naxsi_##name##_t *vec); \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type value); \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type value); \
 	type naxsi_##name##_get_at(naxsi_##name##_t *vec, size_t index, type def_value)
 
 /* vector of structs */
@@ -24,11 +25,12 @@
 	typedef struct naxsi_##name##_s { \
 		type *data; \
 		size_t length; \
+		size_t capacity; \
 	} naxsi_##name##_t; \
 \
-	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t length); \
+	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t capacity); \
 	void naxsi_##name##_free(const naxsi_mem_t *memory, naxsi_##name##_t *vec); \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type *value); \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type *value); \
 	type *naxsi_##name##_get_at(naxsi_##name##_t *vec, size_t index, type *def_value)
 
 /* vector of pointers */
@@ -36,26 +38,28 @@
 	typedef struct naxsi_##name##_s { \
 		type **data; \
 		size_t length; \
+		size_t capacity; \
 		naxsi_free_t free; \
 	} naxsi_##name##_t; \
 \
-	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t length, naxsi_free_t pfree); \
+	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t capacity, naxsi_free_t pfree); \
 	void naxsi_##name##_free(const const naxsi_mem_t *memory, naxsi_##name##_t *vec); \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type *value); \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type *value); \
 	type *naxsi_##name##_get_at(naxsi_##name##_t *vec, size_t index, type *def_value)
 
 /* vector of native types */
 #define naxsi_vector_define(name, type) \
-	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t length) { \
-		if (!memory || length < 1) { \
+	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t capacity) { \
+		if (!memory || capacity < 1) { \
 			return NULL; \
 		} \
 		naxsi_##name##_t *vec = naxsi_mem_new(memory, naxsi_##name##_t); \
 		if (!vec) { \
 			return NULL; \
 		} \
-		vec->length = length; \
-		vec->data = naxsi_mem_calloc(memory, length, sizeof(type)); \
+		vec->length = 0; \
+		vec->capacity = capacity; \
+		vec->data = naxsi_mem_calloc(memory, capacity, sizeof(type)); \
 		if (!vec->data) { \
 			naxsi_mem_free(memory, vec); \
 			return NULL; \
@@ -71,11 +75,23 @@
 		naxsi_mem_free(memory, vec); \
 	} \
 \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type value) { \
-		if (!vec || index >= vec->length) { \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type value) { \
+		if (!vec) { \
 			return false; \
+		} else if (vec->length == vec->capacity) { \
+			size_t new_capacity = vec->capacity + 32; \
+			type *tmp = naxsi_mem_calloc(memory, new_capacity, sizeof(type)); \
+			if (tmp == NULL) { \
+				return false; \
+			} \
+			size_t copy_len = new_capacity * sizeof(type); \
+			memcpy(tmp, vec->data, copy_len); \
+			naxsi_mem_free(memory, vec->data); \
+			vec->data = tmp; \
+			vec->capacity = new_capacity; \
 		} \
-		vec->data[index] = value; \
+		vec->data[vec->length] = value; \
+		vec->length++; \
 		return true; \
 	} \
 \
@@ -88,16 +104,17 @@
 
 /* vector of structs */
 #define naxsi_svector_define(name, type) \
-	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t length) { \
-		if (!memory || length < 1) { \
+	naxsi_##name##_t *naxsi_##name##_new(const naxsi_mem_t *memory, size_t capacity) { \
+		if (!memory || capacity < 1) { \
 			return NULL; \
 		} \
 		naxsi_##name##_t *vec = naxsi_mem_new(memory, naxsi_##name##_t); \
 		if (!vec) { \
 			return NULL; \
 		} \
-		vec->length = length; \
-		vec->data = naxsi_mem_calloc(memory, length, sizeof(type)); \
+		vec->length = 0; \
+		vec->capacity = capacity; \
+		vec->data = naxsi_mem_calloc(memory, capacity, sizeof(type)); \
 		if (!vec->data) { \
 			naxsi_mem_free(memory, vec); \
 			return NULL; \
@@ -113,11 +130,23 @@
 		naxsi_mem_free(memory, vec); \
 	} \
 \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type *value) { \
-		if (!vec || index >= vec->length) { \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type *value) { \
+		if (!vec) { \
 			return false; \
+		} else if (vec->length == vec->capacity) { \
+			size_t new_capacity = vec->capacity + 32; \
+			type *tmp = naxsi_mem_calloc(memory, new_capacity, sizeof(type)); \
+			if (tmp == NULL) { \
+				return false; \
+			} \
+			size_t copy_len = new_capacity * sizeof(type); \
+			memcpy(tmp, vec->data, copy_len); \
+			naxsi_mem_free(memory, vec->data); \
+			vec->data = tmp; \
+			vec->capacity = new_capacity; \
 		} \
-		vec->data[index] = *value; \
+		vec->data[vec->length] = *value; \
+		vec->length++; \
 		return true; \
 	} \
 \
@@ -130,8 +159,8 @@
 
 /* vector of pointers */
 #define naxsi_pvector_define(name, type) \
-	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t length, naxsi_##name##_free_t pfree) { \
-		if (!memory || length < 1) { \
+	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t capacity, naxsi_##name##_free_t pfree) { \
+		if (!memory || capacity < 1) { \
 			return NULL; \
 		} \
 		naxsi_##name##_t *vec = naxsi_mem_new(memory, naxsi_##name##_t); \
@@ -139,8 +168,9 @@
 			return NULL; \
 		} \
 		vec->free = pfree; \
-		vec->length = length; \
-		vec->data = naxsi_mem_calloc(memory, length, sizeof(type *)); \
+		vec->length = 0; \
+		vec->capacity = capacity; \
+		vec->data = naxsi_mem_calloc(memory, capacity, sizeof(type *)); \
 		if (!vec->data) { \
 			naxsi_mem_free(memory, vec); \
 			vec = NULL; \
@@ -161,11 +191,23 @@
 		naxsi_mem_free(memory, vec); \
 	} \
 \
-	bool naxsi_##name##_set_at(naxsi_##name##_t *vec, size_t index, type *value) { \
-		if (!vec || index >= vec->length) { \
+	bool naxsi_##name##_push(const naxsi_mem_t *memory, naxsi_##name##_t *vec, type *value) { \
+		if (!vec) { \
 			return false; \
+		} else if (vec->length == vec->capacity) { \
+			size_t new_capacity = vec->capacity + 32; \
+			type **tmp = naxsi_mem_calloc(memory, new_capacity, sizeof(type *)); \
+			if (tmp == NULL) { \
+				return false; \
+			} \
+			size_t copy_len = new_capacity * sizeof(type *); \
+			memcpy(tmp, vec->data, copy_len); \
+			naxsi_mem_free(memory, vec->data); \
+			vec->data = tmp; \
+			vec->capacity = new_capacity; \
 		} \
-		vec->data[index] = value; \
+		vec->data[vec->length] = value; \
+		vec->length++; \
 		return true; \
 	} \
 \

@@ -25,6 +25,7 @@ bool naxsi_str_init(const naxsi_mem_t *memory, naxsi_str_t *nxstr, char *string,
 			return false;
 		}
 		memcpy(nxstr->data, string, length + 1);
+		nxstr->data[length] = 0;
 	} else {
 		nxstr->data = string;
 	}

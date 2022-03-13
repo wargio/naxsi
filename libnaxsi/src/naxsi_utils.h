@@ -5,6 +5,9 @@
 #define NAXSI_UTILS_H
 #include <naxsi_types.h>
 
+#define naxsi_min(a, b)    ((a) > (b) ? (b) : (a))
+#define naxsi_is_set(v, b) ((v) & (b))
+
 bool naxsi_is_invalid_utf8(const naxsi_str_t *string);
 bool naxsi_escape_nullbytes(naxsi_str_t *str);
 const char *naxsi_strstr_offset(naxsi_str_t *string, size_t offset, naxsi_str_t *substring);
