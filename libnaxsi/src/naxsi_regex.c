@@ -22,7 +22,7 @@
  * @return     Pointer to naxsi_regex_t or NULL when fails
  */
 naxsi_regex_t *naxsi_regex_new(const naxsi_mem_t *memory, char *pattern) {
-	if (!memory || !pattern) {
+	if (!memory || !pattern || !*pattern) {
 		return NULL;
 	}
 	int errcode;

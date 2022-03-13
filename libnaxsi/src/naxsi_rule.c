@@ -7,10 +7,11 @@
 #include <strings.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #define starts_with(s, p) (!strncmp(s, p, strlen(p)))
 
-naxsi_svector_define(scores, naxsi_score_t);
+naxsi_pvector_define(scores, naxsi_score_t);
 naxsi_vector_define(ids, u32);
 
 /**
@@ -81,7 +82,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 	mz->raw_body = NAXSI_MZ_TYPE_UNSET;
 	mz->url = NAXSI_MZ_TYPE_UNSET;
 
-	for (char *start = mz_s->data, *var_end = NULL; start < endp;) {
+	for (char *start = mz_s->data + strlen(NAXSI_RULE_PREFIX_MATCHZONE), *var_end = NULL; start < endp;) {
 		if (*start == '|') {
 			start++;
 			continue;
@@ -100,42 +101,41 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->args != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->args |= NAXSI_MZ_TYPE_GLOBAL;
+			mz->args = NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_ARGS);
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_BODY)) {
 			if (mz->body != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->body |= NAXSI_MZ_TYPE_GLOBAL;
+			mz->body = NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_BODY);
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_FILE_EXT)) {
 			if (mz->file_ext != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->file_ext |= NAXSI_MZ_TYPE_GLOBAL;
+			mz->file_ext = NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_FILE_EXT);
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_HEADERS)) {
 			if (mz->headers != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->headers |= NAXSI_MZ_TYPE_GLOBAL;
+			mz->headers = NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_HEADERS);
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_RAW_BODY)) {
 			if (mz->raw_body != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->raw_body |= NAXSI_MZ_TYPE_GLOBAL;
+			mz->raw_body = NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_RAW_BODY);
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_URL)) {
-			if (mz->url != NAXSI_MZ_TYPE_UNSET) {
-				return false;
+			if (mz->url == NAXSI_MZ_TYPE_UNSET) {
+				mz->url = NAXSI_MZ_TYPE_GLOBAL;
 			}
-			mz->url |= NAXSI_MZ_TYPE_GLOBAL;
 			start += strlen(NAXSI_RULE_MATCHZONE_URL);
 			continue;
 		}
@@ -144,7 +144,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->args != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->args |= NAXSI_MZ_TYPE_STRING;
+			mz->args = NAXSI_MZ_TYPE_STRING;
 			start += strlen(NAXSI_RULE_MATCHZONE_ARGS_S);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -159,7 +159,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->body != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->body |= NAXSI_MZ_TYPE_STRING;
+			mz->body = NAXSI_MZ_TYPE_STRING;
 			start += strlen(NAXSI_RULE_MATCHZONE_BODY_S);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -174,7 +174,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->headers != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->headers |= NAXSI_MZ_TYPE_STRING;
+			mz->headers = NAXSI_MZ_TYPE_STRING;
 			start += strlen(NAXSI_RULE_MATCHZONE_HEADERS_S);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -186,10 +186,10 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			start = var_end;
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_URL_S)) {
-			if (mz->url != NAXSI_MZ_TYPE_UNSET) {
+			if (mz->url != NAXSI_MZ_TYPE_UNSET && mz->url != NAXSI_MZ_TYPE_GLOBAL) {
 				return false;
 			}
-			mz->url |= NAXSI_MZ_TYPE_STRING;
+			mz->url = NAXSI_MZ_TYPE_STRING;
 			start += strlen(NAXSI_RULE_MATCHZONE_URL_S);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -206,7 +206,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->args != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->args |= NAXSI_MZ_TYPE_REGEX;
+			mz->args = NAXSI_MZ_TYPE_REGEX;
 			start += strlen(NAXSI_RULE_MATCHZONE_ARGS_X);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -221,7 +221,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->body != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->body |= NAXSI_MZ_TYPE_REGEX;
+			mz->body = NAXSI_MZ_TYPE_REGEX;
 			start += strlen(NAXSI_RULE_MATCHZONE_BODY_X);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -236,7 +236,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			if (mz->headers != NAXSI_MZ_TYPE_UNSET) {
 				return false;
 			}
-			mz->headers |= NAXSI_MZ_TYPE_REGEX;
+			mz->headers = NAXSI_MZ_TYPE_REGEX;
 			start += strlen(NAXSI_RULE_MATCHZONE_HEADERS_X);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -248,10 +248,10 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			start = var_end;
 			continue;
 		} else if (starts_with(start, NAXSI_RULE_MATCHZONE_URL_X)) {
-			if (mz->url != NAXSI_MZ_TYPE_UNSET) {
+			if (mz->url != NAXSI_MZ_TYPE_UNSET && mz->url != NAXSI_MZ_TYPE_GLOBAL) {
 				return false;
 			}
-			mz->url |= NAXSI_MZ_TYPE_REGEX;
+			mz->url = NAXSI_MZ_TYPE_REGEX;
 			start += strlen(NAXSI_RULE_MATCHZONE_URL_X);
 			if (!(var_end = strchr(start, '|'))) {
 				var_end = endp;
@@ -265,7 +265,15 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 		}
 		return false;
 	}
-	if (mz->name) {
+
+	if (mz->args == NAXSI_MZ_TYPE_UNSET &&
+		mz->body == NAXSI_MZ_TYPE_UNSET &&
+		mz->file_ext == NAXSI_MZ_TYPE_UNSET &&
+		mz->headers == NAXSI_MZ_TYPE_UNSET &&
+		mz->raw_body == NAXSI_MZ_TYPE_UNSET &&
+		mz->url == NAXSI_MZ_TYPE_UNSET) {
+		return false;
+	} else if (mz->name) {
 		if (mz->args == NAXSI_MZ_TYPE_UNSET &&
 			mz->body == NAXSI_MZ_TYPE_UNSET &&
 			mz->headers == NAXSI_MZ_TYPE_UNSET) {
@@ -276,6 +284,7 @@ static bool parse_matchzone(const naxsi_mem_t *memory, naxsi_str_t *mz_s, naxsi_
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -314,7 +323,7 @@ static naxsi_str_t *string_copy_without_prefix(const naxsi_mem_t *memory, naxsi_
 	if (!string || string->length <= prefix_length) {
 		return NULL;
 	}
-	return naxsi_str_new(memory, string->data + prefix_length, string->length + prefix_length, true);
+	return naxsi_str_new(memory, string->data + prefix_length, string->length - prefix_length, true);
 }
 
 /**
@@ -338,23 +347,24 @@ static char *find_score_name_end(char *beginp, char const *endp) {
 }
 
 /**
- * @brief      Finds a score number end char and returns its pointer.
+ * @brief      Finds a number end char and returns its pointer.
  *
  * @param      beginp  The begin pointer
  * @param      endp    The end pointer
  *
  * @return     On fail returns NULL, otherwise a valid pointer
  */
-static char *find_score_number_end(char *beginp, char const *endp) {
-	for (char *p = beginp; p < endp; ++p) {
+static char *find_number_end(char *beginp, char const *endp) {
+	char *p = NULL;
+	for (p = beginp; p < endp; ++p) {
 		if (*p == ',' || !(*p)) {
-			// do not allow variables named "$"
+			// do not allow empty strings
 			return p > beginp ? p : NULL;
 		} else if (!isdigit(*p)) {
 			break;
 		}
 	}
-	return NULL;
+	return p == endp ? p : NULL;
 }
 
 /**
@@ -380,6 +390,40 @@ static u32 parse_number(char *beginp, char const *endp) {
 }
 
 /**
+ * @brief      Frees a naxsi_score_t pointer
+ *
+ * @param[in]  memory  The naxsi_mem_t structure to use
+ * @param      score   The score pointer to be freed
+ */
+static void score_free(const naxsi_mem_t *memory, naxsi_score_t *score) {
+	if (!memory || !score) {
+		return;
+	}
+	naxsi_str_fini(memory, &score->name, true);
+	naxsi_mem_free(memory, score);
+}
+
+/**
+ * @brief      Allocates and initializes a naxsi_score_t struct
+ *
+ * @param[in]  memory  The naxsi_mem_t structure to use
+ * @param[in]  value   The score value
+ * @param      name    The score name
+ * @param[in]  length  The score name length
+ *
+ * @return     On success returns a valid pointer, otherwise NULL
+ */
+static naxsi_score_t *score_new(const naxsi_mem_t *memory, u32 value, char *name, size_t length) {
+	naxsi_score_t *score = naxsi_mem_new(memory, naxsi_score_t);
+	if (!score || !naxsi_str_init(memory, &score->name, name, length, true)) {
+		naxsi_mem_free(memory, score);
+		return false;
+	}
+	score->value = value;
+	return score;
+}
+
+/**
  * @brief      Parses the scores and sets the rule scores & action
  *
  * @param[in]  memory    The naxsi_mem_t structure to use
@@ -390,13 +434,13 @@ static u32 parse_number(char *beginp, char const *endp) {
  */
 static bool parse_scores(const naxsi_mem_t *memory, naxsi_str_t *scores_s, naxsi_rule_t *rule) {
 	rule->action = NAXSI_RULE_ACTION_UNSET;
-	rule->scores = naxsi_scores_new(memory, 5);
+	rule->scores = naxsi_scores_new(memory, 5, (naxsi_free_t)&score_free);
 	if (!rule->scores) {
 		return false;
 	}
-	naxsi_score_t score;
+	u32 value;
 	char const *endp = scores_s->data + scores_s->length;
-	for (char *start = scores_s->data, *name_end = NULL, *num_end = NULL; start < endp;) {
+	for (char *start = scores_s->data + strlen(NAXSI_RULE_PREFIX_SCORES), *name_end = NULL, *num_end = NULL; start < endp;) {
 		if (*start == ',') {
 			start++;
 			continue;
@@ -405,18 +449,19 @@ static bool parse_scores(const naxsi_mem_t *memory, naxsi_str_t *scores_s, naxsi
 			if (!name_end) {
 				return false;
 			}
-			num_end = find_score_number_end(name_end + 1, endp);
+			num_end = find_number_end(name_end + 1, endp);
 			if (!num_end) {
 				return false;
 			}
-			score.score = parse_number(name_end + 1, num_end);
-			if (score.score < 1) {
+			value = parse_number(name_end + 1, num_end);
+			if (value < 1) {
 				return false;
 			}
 			size_t length = name_end - start;
-			naxsi_str_init(memory, &score.name, start, length, true);
-			if (!naxsi_scores_push(memory, rule->scores, &score)) {
-				naxsi_str_fini(memory, &score.name, true);
+
+			naxsi_score_t *score = score_new(memory, value, start, length);
+			if (!score || !naxsi_scores_push(memory, rule->scores, score)) {
+				score_free(memory, score);
 				return false;
 			}
 			start = num_end;
@@ -483,8 +528,8 @@ naxsi_rule_t *naxsi_rule_new(const naxsi_mem_t *memory, naxsi_str_t *id_s, naxsi
 	rule->negative = negative;
 	rule->description = string_copy_without_prefix(memory, descr_s, NAXSI_RULE_PREFIX_DESCRIPTION);
 
-	rule->rule_id = atoi(id_s->data + strlen(NAXSI_RULE_PREFIX_IDENTIFIER));
-	if (rule->rule_id < 1000) {
+	rule->identifier = parse_number(id_s->data + strlen(NAXSI_RULE_PREFIX_IDENTIFIER), id_s->data + id_s->length);
+	if (rule->identifier < 1000) {
 		/* IDs between 0 - 999 are reserved internally */
 		goto fail;
 	}
@@ -492,9 +537,15 @@ naxsi_rule_t *naxsi_rule_new(const naxsi_mem_t *memory, naxsi_str_t *id_s, naxsi
 	if (starts_with(match_s->data, NAXSI_RULE_PREFIX_MATCH_STRING)) {
 		rule->mtype = NAXSI_MATCH_TYPE_STRING;
 		rule->match = (void *)string_copy_without_prefix(memory, match_s, NAXSI_RULE_PREFIX_MATCH_STRING);
+		if (!rule->match) {
+			goto fail;
+		}
 	} else if (starts_with(match_s->data, NAXSI_RULE_PREFIX_MATCH_REGEX)) {
 		rule->mtype = NAXSI_MATCH_TYPE_REGEX;
 		rule->match = (void *)naxsi_regex_new(memory, match_s->data + strlen(NAXSI_RULE_PREFIX_MATCH_REGEX));
+		if (!rule->match) {
+			goto fail;
+		}
 	} else if (starts_with(match_s->data, NAXSI_RULE_LIBINJECTION_XSS)) {
 		rule->mtype = NAXSI_MATCH_TYPE_XSS;
 	} else if (starts_with(match_s->data, NAXSI_RULE_LIBINJECTION_SQL)) {
@@ -531,4 +582,92 @@ void naxsi_whitelist_free(const naxsi_mem_t *memory, naxsi_whitelist_t *whitelis
 	naxsi_ids_free(memory, whitelist->ids);
 	matchzone_fini(memory, &whitelist->matchzone);
 	naxsi_mem_free(memory, whitelist);
+}
+
+/**
+ * @brief      Parses the list of rule identifiers that needs to be whitelisted
+ *
+ * @param[in]  memory       The naxsi_mem_t structure to use
+ * @param      whitelist_s  The list of ids to whitelist in string format
+ * @param      whitelist    The naxsi_whitelist_t to use
+ *
+ * @return     On success true, otherwise false
+ */
+static bool parse_whitelist_ids(const naxsi_mem_t *memory, naxsi_str_t *whitelist_s, naxsi_whitelist_t *whitelist) {
+	u32 identifier = 0, count = 0;
+	char const *endp = whitelist_s->data + whitelist_s->length;
+	for (char *start = whitelist_s->data + strlen(NAXSI_RULE_PREFIX_WHITELIST); start < endp;) {
+		if (*start == ',') {
+			start++;
+			continue;
+		} else if (!isdigit(*start)) {
+			return false;
+		}
+		start = find_number_end(start, endp);
+		if (!start) {
+			return false;
+		}
+		count++;
+	}
+
+	whitelist->ids = naxsi_ids_new(memory, count);
+	if (!whitelist->ids) {
+		return false;
+	}
+
+	for (char *start = whitelist_s->data + strlen(NAXSI_RULE_PREFIX_WHITELIST), *num_end = NULL; start < endp;) {
+		if (*start == ',') {
+			start++;
+			continue;
+		} else if (!isdigit(*start)) {
+			return false;
+		}
+		num_end = find_number_end(start, endp);
+		if (!num_end) {
+			return false;
+		}
+		identifier = parse_number(start, num_end);
+		if (identifier < 1 || !naxsi_ids_push(memory, whitelist->ids, identifier)) {
+			return false;
+		}
+		start = num_end;
+	}
+	return true;
+}
+
+/**
+ * @brief      Allocates and initialize a naxsi_whitelist_t struct
+ *
+ * @param[in]  memory       The naxsi_mem_t structure to use
+ * @param      whitelist_s  The list of ids to whitelist
+ * @param      matchzone_s  The whitelist matchzone
+ * @param[in]  negative     When set to true, negates the match
+ *
+ * @return     On success returns the pointer to naxsi_whitelist_t, otherwise NULL
+ */
+naxsi_whitelist_t *naxsi_whitelist_new(const naxsi_mem_t *memory, naxsi_str_t *whitelist_s, naxsi_str_t *matchzone_s, bool negative) {
+	if (!memory || !whitelist_s || !matchzone_s) {
+		return NULL;
+	}
+
+	naxsi_whitelist_t *whitelist = naxsi_mem_new(memory, naxsi_whitelist_t);
+	if (!whitelist) {
+		return NULL;
+	}
+
+	whitelist->negative = negative;
+
+	if (!parse_matchzone(memory, matchzone_s, &whitelist->matchzone)) {
+		goto fail;
+	}
+
+	if (!parse_whitelist_ids(memory, whitelist_s, whitelist)) {
+		goto fail;
+	}
+
+	return whitelist;
+
+fail:
+	naxsi_whitelist_free(memory, whitelist);
+	return NULL;
 }

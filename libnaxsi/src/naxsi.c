@@ -78,7 +78,7 @@ NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size
 	if (!memory || !nxs || argc < 4 || !argv) {
 		return false;
 	}
-	naxsi_str_t *id_s = NULL, *descr_s = NULL, *match_s = NULL, *matchzone_s = NULL, *scores_s = NULL;
+	naxsi_str_t *id_s = NULL, *descr_s = NULL, *match_s = NULL, *matchzone_s = NULL, *scores_s = NULL, *whitelist_s = NULL;
 	bool negative = false;
 
 	for (size_t i = 0; i < argc; ++i) {
@@ -119,6 +119,12 @@ NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size
 			}
 			scores_s = arg;
 			continue;
+		} else if (find_prefix(arg, NAXSI_RULE_PREFIX_WHITELIST)) {
+			if (whitelist_s) {
+				return false;
+			}
+			whitelist_s = arg;
+			continue;
 		} else if (find_keyword(arg, NAXSI_RULE_NEGATIVE)) {
 			if (negative) {
 				return false;
@@ -128,11 +134,20 @@ NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size
 		}
 	}
 
-	naxsi_rule_t *rule = naxsi_rule_new(memory, id_s, descr_s, match_s, matchzone_s, scores_s, negative);
-	if (!rule || !naxsi_list_append(memory, nxs->rules, rule)) {
-		naxsi_rule_free(memory, rule);
-		return false;
+	if (whitelist_s) {
+		naxsi_whitelist_t *whitelist = naxsi_whitelist_new(memory, whitelist_s, matchzone_s, negative);
+		if (!whitelist || !naxsi_list_append(memory, nxs->whitelist, whitelist)) {
+			naxsi_whitelist_free(memory, whitelist);
+			return false;
+		}
+	} else {
+		naxsi_rule_t *rule = naxsi_rule_new(memory, id_s, descr_s, match_s, matchzone_s, scores_s, negative);
+		if (!rule || !naxsi_list_append(memory, nxs->rules, rule)) {
+			naxsi_rule_free(memory, rule);
+			return false;
+		}
 	}
+
 	return true;
 }
 

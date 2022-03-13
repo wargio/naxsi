@@ -69,6 +69,7 @@ if get_option('enable_tests') and not meson.is_subproject()
     'list',
     'mem',
     'regex',
+    'rule',
     'str',
     'utils',
   ]

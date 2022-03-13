@@ -58,17 +58,18 @@
 #define NAXSI_RULE_MATCHZONE_URL_X     "$URL_X:"
 
 typedef enum {
-	NAXSI_MATCH_TYPE_STRING /**/ = (1 << 0), ///< matches case-insensitive strings when "str:foo" is set
-	NAXSI_MATCH_TYPE_REGEX /* */ = (1 << 1), ///< matches case-insensitive strings when "rx:foo|bar" is set
-	NAXSI_MATCH_TYPE_XSS /*   */ = (1 << 2), ///< matches case-insensitive strings when "d:libinj_xss" is set
-	NAXSI_MATCH_TYPE_SQL /*   */ = (1 << 3), ///< matches case-insensitive strings when "d:libinj_sql" is set
+	NAXSI_MATCH_TYPE_UNSET = 0, ///< unused
+	NAXSI_MATCH_TYPE_STRING, ///< matches case-insensitive strings when "str:foo" is set
+	NAXSI_MATCH_TYPE_REGEX, ///< matches case-insensitive strings when "rx:foo|bar" is set
+	NAXSI_MATCH_TYPE_XSS, ///< matches case-insensitive strings when "d:libinj_xss" is set
+	NAXSI_MATCH_TYPE_SQL, ///< matches case-insensitive strings when "d:libinj_sql" is set
 } naxsi_mtype_t;
 
 typedef enum {
-	NAXSI_MZ_TYPE_UNSET /* */ = (0 << 0), ///< used only when the matchzone variable is unset
-	NAXSI_MZ_TYPE_GLOBAL /**/ = (1 << 0), ///< describes a global matchzone: BODY (parsed), URL, ARGS, HEADERS, FILE_EXT or RAW_BODY
-	NAXSI_MZ_TYPE_STRING /**/ = (1 << 1), ///< describes a specific matchzone: $URL, $ARGS_VAR, $HEADERS_VAR, $BODY_VAR
-	NAXSI_MZ_TYPE_REGEX /* */ = (1 << 2), ///< describes a regex matchzone: $URL_X, $ARGS_VAR_X, $HEADERS_VAR_X, $BODY_VAR_X
+	NAXSI_MZ_TYPE_UNSET = 0, ///< used only when the matchzone variable is unset
+	NAXSI_MZ_TYPE_GLOBAL, ///< describes a global matchzone: BODY (parsed), URL, ARGS, HEADERS, FILE_EXT or RAW_BODY
+	NAXSI_MZ_TYPE_STRING, ///< describes a specific matchzone: $URL, $ARGS_VAR, $HEADERS_VAR, $BODY_VAR
+	NAXSI_MZ_TYPE_REGEX, ///< describes a regex matchzone: $URL_X, $ARGS_VAR_X, $HEADERS_VAR_X, $BODY_VAR_X
 } naxsi_mz_type_t;
 
 typedef enum {
@@ -82,10 +83,10 @@ typedef enum {
 
 typedef struct naxsi_score {
 	naxsi_str_t name; ///< score name, for example: $ATTACK (s:$ATTACK:8)
-	u32 score; ///< score value to add to checkrule score, example: 8 (s:$ATTACK:8)
+	u32 value; ///< score value to add to checkrule score, example: 8 (s:$ATTACK:8)
 } naxsi_score_t;
 
-naxsi_svector(scores, naxsi_score_t); // naxsi_svector_t<naxsi_score_t>
+naxsi_pvector(scores, naxsi_score_t); // naxsi_pvector_t<naxsi_score_t*>
 
 typedef struct naxsi_matchzone {
 	bool name; ///< describes the NAME modifier for the matchzone
@@ -108,12 +109,12 @@ naxsi_vector(ids, u32); // naxsi_vector_t<u32>
 typedef struct naxsi_whitelist {
 	naxsi_ids_t *ids; ///< rule ids to whitelist, example: wl:10,32033,2000
 	naxsi_matchzone_t matchzone; ///< matchzone to match when whitelisting, example: "mz:URL|BODY|ARGS"
-	bool negate; ///< negates the match result, so matching becomes not matching; example: negative
+	bool negative; ///< negates the match result, so matching becomes not matching; example: negative
 } naxsi_whitelist_t;
 
 typedef struct naxsi_rule {
 	naxsi_str_t *description; ///< describes the rule description, example: "msg:GIT-Homedir-Access"
-	u32 rule_id; ///< describes the rule id, example: id:42000329
+	u32 identifier; ///< describes the rule id, example: id:42000329
 	naxsi_action_t action; ///< describes an action instead of a score, example: s:DROP
 	naxsi_scores_t *scores; ///<  describes the scores of the rule, example: s:$ATTACK:8,$UWA:8
 	void *match; ///< describes a case-insensitive of string to match, or a regex or the libinjection XSS/SQL; example: "rx:^[a-zA-Z\d-]+$" or "str:/.git/"
@@ -124,7 +125,7 @@ typedef struct naxsi_rule {
 
 naxsi_rule_t *naxsi_rule_new(const naxsi_mem_t *memory, naxsi_str_t *id_s, naxsi_str_t *descr_s, naxsi_str_t *match_s, naxsi_str_t *matchzone_s, naxsi_str_t *scores_s, bool negative);
 void naxsi_rule_free(const naxsi_mem_t *memory, naxsi_rule_t *rule);
-#define naxsi_whitelist_new(memory) naxsi_mem_new0(memory, naxsi_rule_t)
+naxsi_whitelist_t *naxsi_whitelist_new(const naxsi_mem_t *memory, naxsi_str_t *whitelist_s, naxsi_str_t *matchzone_s, bool negative);
 void naxsi_whitelist_free(const naxsi_mem_t *memory, naxsi_whitelist_t *whitelist);
 
 #endif /* NAXSI_RULE_H */

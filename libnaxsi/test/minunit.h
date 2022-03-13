@@ -135,9 +135,11 @@ void snprint_mem(char *out, size_t out_size, const unsigned char *buf, size_t le
 
 #define mu_assert_eq(actual, expected, message) \
 	do { \
-		if ((expected) != (actual)) { \
+		u64 act__ = (u64)(actual); \
+		u64 exp__ = (u64)(expected); \
+		if ((exp__) != (act__)) { \
 			char _meqstr[MU_BUF_SIZE]; \
-			snprintf(_meqstr, MU_BUF_SIZE, "%s: expected %" PFMT64u ", got %" PFMT64u ".", (message), (expected), (actual)); \
+			snprintf(_meqstr, MU_BUF_SIZE, "%s: expected %lu, got %lu.", (message), (exp__), (act__)); \
 			mu_assert(_meqstr, false); \
 		} \
 	} while (0)
@@ -156,7 +158,7 @@ void snprint_mem(char *out, size_t out_size, const unsigned char *buf, size_t le
 #define mu_assert_neq(actual, expected, message) \
 	do { \
 		char _meqstr[MU_BUF_SIZE]; \
-		snprintf(_meqstr, MU_BUF_SIZE, "%s: expected not %" PFMT64u ", got %" PFMT64u ".", (message), (expected), (actual)); \
+		snprintf(_meqstr, MU_BUF_SIZE, "%s: expected not %lu, got %lu.", (message), (expected), (actual)); \
 		mu_assert(_meqstr, (expected) != (actual)); \
 	} while (0)
 

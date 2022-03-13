@@ -159,7 +159,7 @@
 
 /* vector of pointers */
 #define naxsi_pvector_define(name, type) \
-	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t capacity, naxsi_##name##_free_t pfree) { \
+	naxsi_##name##_t *naxsi_##name##_new(const const naxsi_mem_t *memory, size_t capacity, naxsi_free_t pfree) { \
 		if (!memory || capacity < 1) { \
 			return NULL; \
 		} \
