@@ -12,8 +12,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
     - name: Install meson and ninja
       run: pip3 install --user meson ninja
+
     - name: Run Unit Tests
       run: |
         export PATH=${HOME}/Library/Python/3.8/bin:${HOME}/Library/Python/3.9/bin:${HOME}/.local/bin:${PATH}
@@ -21,13 +23,16 @@ jobs:
         meson -Dbuildtype=release build
         ninja -C build test
 
+
   Asan:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+
     - name: Install meson and ninja
       run: pip3 install --user meson ninja
+
     - name: Run Unit Tests with ASAN
       env:
         ASAN_OPTIONS: detect_leaks=0,detect_odr_violation=0,allocator_may_return_null=1
@@ -36,3 +41,30 @@ jobs:
         cd libnaxsi
         meson -Dbuildtype=debugoptimized -Db_sanitize=address,undefined build
         ninja -C build test
+
+
+  Nginx:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install meson and ninja
+      run: pip3 install --user meson ninja
+
+    - name: Install CPAN Test::Nginx
+      run: sudo cpan -T Test::Nginx
+
+    - name: Build nginx and naxsi
+      run: |
+        export PATH=${HOME}/Library/Python/3.8/bin:${HOME}/Library/Python/3.9/bin:${HOME}/.local/bin:${PATH}
+        wget -O nginx.tar.gz https://nginx.org/download/nginx-1.21.6.tar.gz
+        tar xvf nginx.tar.gz --directory nginx-src --strip-components=1
+        chmod +x ./build-nginx.sh
+        mkdir nginx-src
+        ./build-nginx.sh nginx-src debug
+
+    - name: Naxsi module unit tests
+      run: |
+        chmod +x ./test-nginx.sh
+        ./test-nginx.sh nginx-src

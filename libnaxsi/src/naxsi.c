@@ -13,9 +13,15 @@
 
 typedef struct naxsi {
 	naxsi_list_t /*<naxsi_rule_t*>*/ *rules; ///< Rules to check
-	naxsi_list_t /*<naxsi_whitelist_t*>*/ *whitelist; ///<  Whitelist to check after rule match
+	naxsi_list_t /*<naxsi_whitelist_t*>*/ *whitelist; ///< Whitelist to check after rule match
+	naxsi_list_t /*<naxsi_checkrules_t*>*/ *checkrules; ///< CheckRules
 	naxsi_list_t /*<naxsi_inet_t*>*/ *ignore_ips; ///< IPs to ignore
 	naxsi_list_t /*<naxsi_subnet_t*>*/ *ignore_cidrs; ///< CIDR to use to ignore IPs
+	naxsi_str_t *denied_url;
+	bool learning_mode;
+	bool security_rules;
+	bool libinjection_sql;
+	bool libinjection_xss;
 } naxsi_t;
 
 /**
@@ -37,9 +43,10 @@ NAXSI_API naxsi_t *naxsi_new(const naxsi_mem_t *memory) {
 
 	nxs->rules = naxsi_list_new(memory, (naxsi_free_t)&naxsi_rule_free);
 	nxs->whitelist = naxsi_list_new(memory, (naxsi_free_t)&naxsi_whitelist_free);
+	nxs->checkrules = naxsi_list_new(memory, (naxsi_free_t)&naxsi_checkrule_free);
 	nxs->ignore_ips = naxsi_list_new(memory, &naxsi_mem_free);
 	nxs->ignore_cidrs = naxsi_list_new(memory, &naxsi_mem_free);
-	if (!nxs->rules || !nxs->whitelist || !nxs->ignore_ips || !nxs->ignore_cidrs) {
+	if (!nxs->rules || !nxs->whitelist || !nxs->checkrules || !nxs->ignore_ips || !nxs->ignore_cidrs) {
 		naxsi_free(memory, nxs);
 		return NULL;
 	}
@@ -59,9 +66,114 @@ NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs) {
 	}
 	naxsi_list_free(memory, nxs->rules);
 	naxsi_list_free(memory, nxs->whitelist);
+	naxsi_list_free(memory, nxs->checkrules);
 	naxsi_list_free(memory, nxs->ignore_ips);
 	naxsi_list_free(memory, nxs->ignore_cidrs);
+	naxsi_str_free(memory, nxs->denied_url, true);
 	naxsi_mem_free(memory, nxs);
+}
+
+/**
+ * @brief      Sets the LearningMode value
+ *
+ * @param      nxs     The nxs
+ * @param[in]  enable  The enable
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_set_learning_mode(naxsi_t *nxs, bool enable) {
+	if (!nxs) {
+		return false;
+	}
+	nxs->learning_mode = enable;
+	return true;
+}
+
+/**
+ * @brief      Sets the SecRulesEnabled/SecRulesDisabled value
+ *
+ * @param      nxs     The nxs
+ * @param[in]  enable  The enable
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_set_security_rules(naxsi_t *nxs, bool enable) {
+	if (!nxs) {
+		return false;
+	}
+	nxs->security_rules = enable;
+	return true;
+}
+
+/**
+ * @brief      Sets the LibInjectionSql value
+ *
+ * @param      nxs     The nxs
+ * @param[in]  enable  The enable
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_set_libinjection_sql(naxsi_t *nxs, bool enable) {
+	if (!nxs) {
+		return false;
+	}
+	nxs->libinjection_sql = enable;
+	return true;
+}
+
+/**
+ * @brief      Sets the LibInjectionXss value
+ *
+ * @param      nxs     The nxs
+ * @param[in]  enable  The enable
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_set_libinjection_xss(naxsi_t *nxs, bool enable) {
+	if (!nxs) {
+		return false;
+	}
+	nxs->libinjection_xss = enable;
+	return true;
+}
+
+/**
+ * @brief      Sets the DeniedUrl value
+ *
+ * @param[in]  memory      The naxsi_mem_t structure to use for handling memory
+ * @param      nxs         The naxsi_t struct to use
+ * @param      denied_url  The url to use to redirect on denied requests
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_set_denied_url(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *denied_url) {
+	if (!memory || !nxs || !denied_url) {
+		return false;
+	}
+	nxs->denied_url = naxsi_str_new(memory, denied_url->data, denied_url->length, true);
+	return nxs->denied_url != NULL;
+}
+
+/**
+ * @brief      Adds a CheckRule to the naxsi_t structure
+ *
+ * @param[in]  memory       The naxsi_mem_t structure to use for handling memory
+ * @param      nxs          The naxsi_t struct to use
+ * @param      checkrule_s  The checkrule
+ * @param      action_s     The action to take
+ *
+ * @return     On success returns true, on failure false.
+ */
+NAXSI_API bool naxsi_add_checkrule(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *checkrule_s, naxsi_str_t *action_s) {
+	if (!memory || !nxs || !checkrule_s || !action_s) {
+		return false;
+	}
+	naxsi_checkrule_t *checkrule = naxsi_checkrule_new(memory, checkrule_s, action_s);
+	if (!checkrule || !naxsi_list_append(memory, nxs->checkrules, checkrule)) {
+		naxsi_checkrule_free(memory, checkrule);
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -74,7 +186,7 @@ NAXSI_API void naxsi_free(const naxsi_mem_t *memory, naxsi_t *nxs) {
  *
  * @return     On success returns true, on failure false.
  */
-NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size_t argc, naxsi_str_t **argv) {
+NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size_t argc, naxsi_str_t *argv) {
 	if (!memory || !nxs || argc < 4 || !argv) {
 		return false;
 	}
@@ -82,7 +194,7 @@ NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size
 	bool negative = false;
 
 	for (size_t i = 0; i < argc; ++i) {
-		naxsi_str_t *arg = argv[i];
+		naxsi_str_t *arg = &argv[i];
 		if (find_prefix(arg, NAXSI_RULE_PREFIX_IDENTIFIER)) {
 			if (id_s) {
 				return false;
@@ -160,7 +272,7 @@ NAXSI_API bool naxsi_add_rule_args(const naxsi_mem_t *memory, naxsi_t *nxs, size
  *
  * @return     On success returns true, on error false.
  */
-NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_address) {
+NAXSI_API bool naxsi_add_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *ip_address) {
 	if (!memory || !nxs || !ip_address) {
 		return false;
 	}
@@ -181,7 +293,7 @@ NAXSI_API bool naxsi_ignore_ip(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_st
  *
  * @return     On success returns true, on error false.
  */
-NAXSI_API bool naxsi_ignore_cidr(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *cidr) {
+NAXSI_API bool naxsi_add_ignore_cidr(const naxsi_mem_t *memory, naxsi_t *nxs, naxsi_str_t *cidr) {
 	if (!memory || !nxs || !cidr) {
 		return false;
 	}

@@ -73,13 +73,29 @@ typedef enum {
 } naxsi_mz_type_t;
 
 typedef enum {
-	NAXSI_RULE_ACTION_UNSET /**/ = (0 << 0), ///< used for invalid action
+	NAXSI_RULE_ACTION_UNSET /**/ = (0 << 0), ///< used for invalid rule action
 	NAXSI_RULE_ACTION_SCORE /**/ = (1 << 0), ///< increments the scores when the rules matches
 	NAXSI_RULE_ACTION_BLOCK /**/ = (1 << 1), ///< directly blocks the request when the rule matches and is not in learning mode
 	NAXSI_RULE_ACTION_ALLOW /**/ = (1 << 2), ///< directly allows the request when the rule matches
 	NAXSI_RULE_ACTION_DROP /* */ = (1 << 3), ///< directly drop the request when the rule matches, regardless of the current mode
 	NAXSI_RULE_ACTION_LOG /*  */ = (1 << 4), ///< directly logs the request when the rule matches
 } naxsi_action_t;
+
+typedef enum {
+	NAXSI_CHECKRULE_COMPARE_INVALID = 0, ///< used for invalid checkrule action
+	NAXSI_CHECKRULE_COMPARE_LT, ///< $FOO <  123
+	NAXSI_CHECKRULE_COMPARE_LE, ///< $FOO <= 123
+	NAXSI_CHECKRULE_COMPARE_GT, ///< $FOO >  123
+	NAXSI_CHECKRULE_COMPARE_GE, ///< $FOO >= 123
+} naxsi_cr_compare_t;
+
+typedef enum {
+	NAXSI_CHECKRULE_ACTION_UNSET = 0, ///< used for invalid checkrule action
+	NAXSI_CHECKRULE_ACTION_BLOCK, ///< directly blocks the request when the rule matches and is not in learning mode
+	NAXSI_CHECKRULE_ACTION_ALLOW, ///< directly allows the request when the rule matches
+	NAXSI_CHECKRULE_ACTION_DROP, ///< directly drop the request when the rule matches, regardless of the current mode
+	NAXSI_CHECKRULE_ACTION_LOG, ///< directly logs the request when the rule matches
+} naxsi_cr_action_t;
 
 typedef struct naxsi_score {
 	naxsi_str_t name; ///< score name, for example: $ATTACK (s:$ATTACK:8)
@@ -123,9 +139,18 @@ typedef struct naxsi_rule {
 	bool negative; ///< negates the match result, so matching becomes not matching; example: negative
 } naxsi_rule_t;
 
+typedef struct naxsi_checkrule {
+	naxsi_str_t name; ///< check rule name, for example: '$ATTACK' in 'CheckRule "$ATTACK >= 8" BLOCK'
+	u32 value; ///<  check rule value to compare with the computed score, example: '8' in 'CheckRule "$ATTACK >= 8" BLOCK'
+	naxsi_cr_compare_t compare; ///< check rule compare type, example: '>=' in 'CheckRule "$ATTACK >= 8" BLOCK'
+	naxsi_cr_action_t action; ///< check rule action type, example: 'BLOCK' in 'CheckRule "$ATTACK >= 8" BLOCK'
+} naxsi_checkrule_t;
+
 naxsi_rule_t *naxsi_rule_new(const naxsi_mem_t *memory, naxsi_str_t *id_s, naxsi_str_t *descr_s, naxsi_str_t *match_s, naxsi_str_t *matchzone_s, naxsi_str_t *scores_s, bool negative);
 void naxsi_rule_free(const naxsi_mem_t *memory, naxsi_rule_t *rule);
 naxsi_whitelist_t *naxsi_whitelist_new(const naxsi_mem_t *memory, naxsi_str_t *whitelist_s, naxsi_str_t *matchzone_s, bool negative);
 void naxsi_whitelist_free(const naxsi_mem_t *memory, naxsi_whitelist_t *whitelist);
+naxsi_checkrule_t *naxsi_checkrule_new(const naxsi_mem_t *memory, naxsi_str_t *checkrule_s, naxsi_str_t *action_s);
+void naxsi_checkrule_free(const naxsi_mem_t *memory, naxsi_checkrule_t *checkrule);
 
 #endif /* NAXSI_RULE_H */

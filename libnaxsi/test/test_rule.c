@@ -3,30 +3,44 @@
 #include "minunit_mem.h"
 #include "naxsi_rule.h"
 
+#define test_str_init(n, x) \
+	do { \
+		n.length = 0; \
+		n.data = NULL; \
+		naxsi_str_init(&mem, &n, x, strlen(x), false); \
+	} while (0)
+
 #define test_rule(id, descr, match, matchzone, scores, neg) \
 	do { \
-		naxsi_str_init(&mem, &id_s, id, strlen(id), false); \
-		naxsi_str_init(&mem, &descr_s, descr, strlen(descr), false); \
-		naxsi_str_init(&mem, &match_s, match, strlen(match), false); \
-		naxsi_str_init(&mem, &matchzone_s, matchzone, strlen(matchzone), false); \
-		naxsi_str_init(&mem, &scores_s, scores, strlen(scores), false); \
+		test_str_init(id_s, id); \
+		test_str_init(descr_s, descr); \
+		test_str_init(match_s, match); \
+		test_str_init(matchzone_s, matchzone); \
+		test_str_init(scores_s, scores); \
 		rule = naxsi_rule_new(&mem, &id_s, &descr_s, &match_s, &matchzone_s, &scores_s, neg); \
 	} while (0)
 
 #define test_rule_nodesc(id, match, matchzone, scores, neg) \
 	do { \
-		naxsi_str_init(&mem, &id_s, id, strlen(id), false); \
-		naxsi_str_init(&mem, &match_s, match, strlen(match), false); \
-		naxsi_str_init(&mem, &matchzone_s, matchzone, strlen(matchzone), false); \
-		naxsi_str_init(&mem, &scores_s, scores, strlen(scores), false); \
+		test_str_init(id_s, id); \
+		test_str_init(match_s, match); \
+		test_str_init(matchzone_s, matchzone); \
+		test_str_init(scores_s, scores); \
 		rule = naxsi_rule_new(&mem, &id_s, NULL, &match_s, &matchzone_s, &scores_s, neg); \
 	} while (0)
 
 #define test_whitelist(wl, matchzone, neg) \
 	do { \
-		naxsi_str_init(&mem, &wl_s, wl, strlen(wl), false); \
-		naxsi_str_init(&mem, &matchzone_s, matchzone, strlen(matchzone), false); \
+		test_str_init(wl_s, wl); \
+		test_str_init(matchzone_s, matchzone); \
 		whitelist = naxsi_whitelist_new(&mem, &wl_s, &matchzone_s, neg); \
+	} while (0)
+
+#define test_checkrule(cr, action) \
+	do { \
+		test_str_init(checkrule_s, cr); \
+		test_str_init(action_s, action); \
+		checkrule = naxsi_checkrule_new(&mem, &checkrule_s, &action_s); \
 	} while (0)
 
 bool test_naxsi_rule_failures(void) {
@@ -337,6 +351,99 @@ bool test_naxsi_whitelist_successes(void) {
 	mu_end;
 }
 
+bool test_naxsi_checkrules(void) {
+	naxsi_str_t checkrule_s = { 0 }, action_s = { 0 };
+	naxsi_checkrule_t *checkrule = NULL;
+	naxsi_mem_t mem = mu_naxsi_mem();
+
+	/* invalid */
+
+	checkrule = naxsi_checkrule_new(NULL, &checkrule_s, &action_s);
+	mu_assert_null(checkrule, "naxsi_checkrule_new(NULL, &checkrule_s, &action_s) shall return NULL");
+
+	checkrule = naxsi_checkrule_new(&mem, NULL, &action_s);
+	mu_assert_null(checkrule, "naxsi_whitelist_new(&mem, NULL, &action_s) shall return NULL");
+
+	checkrule = naxsi_checkrule_new(&mem, &checkrule_s, NULL);
+	mu_assert_null(checkrule, "naxsi_whitelist_new(&mem, &checkrule_s, NULL) shall return NULL");
+
+	test_checkrule("", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule (empty)");
+
+	test_checkrule("FOO > 7", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule ($ is missing)");
+
+	test_checkrule("$FOO 7", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule (no compare)");
+
+	test_checkrule("$FOO >", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule (no number)");
+
+	test_checkrule("$FOO > UUU", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule (not a number)");
+
+	test_checkrule("$ > 7", "BLOCK");
+	mu_assert_null(checkrule, "Invalid checkrule (invalid name)");
+
+	test_checkrule("$FOO > 7", "");
+	mu_assert_null(checkrule, "Invalid action (empty)");
+
+	test_checkrule("$FOO > 7", "BLABLABLA");
+	mu_assert_null(checkrule, "Invalid action (invalid value)");
+
+	test_checkrule("$FOO > 7", "block");
+	mu_assert_null(checkrule, "Invalid action (lowercase)");
+
+	/* valid */
+
+	test_checkrule("$FOO > 7", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO > 7\" BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO>7", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO>7\" BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO >7", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO >7\" BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO> 7", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO> 7\" BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO > 7", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO > 7\" BLOCK");
+	mu_assert_streq(checkrule->name.data, "$FOO", "checkrule name shall be $FOO");
+	mu_assert_eq(checkrule->name.length, 4, "checkrule name shall be $FOO with length of 4");
+	mu_assert_eq(checkrule->value, 7, "checkrule value shall be 7");
+	mu_assert_eq(checkrule->compare, NAXSI_CHECKRULE_COMPARE_GT, "checkrule compare shall be NAXSI_CHECKRULE_COMPARE_GT");
+	mu_assert_eq(checkrule->action, NAXSI_CHECKRULE_ACTION_BLOCK, "checkrule action shall be NAXSI_CHECKRULE_ACTION_BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO >= 77777", "ALLOW");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO >= 77777\" ALLOW");
+	mu_assert_eq(checkrule->value, 77777, "checkrule value shall be 77777");
+	mu_assert_eq(checkrule->compare, NAXSI_CHECKRULE_COMPARE_GE, "checkrule compare shall be NAXSI_CHECKRULE_COMPARE_GE");
+	mu_assert_eq(checkrule->action, NAXSI_CHECKRULE_ACTION_ALLOW, "checkrule action shall be NAXSI_CHECKRULE_ACTION_ALLOW");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO < 77777", "BLOCK");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO < 77777\" BLOCK");
+	mu_assert_eq(checkrule->value, 77777, "checkrule value shall be 77777");
+	mu_assert_eq(checkrule->compare, NAXSI_CHECKRULE_COMPARE_LT, "checkrule compare shall be NAXSI_CHECKRULE_COMPARE_LT");
+	mu_assert_eq(checkrule->action, NAXSI_CHECKRULE_ACTION_BLOCK, "checkrule action shall be NAXSI_CHECKRULE_ACTION_BLOCK");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	test_checkrule("$FOO <= 77777", "LOG");
+	mu_assert_notnull(checkrule, "CheckRule \"$FOO <= 77777\" LOG");
+	mu_assert_eq(checkrule->value, 77777, "checkrule value shall be 77777");
+	mu_assert_eq(checkrule->compare, NAXSI_CHECKRULE_COMPARE_LE, "checkrule compare shall be NAXSI_CHECKRULE_COMPARE_LE");
+	mu_assert_eq(checkrule->action, NAXSI_CHECKRULE_ACTION_LOG, "checkrule action shall be NAXSI_CHECKRULE_ACTION_LOG");
+	naxsi_checkrule_free(&mem, checkrule);
+
+	mu_end;
+}
 int all_tests() {
 	mu_run_test(test_naxsi_rule_failures);
 	mu_run_test(test_naxsi_rule_successes);
@@ -345,6 +452,7 @@ int all_tests() {
 	mu_run_test(test_naxsi_rule_match_str_all_scores);
 	mu_run_test(test_naxsi_whitelist_failures);
 	mu_run_test(test_naxsi_whitelist_successes);
+	mu_run_test(test_naxsi_checkrules);
 	return tests_passed != tests_run;
 }
 

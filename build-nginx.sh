@@ -8,6 +8,7 @@ fi
 
 NGINX_SRC=$(realpath "$1")
 OPTION="$2"
+NCPUS=$(getconf _NPROCESSORS_ONLN)
 
 MESON_OPTIONS="--buildtype=release"
 if [ "$OPTION" == "debug" ]; then
@@ -29,4 +30,8 @@ ninja -C build
 # build nginx module
 cd "$NGINX_SRC"
 ./configure --add-dynamic-module="$ROOT_DIR/naxsi_nginx_module/"
-make modules
+
+if [ ! -f "$NGINX_SRC/objs/nginx" ]; then
+	make -j$NCPUS
+fi
+make -j$NCPUS modules

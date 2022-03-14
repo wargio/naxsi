@@ -671,3 +671,158 @@ fail:
 	naxsi_whitelist_free(memory, whitelist);
 	return NULL;
 }
+
+/**
+ * @brief      Finds checkrule named variable end
+ *
+ * @param      checkrule_s  The checkrule string to parse
+ *
+ * @return     On success returns valid pointer, otherwise NULL
+ */
+static char *find_checkrule_name_end(naxsi_str_t *checkrule_s) {
+	if (checkrule_s->length < 4 || *checkrule_s->data != '$') {
+		return NULL;
+	}
+	char *beginp = checkrule_s->data + 1;
+	char const *endp = checkrule_s->data + checkrule_s->length;
+	for (char *start = beginp; start < endp; start++) {
+		if (*start == ' ' || *start == '<' || *start == '>') {
+			return start > beginp ? start : NULL;
+		} else if (!isalpha(*start) && *start != '_') {
+			break;
+		}
+	}
+	return NULL;
+}
+
+/**
+ * @brief      Finds checkrule compare operation
+ *
+ * @param      checkrule_s  The checkrule string to parse
+ * @param      beginp       The start position
+ *
+ * @return     On success returns valid pointer, otherwise NULL
+ */
+static char *find_checkrule_compare(naxsi_str_t *checkrule_s, char *beginp) {
+	char const *endp = checkrule_s->data + checkrule_s->length;
+	for (char *start = beginp; start < endp; start++) {
+		if (*start == '<' || *start == '>') {
+			return start;
+		} else if (*start != ' ') {
+			break;
+		}
+	}
+	return NULL;
+}
+
+/**
+ * @brief      Finds checkrule numeric score value
+ *
+ * @param      checkrule_s  The checkrule string to parse
+ * @param      beginp       The start position
+ *
+ * @return     On success returns valid pointer, otherwise NULL
+ */
+static char *find_checkrule_score(naxsi_str_t *checkrule_s, char *beginp) {
+	char const *endp = checkrule_s->data + checkrule_s->length;
+	for (char *start = beginp; start < endp; start++) {
+		if (isdigit(*start)) {
+			return start;
+		} else if (*start != ' ') {
+			break;
+		}
+	}
+	return NULL;
+}
+
+/**
+ * @brief      Allocates and initialize a naxsi_checkrule_t struct
+ *
+ * @param[in]  memory       The naxsi_mem_t structure to use
+ * @param      checkrule_s  The checkrule
+ * @param      action_s     The action linked to the checkrule
+ *
+ * @return     On success returns the pointer to naxsi_checkrule_t, otherwise NULL
+ */
+naxsi_checkrule_t *naxsi_checkrule_new(const naxsi_mem_t *memory, naxsi_str_t *checkrule_s, naxsi_str_t *action_s) {
+	if (!memory || !checkrule_s || !action_s) {
+		return NULL;
+	}
+	u32 value = 0;
+	naxsi_cr_compare_t compare = NAXSI_CHECKRULE_COMPARE_INVALID;
+	naxsi_cr_action_t action = NAXSI_CHECKRULE_ACTION_UNSET;
+	char *name_end = NULL, *cmp = NULL, *num_beg = NULL, *num_end = NULL;
+
+	if (action_s->length < 3 || action_s->length > 5 || !*action_s->data) {
+		return NULL;
+	} else if (!strcmp(action_s->data, NAXSI_RULE_SCORE_BLOCK)) {
+		action = NAXSI_CHECKRULE_ACTION_BLOCK;
+	} else if (!strcmp(action_s->data, NAXSI_RULE_SCORE_ALLOW)) {
+		action = NAXSI_CHECKRULE_ACTION_ALLOW;
+	} else if (!strcmp(action_s->data, NAXSI_RULE_SCORE_DROP)) {
+		action = NAXSI_CHECKRULE_ACTION_DROP;
+	} else if (!strcmp(action_s->data, NAXSI_RULE_SCORE_LOG)) {
+		action = NAXSI_CHECKRULE_ACTION_LOG;
+	} else {
+		return NULL;
+	}
+
+	name_end = find_checkrule_name_end(checkrule_s);
+	if (!name_end) {
+		return NULL;
+	}
+
+	cmp = find_checkrule_compare(checkrule_s, name_end);
+	if (!cmp) {
+		return NULL;
+	} else if (starts_with(cmp, "<=")) {
+		compare = NAXSI_CHECKRULE_COMPARE_LE;
+		cmp += strlen("<=");
+	} else if (starts_with(cmp, ">=")) {
+		compare = NAXSI_CHECKRULE_COMPARE_GE;
+		cmp += strlen(">=");
+	} else if (starts_with(cmp, "<")) {
+		compare = NAXSI_CHECKRULE_COMPARE_LT;
+		cmp += strlen("<");
+	} else if (starts_with(cmp, ">")) {
+		compare = NAXSI_CHECKRULE_COMPARE_GT;
+		cmp += strlen(">");
+	} else {
+		return NULL;
+	}
+
+	num_beg = find_checkrule_score(checkrule_s, cmp);
+	if (!num_beg) {
+		return NULL;
+	}
+
+	num_end = find_number_end(num_beg, checkrule_s->data + checkrule_s->length);
+	if (!num_end) {
+		return false;
+	}
+	value = parse_number(num_beg, num_end);
+
+	naxsi_checkrule_t *checkrule = naxsi_mem_new(memory, naxsi_checkrule_t);
+	if (!checkrule || !naxsi_str_init(memory, &checkrule->name, checkrule_s->data, name_end - checkrule_s->data, true)) {
+		naxsi_mem_free(memory, checkrule);
+		return false;
+	}
+	checkrule->value = value;
+	checkrule->compare = compare;
+	checkrule->action = action;
+	return checkrule;
+}
+
+/**
+ * @brief      Frees a naxsi_checkrule_t pointer
+ *
+ * @param[in]  memory     The naxsi_mem_t structure to use
+ * @param      checkrule  The naxsi_checkrule_t to be freed
+ */
+void naxsi_checkrule_free(const naxsi_mem_t *memory, naxsi_checkrule_t *checkrule) {
+	if (!memory || !checkrule) {
+		return;
+	}
+	naxsi_str_fini(memory, &checkrule->name, true);
+	naxsi_mem_free(memory, checkrule);
+}

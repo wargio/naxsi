@@ -11,7 +11,7 @@ Files: **/meson.build **/*.wrap **/meson_options.txt
 Copyright: 2022 deroad <wargio@libero.it>
 License: LGPL-3.0-only
 
-Files: naxsi_nginx_module/config
+Files: naxsi_nginx_module/config naxsi_nginx_module/tests/*.t
 Copyright: 2022 deroad <wargio@libero.it>
 License: LGPL-3.0-only
 

@@ -1,3 +1,4 @@
 libnaxsi/build*/
 libnaxsi/subprojects/libinjection
 libnaxsi/subprojects/pcre2
+naxsi_test_dir/
