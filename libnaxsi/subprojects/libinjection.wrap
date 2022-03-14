@@ -1,0 +1,4 @@
+[wrap-git]
+url = https://github.com/libinjection/libinjection.git
+revision = 49904c42a6e68dc8f16c022c693e897e4010a06c
+patch_directory = libinjection

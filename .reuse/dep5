@@ -1,0 +1,24 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Re:WAF
+Upstream-Contact: deroad <wargio@libero.it>
+Source: https://github.com/wargio/rewaf
+
+Files: *.md *.sh *.py *.yaml .gitignore .clang-format
+Copyright: 2022 deroad <wargio@libero.it>
+License: LGPL-3.0-only
+
+Files: **/meson.build **/*.wrap **/meson_options.txt
+Copyright: 2022 deroad <wargio@libero.it>
+License: LGPL-3.0-only
+
+Files: naxsi_nginx_module/config naxsi_nginx_module/tests/*.t
+Copyright: 2022 deroad <wargio@libero.it>
+License: LGPL-3.0-only
+
+Files: naxsi_config/** naxsi_src/** nxapi/** t/** .gitattributes
+Copyright: 2016, Thibault 'bui' Koechlin
+License: GPL-3.0-only
+
+Files: logo.png
+Copyright: 2016-2020, NBS System
+License: GPL-3.0-only

@@ -1,0 +1,18 @@
+ngx_addon_name=ngx_http_naxsi_module
+
+ngx_http_naxsi_module_inc_path=" -I $ngx_addon_dir/../libnaxsi/include "
+ngx_http_naxsi_module_libs=" -L $ngx_addon_dir/../libnaxsi/build -lnaxsi "
+
+if test -n "$ngx_module_link"; then
+  ngx_module_type=HTTP
+  ngx_module_name="$ngx_addon_name"
+  ngx_module_incs="$ngx_http_naxsi_module_inc_path"
+  ngx_module_libs="$ngx_http_naxsi_module_libs"
+  ngx_module_srcs="$ngx_addon_dir/ngx_http_naxsi_module.c"
+  . auto/module
+else
+    HTTP_MODULES="$HTTP_MODULES $ngx_addon_name"
+    HTTP_INCS="$HTTP_INCS $ngx_http_naxsi_module_inc_path"
+    HTTP_DEPS="$HTTP_DEPS $ngx_http_naxsi_module_libs"
+    NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_http_naxsi_module.c"
+fi
