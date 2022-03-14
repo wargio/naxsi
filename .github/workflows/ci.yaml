@@ -58,10 +58,10 @@ jobs:
     - name: Build nginx and naxsi
       run: |
         export PATH=${HOME}/Library/Python/3.8/bin:${HOME}/Library/Python/3.9/bin:${HOME}/.local/bin:${PATH}
+        mkdir nginx-src
         wget -O nginx.tar.gz https://nginx.org/download/nginx-1.21.6.tar.gz
         tar xvf nginx.tar.gz --directory nginx-src --strip-components=1
         chmod +x ./build-nginx.sh
-        mkdir nginx-src
         ./build-nginx.sh nginx-src debug
 
     - name: Naxsi module unit tests
