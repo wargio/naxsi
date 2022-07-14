@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "assert.h"
-#include "naxsi.h"
-#include "naxsi_macros.h"
-#include "naxsi_net.h"
+#include <naxsi.h>
+#include <naxsi_macros.h>
+#include <naxsi_net.h>
 
 /* used to store locations during the configuration time.
    then, accessed by the hashtable building feature during "init" time. */

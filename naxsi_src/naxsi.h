@@ -4,17 +4,15 @@
 #ifndef __NAXSI_H__
 #define __NAXSI_H__
 
-#include <nginx.h>
 #include <ngx_config.h>
 #include <ngx_core.h>
-#include <ngx_event.h>
 #include <ngx_http.h>
 #include <ngx_http_core_module.h>
 #include <ngx_md5.h>
 
 #include <ctype.h>
 
-#include "naxsi_const.h"
+#include <naxsi_const.h>
 
 #include "libinjection/src/libinjection_sqli.h"
 #include "libinjection/src/libinjection_xss.h"

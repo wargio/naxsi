@@ -7,8 +7,9 @@
 ** aware of nginx's modules can skip most of this.
 */
 
-#include "naxsi.h"
-#include "naxsi_net.h"
+#include <naxsi.h>
+#include <naxsi_net.h>
+
 #include <ctype.h>
 #include <sys/times.h>
 

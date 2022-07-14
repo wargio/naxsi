@@ -28,7 +28,7 @@ ngx_addon_name=naxsi
 ngx_module_name=ngx_http_naxsi_module
 if test -n "$ngx_module_link"; then
     ngx_module_type=HTTP
-    ngx_module_incs="$naxsi_includes"
+    ngx_module_incs="$ngx_addon_dir/"
     ngx_module_srcs="$naxsi_sources"
     . auto/module
 else
