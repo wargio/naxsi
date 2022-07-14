@@ -19,6 +19,11 @@
 
 extern ngx_module_t ngx_http_naxsi_module;
 
+/**
+ * Enable this to debug naxsi
+ */
+#define _debug_naxsi_logs 1
+
 /*
 ** as the #ifdef #endif for debug are getting really messy ...
 ** Bellow are all the possibles debug defines. To enable associated feature
@@ -28,7 +33,6 @@ extern ngx_module_t ngx_http_naxsi_module;
 *(0);
 */
 
-#define _naxsi_rawbody            0
 #define _debug_basestr_ruleset    0
 #define _debug_custom_score       0
 #define _debug_body_parse         0
@@ -52,24 +56,24 @@ extern ngx_module_t ngx_http_naxsi_module;
 #define _debug_whitelist_heavy    0
 #define _debug_whitelist_light    0
 #define _debug_whitelist_ignore   0
-#define wl_debug_rx               0
+#define _debug_libinj_sqli        1
+#define _debug_libinj_xss         0
+#define _debug_wl_debug_rx        0
 
-#ifndef __NAXSI_DEBUG
-#define __NAXSI_DEBUG
+#if _debug_naxsi_logs
 #define NX_DEBUG(FEATURE, DEF, LOG, ST, ...)                                                       \
   do {                                                                                             \
     if (FEATURE)                                                                                   \
       ngx_log_debug(DEF, LOG, ST, __VA_ARGS__);                                                    \
   } while (0)
-#endif
-
-#ifndef __NAXSI_LOG_DEBUG
-#define __NAXSI_LOG_DEBUG
 #define NX_LOG_DEBUG(FEATURE, DEF, LOG, ST, ...)                                                   \
   do {                                                                                             \
     if (FEATURE)                                                                                   \
       ngx_conf_log_error(DEF, LOG, ST, __VA_ARGS__);                                               \
   } while (0)
+#else
+#define NX_DEBUG(FEATURE, DEF, LOG, ST, ...)
+#define NX_LOG_DEBUG(FEATURE, DEF, LOG, ST, ...)
 #endif
 
 /*

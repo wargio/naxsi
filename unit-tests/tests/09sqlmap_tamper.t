@@ -1,3 +1,4 @@
+#vi:filetype=perl
 
 use lib 'lib';
 use Test::Nginx::Socket;
@@ -392,18 +393,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1+/*!00000AND+2>1*/-- HTTP/1.0
@@ -422,18 +424,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=+UNION+++SELECT++ HTTP/1.0
@@ -452,18 +455,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=%S%E%L%E%C%T+%F%I%E%L%D+%F%R%O%M+%T%A%B%L%E HTTP/1.0
@@ -482,18 +486,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1 UnioN SeLEct 1 HTTP/1.0
@@ -512,18 +517,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=AND+1=1+and+'0having'='0having' HTTP/1.0
@@ -542,18 +548,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=SELECT/**/id/**/FROM/**/users HTTP/1.0
@@ -572,18 +579,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1--PTTmJopxdWJ%0AAND--cWfcVRPV%0A9227=9227 HTTP/1.0
@@ -602,18 +610,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1%23PTTmJopxdWJ%0AAND%23cWfcVRPV%0A9227=9227 HTTP/1.0
@@ -632,18 +641,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1%23PTTmJopxdWJ%0AAND%23cWfcVRPV%0A9227=9227 HTTP/1.0
@@ -662,18 +672,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=SELECT%08id%02FROM%0Fusers HTTP/1.0
@@ -692,18 +703,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1%23%0A9227=922%237 HTTP/1.0
@@ -722,18 +734,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=SELECT%0Bid%0BFROM%A0users HTTP/1.0
@@ -752,18 +765,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1--%0AAND--%0A9227=9227 HTTP/1.0
@@ -782,18 +796,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=SELECT+id+FROM+users HTTP/1.0
@@ -813,18 +828,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1%bf%27+AND+1=1--%20 HTTP/1.0
@@ -843,18 +859,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1/*!UNION*//*!ALL*//*!SELECT*//*!NULL*/,/*!NULL*/,+CONCAT(CHAR(58,104,116,116,58),IFNULL(CAST(CURRENT_USER()/*!AS*//*!CHAR*/),CHAR(32)),CHAR(58,100,114,117,58))# HTTP/1.0
@@ -873,18 +890,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1/*!UNION*//*!ALL*//*!SELECT*//*!NULL*/,/*!NULL*/,/*!CONCAT*/(/*!CHAR*/(58,122,114,115,58),/*!IFNULL*/(CAST(/*!CURRENT_USER*/()/*!AS*//*!CHAR*/),/*!CHAR*/(32)),/*!CHAR*/(58,115,114,121,58))# HTTP/1.0
