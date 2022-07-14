@@ -319,11 +319,7 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 
         custom_rule->target_rx = ngx_pcalloc(r->pool, sizeof(ngx_regex_compile_t));
         return_value_if(!custom_rule->target_rx, NGX_CONF_ERROR);
-#if (NGX_PCRE2)
-        custom_rule->target_rx->options = PCRE2_CASELESS | PCRE2_MULTILINE;
-#else
-        custom_rule->target_rx->options = PCRE_CASELESS | PCRE_MULTILINE;
-#endif
+        custom_rule->target_rx->options  = NAXSI_REGEX_OPTIONS;
         custom_rule->target_rx->pattern  = custom_rule->target;
         custom_rule->target_rx->pool     = r->pool;
         custom_rule->target_rx->err.len  = 0;
@@ -443,16 +439,7 @@ naxsi_rx(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
   rgc     = ngx_pcalloc(r->pool, sizeof(ngx_regex_compile_t));
   return_value_if(!rgc, NGX_CONF_ERROR);
 
-#if defined nginx_version && (nginx_version >= 1021005)
-  // after 1.21.5 NGX_REGEX_MULTILINE is present.
-  rgc->options = NGX_REGEX_CASELESS | NGX_REGEX_MULTILINE;
-#else
-#if (NGX_PCRE2)
-  rgc->options = PCRE2_CASELESS | PCRE2_MULTILINE;
-#else
-  rgc->options = PCRE_CASELESS | PCRE_MULTILINE;
-#endif
-#endif
+  rgc->options  = NAXSI_REGEX_OPTIONS;
   rgc->pattern  = ha;
   rgc->pool     = r->pool;
   rgc->err.len  = 0;

@@ -735,11 +735,7 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
             ngx_pcalloc(cf->pool, sizeof(ngx_regex_compile_t));
           rgc = custloc_array(curr_r->br->custom_locations->elts)[name_idx].target_rx;
           if (rgc) {
-#if (NGX_PCRE2)
-            rgc->options = PCRE2_CASELESS | PCRE2_MULTILINE;
-#else
-            rgc->options = PCRE_CASELESS | PCRE_MULTILINE;
-#endif
+            rgc->options  = NAXSI_REGEX_OPTIONS;
             rgc->pattern  = custloc_array(curr_r->br->custom_locations->elts)[name_idx].target;
             rgc->pool     = cf->pool;
             rgc->err.len  = 0;
@@ -755,11 +751,7 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
             ngx_pcalloc(cf->pool, sizeof(ngx_regex_compile_t));
           rgc = custloc_array(curr_r->br->custom_locations->elts)[uri_idx].target_rx;
           if (rgc) {
-#if (NGX_PCRE2)
-            rgc->options = PCRE2_CASELESS | PCRE2_MULTILINE;
-#else
-            rgc->options = PCRE_CASELESS | PCRE_MULTILINE;
-#endif
+            rgc->options  = NAXSI_REGEX_OPTIONS;
             rgc->pattern  = custloc_array(curr_r->br->custom_locations->elts)[uri_idx].target;
             rgc->pool     = cf->pool;
             rgc->err.len  = 0;
