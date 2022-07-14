@@ -443,7 +443,8 @@ naxsi_rx(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
   rgc     = ngx_pcalloc(r->pool, sizeof(ngx_regex_compile_t));
   return_value_if(!rgc, NGX_CONF_ERROR);
 
-#if defined nginx_version && (nginx_version >= 1021005) // after 1.21.5 NGX_REGEX_MULTILINE is present.
+#if defined nginx_version && (nginx_version >= 1021005)
+  // after 1.21.5 NGX_REGEX_MULTILINE is present.
   rgc->options = NGX_REGEX_CASELESS | NGX_REGEX_MULTILINE;
 #else
 #if (NGX_PCRE2)

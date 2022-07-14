@@ -24,10 +24,11 @@ naxsi_sources+="$ngx_addon_dir/libinjection/src/libinjection_sqli.c "
 naxsi_sources+="$ngx_addon_dir/libinjection/src/libinjection_xss.c "
 
 # NGINX module condfiguration.
-ngx_addon_name=ngx_http_naxsi_module
+ngx_addon_name=naxsi
+ngx_module_name=ngx_http_naxsi_module
 if test -n "$ngx_module_link"; then
     ngx_module_type=HTTP
-    ngx_module_name=ngx_http_naxsi_module
+    ngx_module_incs="$naxsi_includes"
     ngx_module_srcs="$naxsi_sources"
     . auto/module
 else
