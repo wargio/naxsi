@@ -641,14 +641,18 @@ ngx_http_naxsi_is_rule_whitelisted_rx(ngx_http_request_t*        req,
              p->br->custom_locations->nelts);
 
     if (p->br->zone != (ngx_int_t)zone) {
-      NX_DEBUG(
-        _debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "%d/%d Not targeting same zone.");
+      NX_DEBUG(_debug_wl_debug_rx,
+               NGX_LOG_DEBUG_HTTP,
+               req->connection->log,
+               0,
+               "%d/%d Not targeting same zone.");
 
       continue;
     }
 
     if (target_name != p->br->target_name) {
-      NX_DEBUG(_debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "only one target_name");
+      NX_DEBUG(
+        _debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "only one target_name");
 
       continue;
     }
@@ -735,8 +739,11 @@ ngx_http_naxsi_is_rule_whitelisted_rx(ngx_http_request_t*        req,
       }
     }
     if (violation == 0) {
-      NX_DEBUG(
-        _debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "wut, rule whitelisted by rx.");
+      NX_DEBUG(_debug_wl_debug_rx,
+               NGX_LOG_DEBUG_HTTP,
+               req->connection->log,
+               0,
+               "wut, rule whitelisted by rx.");
 
       if (nx_check_ids(r->rule_id, p->wlid_array) == 1)
         return (1);
@@ -1042,7 +1049,8 @@ ngx_http_naxsi_is_rule_whitelisted_n(ngx_http_request_t*        req,
   ** Look it up in regexed whitelists for matchzones
   */
   if (ngx_http_naxsi_is_rule_whitelisted_rx(req, cf, r, name, zone, target_name) == 1) {
-    NX_DEBUG(_debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "Whitelisted by RX !");
+    NX_DEBUG(
+      _debug_wl_debug_rx, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "Whitelisted by RX !");
 
     return (1);
   }
