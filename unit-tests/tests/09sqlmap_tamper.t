@@ -23,7 +23,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -54,7 +53,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -85,7 +83,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -116,7 +113,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -147,7 +143,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -178,7 +173,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -209,7 +203,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -240,7 +233,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -271,7 +263,6 @@ include $TEST_NGINX_NAXSI_RULES;
 location / {
 	#LearningMode;
 	SecRulesEnabled;
-	LibInjectionSql;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
@@ -301,7 +292,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -332,7 +322,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -363,7 +352,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -394,7 +382,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -425,7 +412,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -456,7 +442,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -487,7 +472,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -501,7 +485,7 @@ location /RequestDenied {
 	return 412;
 }
 --- raw_request eval
-"GET /?a=1 UnioN SeLEct 1 HTTP/1.0
+"GET /?a=1%20UnioN%20SeLEct%201 HTTP/1.0
 
 "
 --- error_code: 412
@@ -518,7 +502,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -549,7 +532,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -580,7 +562,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -611,7 +592,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -642,7 +622,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -673,7 +652,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -704,7 +682,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -735,7 +712,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -766,7 +742,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -797,7 +772,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -829,7 +803,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -860,7 +833,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
@@ -891,7 +863,6 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
 	#LearningMode;
-	LibInjectionSql;
 	SecRulesEnabled;
 	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;

@@ -1,3 +1,4 @@
+// SPDX-FileCopyrightText: 2022 wargio <deroad@libero.it>
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -22,7 +23,7 @@ extern ngx_module_t ngx_http_naxsi_module;
 /**
  * Enable this to debug naxsi
  */
-#define _debug_naxsi_logs 1
+#define _debug_naxsi_logs 0
 
 /*
 ** as the #ifdef #endif for debug are getting really messy ...
@@ -56,7 +57,7 @@ extern ngx_module_t ngx_http_naxsi_module;
 #define _debug_whitelist_heavy    0
 #define _debug_whitelist_light    0
 #define _debug_whitelist_ignore   0
-#define _debug_libinj_sqli        1
+#define _debug_libinj_sqli        0
 #define _debug_libinj_xss         0
 #define _debug_wl_debug_rx        0
 

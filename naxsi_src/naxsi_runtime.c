@@ -1878,13 +1878,6 @@ ngx_http_libinjection(ngx_pool_t*             pool,
   int     issqli;
 
   if (ctx->libinjection_sql) {
-    NX_DEBUG(_debug_libinj_sqli,
-             NGX_LOG_DEBUG_HTTP,
-             req->connection->log,
-             0,
-             "XX-SQLI %.*s",
-             name->len,
-             (const char*)name->data);
 
     /* hardcoded call to libinjection on NAME, apply internal rule if matched.
      */
@@ -1904,13 +1897,6 @@ ngx_http_libinjection(ngx_pool_t*             pool,
   }
 
   if (ctx->libinjection_xss) {
-    NX_DEBUG(_debug_libinj_xss,
-             NGX_LOG_DEBUG_HTTP,
-             req->connection->log,
-             0,
-             "XX-XSS %s:%s",
-             (const char*)name->data,
-             value ? (const char*)value->data : NULL);
     /* first on var_name */
     issqli = libinjection_xss((const char*)name->data, name->len);
     if (issqli == 1) {
@@ -1958,7 +1944,7 @@ ngx_http_basestr_ruleset_n(ngx_pool_t*             pool,
                               : "UNKNOWN");
 
   if (!rules) {
-    ngx_log_debug(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "XX-no rules, wtf ?!");
+    ngx_log_debug(NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "XX-no no rules has been defined for naxsi.");
     return (0);
   }
   r = rules->elts;
