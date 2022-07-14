@@ -2,7 +2,7 @@
 use lib 'lib';
 use Test::Nginx::Socket;
 
-plan tests => repeat_each(2) * blocks();
+plan tests => repeat_each(1) * blocks();
 no_root_location();
 no_long_string();
 $ENV{TEST_NGINX_SERVROOT} = server_root();
@@ -10,7 +10,7 @@ run_tests();
 
 
 __DATA__
-=== TODO: naxsi does not support utf8, potential bypass. Still too marginal to be worth checking
+=== TEST: AND+%EF%BC%871%EF%BC%87=%EF%BC%871%EF%BC%87 UTF-8
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -19,19 +19,20 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
 include $TEST_NGINX_NAXSI_RULES;
 --- config
- location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+location / {
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=AND+%EF%BC%871%EF%BC%87=%EF%BC%871%EF%BC%87 HTTP/1.0
@@ -40,7 +41,7 @@ location /RequestDenied {
 --- error_code: 200
 
 
-=== TEST 1: hey 2
+=== TEST: AND+%00%271%00%27=%00%271%00%27
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -50,18 +51,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=AND+%00%271%00%27=%00%271%00%27 HTTP/1.0
@@ -70,7 +72,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 3
+=== TEST: AND+1=1%00 Union select 1
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -80,18 +82,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=AND+1=1%00 Union select 1 HTTP/1.0
@@ -100,7 +103,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== NOT TODO: base64, not worthing checking
+=== TEST: base64, worthing checking
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -110,18 +113,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=MScgQU5EIFNMRUVQKDUpIw== HTTP/1.0
@@ -130,7 +134,7 @@ location /RequestDenied {
 --- error_code: 200
 
 
-=== TEST 1: hey 5
+=== TEST: 'A+NOT+BETWEEN+0+AND+B'
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -140,18 +144,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a='A+NOT+BETWEEN+0+AND+B' HTTP/1.0
@@ -160,7 +165,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 6
+=== TEST: %2553%2545%254c%2545%2543%2554%2520%2546%2549%2545%254c%2544%2520%2546%2552%254f%254d%2520%2554%2541%2542%254c%2545
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -170,18 +175,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=%2553%2545%254c%2545%2543%2554%2520%2546%2549%2545%254c%2544%2520%2546%2552%254f%254d%2520%2554%2541%2542%254c%2545 HTTP/1.0
@@ -190,7 +196,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 7
+=== TEST: %53%45%4c%45%43%54%20%46%49%45%4c%44%20%46%52%4f%4d%20%54%41%42%4c%45
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -200,18 +206,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=%53%45%4c%45%43%54%20%46%49%45%4c%44%20%46%52%4f%4d%20%54%41%42%4c%45 HTTP/1.0
@@ -220,7 +227,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 8
+=== TEST: %u0053%u0045%u004c%u0045%u0043%u0054%u0020
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -230,18 +237,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=%u0053%u0045%u004c%u0045%u0043%u0054%u0020%u0046%u0049%u0045%u004c%u0044%u0020%u0046%u0052%u004f%u004d%u0020%u0054%u0041%u0042%u004c%u0045' HTTP/1.0
@@ -250,7 +258,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 9
+=== TEST: SELECT+*+FROM+users+WHERE+id+LIKE+1
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -260,18 +268,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	SecRulesEnabled;
+	LibInjectionSql;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=SELECT+*+FROM+users+WHERE+id+LIKE+1 HTTP/1.0
@@ -280,7 +289,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 10
+=== TEST: value'/*!0UNION/*!0ALL/*!0SELECT/*!0CONCAT(/*!0CHAR'
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -289,19 +298,20 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
 include $TEST_NGINX_NAXSI_RULES;
 --- config
- location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+location / {
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=value'/*!0UNION/*!0ALL/*!0SELECT/*!0CONCAT(/*!0CHAR(58,107,112,113,58),/*!0IFNULL(CAST(/*!0CURRENT_USER()/*!0AS/*!0CHAR),/*!0CHAR(32)),/*!0CHAR(58,97,110,121,58)),+NULL,+NULL#/*!0AND+'QDWa'='QDWa HTTP/1.0
@@ -310,7 +320,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 11
+=== TEST: IF(ISNULL(1),+2,+1)
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -320,18 +330,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=IF(ISNULL(1),+2,+1) HTTP/1.0
@@ -340,7 +351,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 12
+=== TEST: 1+/*!30000AND+2>1*/--
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -350,18 +361,19 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-	 #LearningMode;
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
+	#LearningMode;
+	LibInjectionSql;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
 	CheckRule "$SQL >= 8" BLOCK;
 	CheckRule "$RFI >= 8" BLOCK;
 	CheckRule "$TRAVERSAL >= 4" BLOCK;
 	CheckRule "$XSS >= 8" BLOCK;
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- raw_request eval
 "GET /?a=1+/*!30000AND+2>1*/-- HTTP/1.0
@@ -370,7 +382,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 13
+=== TEST: 1+/*!00000AND+2>1*/--
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -400,7 +412,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 14
+=== TEST: +UNION+++SELECT++
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -430,7 +442,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== IIS/ASP Encoding
+=== TEST: IIS/ASP Encoding
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -460,7 +472,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 16
+=== TEST: 1 UnioN SeLEct 1
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -490,7 +502,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 17
+=== TEST: AND+1=1+and+'0having'='0having'
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -520,7 +532,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 18
+=== TEST: SELECT/**/id/**/FROM/**/users
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -550,7 +562,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 19
+=== TEST: 1--PTTmJopxdWJ%0AAND--cWfcVRPV%0A9227=9227
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -580,7 +592,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 20
+=== TEST: 1%23PTTmJopxdWJ%0AAND%23cWfcVRPV%0A9227=9227
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -610,7 +622,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 21
+=== TEST: 1%23PTTmJopxdWJ%0AAND%23cWfcVRPV%0A9227=9227
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -640,7 +652,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 22
+=== TEST: SELECT%08id%02FROM%0Fusers
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -670,7 +682,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 23
+=== TEST: 1%23%0A9227=922%237
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -700,7 +712,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 24
+=== TEST: SELECT%0Bid%0BFROM%A0users
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -730,7 +742,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 25
+=== TEST: 1--%0AAND--%0A9227=9227
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -760,7 +772,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 26
+=== TEST: SELECT+id+FROM+users
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -791,7 +803,7 @@ location /RequestDenied {
 
 
 
-=== TEST 1: hey 28
+=== TEST: hey 28
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -821,7 +833,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 29
+=== TEST: hey 29
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;
@@ -851,7 +863,7 @@ location /RequestDenied {
 --- error_code: 412
 
 
-=== TEST 1: hey 30
+=== TEST: hey 30
 --- main_config
 working_directory /tmp/;
 worker_rlimit_core 25M;

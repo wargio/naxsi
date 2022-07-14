@@ -30,7 +30,7 @@ export TEST_NGINX_NAXSI_RULES="$NAXSI_CFG_PATH/naxsi_core.rules"
 cd "$NAXSI_TMP_PATH"
 
 if [ -z "$RUN_TEST" ]; then
-    prove -r "$NAXSI_TST_PATH/tests/"*.t
+    prove --verbose -r "$NAXSI_TST_PATH/tests/"*.t
 else
-    prove -r "$NAXSI_TST_PATH/tests/$RUN_TEST"
+    prove --verbose -r "$NAXSI_TST_PATH/tests/$RUN_TEST"
 fi
