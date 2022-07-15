@@ -13,9 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Check debug logs are disabled
-      run: |
-        cat naxsi_src/naxsi.h | grep "#define _debug" | grep 1
-        exit $(cat naxsi_src/naxsi.h | grep "#define _debug" | grep 1 | wc -l)
+      run: /bin/bash .scripts/ci-debug-check.sh
 
   licenses:
     runs-on: ubuntu-latest

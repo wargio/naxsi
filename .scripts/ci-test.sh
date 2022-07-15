@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2022 wargio <deroad@libero.it>
 # SPDX-License-Identifier: LGPL-3.0-only
 
-
 RUN_TEST="$1"
 
 export NAXSI_CFG_PATH=$(realpath naxsi_config/)
