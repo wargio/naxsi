@@ -45,7 +45,7 @@ jobs:
     - name: Move file to merged.sarif (CodeQL)
       run: mv reports/*.sarif merged.sarif
 
-    - name: Exclude external lib
+    - name: Exclude NGINX source
       run: |
         jq 'del(.runs[].results[].locations[] | select(.physicalLocation.artifactLocation.uri | contains("nginx-source/")))' merged.sarif > tmp0.sarif
         jq 'del(.runs[].results[] | select(.locations | length == 0))' tmp0.sarif > filtered.sarif
