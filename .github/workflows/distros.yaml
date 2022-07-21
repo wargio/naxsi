@@ -67,14 +67,22 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      with:
-        submodules: recursive
-        persist-credentials: false
+
+    # requires git in the container.
+    #- name: Checkout submodules
+    #  run: git submodule update --init --recursive
 
     # Arch Linux package
     - name: Package arch
       if: matrix.package == 'arch'
-      run: cd distros/arch && makepkg -s --noconfirm
+      run: |
+        pacman -Syy --needed --noconfirm sudo base-devel git
+        chmod 777 distros/arch
+        useradd build-user -m
+        passwd -d build-user
+        printf 'build-user ALL=(ALL) ALL\n' | tee -a /etc/sudoers
+        cd distros/arch
+        sudo -u build-user makepkg -s --noconfirm
     - name: Upload arch package
       if: matrix.package == 'arch'
       uses: actions/upload-artifact@v3
