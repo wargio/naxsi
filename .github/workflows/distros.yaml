@@ -83,6 +83,8 @@ jobs:
         printf 'build-user ALL=(ALL) ALL\n' | tee -a /etc/sudoers
         cd distros/arch
         sudo -u build-user makepkg -s --noconfirm
+        # Fix package name due github name restrictions
+        ls *.pkg.tar.zst | sed 's/:/-/g' | xargs -I % mv -v *.pkg.tar.zst %
     - name: Upload arch package
       if: matrix.package == 'arch'
       uses: actions/upload-artifact@v3
