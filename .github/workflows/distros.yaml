@@ -89,4 +89,5 @@ jobs:
       if: matrix.package == 'arch'
       uses: actions/upload-artifact@v3
       with:
+        name: ${{ matrix.name }}-nginx-mod-naxsi-git-x86_64.pkg.tar.zst
         path: distros/arch/*.pkg.tar.zst
