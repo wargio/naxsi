@@ -121,9 +121,9 @@ jobs:
         install -Dm644 distros/deb/control.install "$DEB_PKG/control.install"
         install -Dm755 "nginx-$NGINX_VERSION/objs/ngx_http_naxsi_module.so" "$DEB_PKG/data/usr/lib/nginx/modules/ngx_http_naxsi_module.so"
         install -Dm644 distros/deb/mod-http-naxsi.conf "$DEB_PKG/data/usr/share/nginx/modules-available/mod-http-naxsi.conf"
-        install -Dm644 distros/deb/naxsi_block_mode.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_block_mode.conf"
-        install -Dm644 distros/deb/naxsi_denied_url.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_denied_url.conf"
-        install -Dm644 distros/deb/naxsi_learning_mode.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_learning_mode.conf"
+        install -Dm644 distros/nginx/naxsi_block_mode.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_block_mode.conf"
+        install -Dm644 distros/nginx/naxsi_denied_url.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_denied_url.conf"
+        install -Dm644 distros/nginx/naxsi_learning_mode.conf "$DEB_PKG/data/usr/share/naxsi/naxsi_learning_mode.conf"
         install -Dm644 naxsi_rules/naxsi_core.rules "$DEB_PKG/data/usr/share/naxsi/naxsi_core.rules"
         install -Dm644 naxsi_rules/extras/*.rules "$DEB_PKG/data/usr/share/naxsi/"
         # add deb details.
