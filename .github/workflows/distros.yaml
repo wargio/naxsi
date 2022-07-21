@@ -12,6 +12,32 @@ on:
       - "distro-*"
 
 jobs:
+  tarball:
+    runs-on: ubuntu-latest
+    name: "Release Tarball"
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        persist-credentials: false
+    - name: Prepare Release
+      shell: bash
+      run: |
+        if [[ "${{ startsWith(github.event.ref, 'refs/tags')}}" = "true" ]]
+        then
+          RELEASE_ID="${{ github.event.ref }}"
+        else
+          RELEASE_ID="git-`date "+%Y-%m-%d"`-${{ format('{0}', github.sha) }}"
+        fi
+        RELEASE_ID=${RELEASE_ID##refs/tags/}
+        echo RELEASE_NAME="naxsi-${RELEASE_ID}" >> $GITHUB_ENV
+    - name: Upload tarball
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.RELEASE_NAME }}
+        path: ./*
+
   packages:
     runs-on: ubuntu-latest
     name: ${{ matrix.name }}
