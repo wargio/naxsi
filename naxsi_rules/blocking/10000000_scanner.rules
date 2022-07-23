@@ -23,48 +23,47 @@ MainRule id:10000009 "s:$UWA:8" "str:sucuri" "mz:$HEADERS_VAR:User-Agent" "msg:S
 MainRule id:10000010 "s:$UWA:8" "str:brutus/" "mz:$HEADERS_VAR:User-Agent" "msg:Brutus - Scanner";
 MainRule id:10000011 "s:$UWA:4" "str:apachebench" "mz:$HEADERS_VAR:User-Agent" "msg:AB - ApacheBenchmark-Tool detected";
 MainRule id:10000012 "s:$UWA:8" "str:/netsparker" "mz:URL" "msg:Netsparker-Scan in Progress";
-MainRule id:10000013 "s:$UWA:8" "str:sqlmap" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner sqlmap sql injection";
-MainRule id:10000014 "s:$UWA:8" "str:mysqloit" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner Mysqloit - Mysql Injection Takover Tool";
-MainRule id:10000015 "s:$UWA:8" "str:network-services-auditor" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner IBM NSA User Agent";
-MainRule id:10000016 "s:$UWA:8" "str:dav.pm" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner DavTest WebDav Vulnerability Scanner";
-MainRule id:10000017 "s:$UWA:8" "str:w3af" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner w3af";
-MainRule id:10000018 "s:$UWA:8" "str:http_get_vars" "mz:$HEADERS_VAR:User-Agent" "msg:PHP-Injetion on UA";
-MainRule id:10000019 "s:$UWA:8" "str:whisker" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner whisker";
-MainRule id:10000020 "s:$UWA:8" "str:whatweb" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner whatweb";
-MainRule id:10000021 "s:$UWA:8" "str:dirbuster" "mz:$HEADERS_VAR:User-Agent" "msg:DirBuster Web App Scan in Progress";
+MainRule id:10000013 "s:$UWA:8" "str:mysqloit" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner Mysqloit - Mysql Injection Takover Tool";
+MainRule id:10000014 "s:$UWA:8" "str:network-services-auditor" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner IBM NSA User Agent";
+MainRule id:10000015 "s:$UWA:8" "str:dav.pm" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner DavTest WebDav Vulnerability Scanner";
+MainRule id:10000016 "s:$UWA:8" "str:w3af" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner w3af";
+MainRule id:10000017 "s:$UWA:8" "str:http_get_vars" "mz:$HEADERS_VAR:User-Agent" "msg:PHP-Injetion on UA";
+MainRule id:10000018 "s:$UWA:8" "str:whisker" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner whisker";
+MainRule id:10000019 "s:$UWA:8" "str:whatweb" "mz:$HEADERS_VAR:User-Agent" "msg:Scanner whatweb";
+MainRule id:10000020 "s:$UWA:8" "str:dirbuster" "mz:$HEADERS_VAR:User-Agent" "msg:DirBuster Web App Scan in Progress";
 
 # https://www.bleepingcomputer.com/news/security/phps-git-server-hacked-to-add-backdoors-to-php-source-code/
 # https://github.com/php/php-src/commit/c730aa26bd52829a49f2ad284b181b7e82a68d7d#diff-a35f2ee9e1d2d3983a3270ee10ec70bf86349c53febdeabdf104f88cb2167961R370
 # prevent php supply chain attack
-MainRule id:10000022 "s:$UWA:8" "str:zerodium" "mz:$HEADERS_VAR:User-Agent" "msg:php supply chain attack";
+MainRule id:10000021 "s:$UWA:8" "str:zerodium" "mz:$HEADERS_VAR:User-Agent" "msg:php supply chain attack";
 
 # prevent log4j attack
 # info https://www.govcert.ch/blog/zero-day-exploit-targeting-popular-java-library-log4j/
 # payload check https://github.com/johto89/Some-collections-for-Security-Researcher/blob/master/log4j-all-in-one.md
-MainRule id:10000023 "s:$UWA:8" "str:${" "mz:$HEADERS_VAR:User-Agent" "msg:log4j attack detection";
+MainRule id:10000022 "s:$UWA:8" "str:${" "mz:$HEADERS_VAR:User-Agent" "msg:log4j attack detection";
 
 # Python libraries like python-requests, python-urllib, etc..
-MainRule id:10000024 "s:$UWA:8" "str:python" "mz:$HEADERS_VAR:User-Agent" "msg:python library";
+MainRule id:10000023 "s:$UWA:8" "str:python" "mz:$HEADERS_VAR:User-Agent" "msg:python library";
 
 # Meterpreter
-MainRule id:10000025 "s:$UWA:8" "str:meterpreter" "mz:$HEADERS_VAR:User-Agent" "msg:Meterpreter-UA detected";
+MainRule id:10000024 "s:$UWA:8" "str:meterpreter" "mz:$HEADERS_VAR:User-Agent" "msg:Meterpreter-UA detected";
 
 # https://github.com/zmap/zgrab2
-MainRule id:10000026 "s:$UWA:8" "str:zgrab" "mz:$HEADERS_VAR:User-Agent" "msg:python library";
+MainRule id:10000025 "s:$UWA:8" "str:zgrab" "mz:$HEADERS_VAR:User-Agent" "msg:python library";
 
 # Known tools like nmap,curl,wget
-MainRule id:10000027 "s:$UWA:8" "str:nmap" "mz:$HEADERS_VAR:User-Agent" "msg:nmap in user-agent";
-MainRule id:10000028 "s:$UWA:8" "str:curl" "mz:$HEADERS_VAR:User-Agent" "msg:curl in user-agent";
-MainRule id:10000029 "s:$UWA:8" "str:wget" "mz:$HEADERS_VAR:User-Agent" "msg:wget in user-agent";
-MainRule id:10000030 "s:$UWA:8" "str:sqlmap" "mz:$HEADERS_VAR:User-Agent" "msg:slqmap in user-agent";
+MainRule id:10000026 "s:$UWA:8" "str:nmap" "mz:$HEADERS_VAR:User-Agent" "msg:nmap in user-agent";
+MainRule id:10000027 "s:$UWA:8" "str:curl" "mz:$HEADERS_VAR:User-Agent" "msg:curl in user-agent";
+MainRule id:10000028 "s:$UWA:8" "str:wget" "mz:$HEADERS_VAR:User-Agent" "msg:wget in user-agent";
+MainRule id:10000029 "s:$UWA:8" "str:sqlmap" "mz:$HEADERS_VAR:User-Agent" "msg:slqmap in user-agent";
 
 # Scan from Expense with this User-Agent:
 # Expanse, a Palo Alto Networks company, searches across the global IPv4 space multiple times per day to identify customers presences on the Internet.
 # If you would like to be excluded from our scans, please send IP addresses/domains to: scaninfo@paloaltonetworks.com
-MainRule id:10000031 "s:$UWA:8" "str:paloaltonetworks.com" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
-MainRule id:10000032 "s:$UWA:8" "str:palo alto network" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
-MainRule id:10000033 "s:$UWA:8" "str:Expense" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
+MainRule id:10000030 "s:$UWA:8" "str:paloaltonetworks.com" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
+MainRule id:10000031 "s:$UWA:8" "str:palo alto network" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
+MainRule id:10000032 "s:$UWA:8" "str:Expense" "mz:$HEADERS_VAR:User-Agent" "msg:Expense Web Scan";
 
 # Scan from NetSystemsResearch with this User-Agent:
 # NetSystemsResearch studies the availability of various services across the internet. Our website is netsystemsresearch.com
-MainRule id:10000034 "s:$UWA:8" "str:NetSystemsResearch" "mz:$HEADERS_VAR:User-Agent" "msg:NetSystemsResearch Web Scan";
+MainRule id:10000033 "s:$UWA:8" "str:NetSystemsResearch" "mz:$HEADERS_VAR:User-Agent" "msg:NetSystemsResearch Web Scan";
