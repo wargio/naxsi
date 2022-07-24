@@ -61,12 +61,13 @@ MainRule id:20000044 "s:$UWA:8" "str:/.aws/" "mz:URL" "msg:AWS Credential Steale
 MainRule id:20000045 "s:$UWA:8" "str:/.env/" "mz:URL" "msg:AWS Credential Stealer";
 
 # Exposed Microsoft Exchange
-MainRule id:20000046 "s:$UWA:8" "str:autodiscover/autodiscover.json" "mz:URL" "msg:";
-MainRule id:20000047 "s:$UWA:8" "str:autodiscover/autodiscover.xml " "mz:URL" "msg:";
+MainRule id:20000046 "s:$UWA:8" "str:autodiscover/autodiscover.json" "mz:URL" "msg:Exposed Microsoft Exchange";
+MainRule id:20000047 "s:$UWA:8" "str:autodiscover/autodiscover.xml" "mz:URL" "msg:Exposed Microsoft Exchange";
+MainRule id:20000048 "s:$UWA:8" "str:/auth.owa" "mz:URL" "msg:Exposed Microsoft Exchange";
 
 # Ignition 2.5.1 Remote Code Execution CVE-2021-3129
-MainRule id:20000048 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
+MainRule id:20000049 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
 
 # CVE-2018-13379 path traversal vulnerability in Fortinet's FortiGate SSL VPN
 # https://x.x.x.x/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession
-MainRule id:20000049 "s:$UWA:8" "str:/sslvpn_websession" "mz:ARGS|BODY|HEADERS" "msg:CVE-2018-13379";
+MainRule id:20000050 "s:$UWA:8" "str:/sslvpn_websession" "mz:ARGS|BODY|HEADERS" "msg:CVE-2018-13379";
