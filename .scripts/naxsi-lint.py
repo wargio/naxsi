@@ -111,6 +111,11 @@ class Rule(object):
 	def is_whitelist(self):
 		return self.wl != None
 
+	def message(self):
+		if self.msg == None:
+			return "match " + self.match().replace('"', '')
+		return self.msg[4:]
+
 	def print(self):
 		if len(self.comments) > 0:
 			print('\n'.join(self.comments))
@@ -176,7 +181,7 @@ def parse_file(filename, rules, whitelists, ruleid):
 
 		rules[rule.id] = rule
 
-def write_to_file(filename, rules_ids, rules, whitelists):
+def write_rules_to_file(filename, rules_ids, rules, whitelists):
 	fd = sys.stdout
 	if filename != '-':
 		sys.stdout = open(filename, 'w')
@@ -203,16 +208,47 @@ def write_to_file(filename, rules_ids, rules, whitelists):
 		sys.stdout.close()
 		sys.stdout = fd
 
+def print_rules(rules_ids, rules, whitelists):
+	header = len(rules_ids) < 1
+	if len(whitelists) > 0:
+		for whitelist in whitelists:
+			if not header:
+				header = True
+				print('#############')
+				print("# Whitelist #")
+				print('#############')
+			whitelist.print()
+
+	for idx in rules_ids:
+		if header:
+			header = False
+			print('#########')
+			print("# Rules #")
+			print('#########')
+		rules[idx].print()
+
+def print_translate_dictionary(rules_ids, rules, whitelists):
+	for idx in rules_ids:
+		print('"{}","{}"'.format(rules[idx].id, rules[idx].message()))
+
+output_formats = {
+	'rules': print_rules,
+	'logstash_translate_dictionary': print_translate_dictionary,
+}
+
 def main():
 	parser = argparse.ArgumentParser(usage='%(prog)s [options]', description=DESCRIPTION, epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('-r', '--rule', default='', help='source rule to parse')
 	parser.add_argument('-o', '--output', default='', help='path to the output file')
+	parser.add_argument('-f', '--format', default='rules', help='format of the output file ({})'.format(','.join(list(output_formats.keys()))))
 	parser.add_argument('-b', '--begin-id', default=0, type=int, help='rebase all rules ids from this id number (id must be > 100)')
 	args = parser.parse_args()
 
 	if len(sys.argv) == 1 or \
 		len(args.rule) < 1 or \
 		len(args.output) < 1 or \
+		len(args.format) < 1 or \
+		args.format not in output_formats or \
 		(args.begin_id != 0 and args.begin_id <= 100):
 		parser.print_help(sys.stderr)
 		sys.exit(1)
@@ -225,7 +261,17 @@ def main():
 	rules_ids = list(rules.keys())
 	rules_ids.sort()
 
-	write_to_file(args.output, rules_ids, rules, whitelists)
+	file_format = output_formats[args.format]
+
+	fd = sys.stdout
+	if args.output != '-':
+		sys.stdout = open(args.output, 'w')
+
+	file_format(rules_ids, rules, whitelists)
+
+	if args.output != '-':
+		sys.stdout.close()
+		sys.stdout = fd
 
 if __name__ == '__main__':
 	main()
