@@ -58,37 +58,15 @@ MainRule id:20000043 "s:$UWA:8" "str:index/\think\app/invokefunction" "mz:HEADER
 
 # AWS related files
 MainRule id:20000044 "s:$UWA:8" "str:/.aws/" "mz:URL" "msg:AWS Credential Stealer";
+MainRule id:20000045 "s:$UWA:8" "str:/.env/" "mz:URL" "msg:AWS Credential Stealer";
 
 # Exposed Microsoft Exchange
-MainRule id:20000045 "s:$UWA:8" "str:autodiscover/autodiscover.json" "mz:URL" "msg:";
-MainRule id:20000046 "s:$UWA:8" "str:autodiscover/autodiscover.xml " "mz:URL" "msg:";
-
-# Php Functions
-MainRule id:20000047 "s:$UWA:8" "str:gzinflate(" "mz:URL|BODY|ARGS" "msg:gzinflate in URI";
-MainRule id:20000048 "s:$UWA:8" "str:system(" "mz:URL|BODY|ARGS" "msg:php system called";
-
-# PhpMyAdmin
-MainRule id:20000049 "s:$UWA:8" "str:/db-admin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000050 "s:$UWA:8" "str:/dbadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000051 "s:$UWA:8" "str:/myadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000052 "s:$UWA:8" "str:/mysqldumper " "mz:URL" "msg:MysqlDumper";
-MainRule id:20000053 "s:$UWA:8" "str:/mysqlmanager" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000054 "s:$UWA:8" "str:/p/m/a/" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000055 "s:$UWA:8" "str:/php-my-admin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000056 "s:$UWA:8" "str:/php-myadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000057 "s:$UWA:8" "str:/phpmanager" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000058 "s:$UWA:8" "str:/phpmy" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000059 "s:$UWA:8" "str:/phpmy-admin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000060 "s:$UWA:8" "str:/phpmyadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000061 "s:$UWA:8" "str:/phppgadmin " "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000062 "s:$UWA:8" "str:/pma" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000063 "s:$UWA:8" "str:/sql-admin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000064 "s:$UWA:8" "str:/sqladmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000065 "s:$UWA:8" "str:/sqlweb" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000066 "s:$UWA:8" "str:/sysadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000067 "s:$UWA:8" "str:/webadmin" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000068 "s:$UWA:8" "str:/webdb" "mz:URL" "msg:SQL Admin Interface";
-MainRule id:20000069 "s:$UWA:8" "str:/websql" "mz:URL" "msg:SQL Admin Interface";
+MainRule id:20000046 "s:$UWA:8" "str:autodiscover/autodiscover.json" "mz:URL" "msg:";
+MainRule id:20000047 "s:$UWA:8" "str:autodiscover/autodiscover.xml " "mz:URL" "msg:";
 
 # Ignition 2.5.1 Remote Code Execution CVE-2021-3129
-MainRule id:20000070 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
+MainRule id:20000071 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
+
+# CVE-2018-13379 path traversal vulnerability in Fortinet's FortiGate SSL VPN
+# https://x.x.x.x/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession
+MainRule id:20000072 "s:$UWA:8" "str:/sslvpn_websession" "mz:ARGS|BODY|HEADERS" "msg:CVE-2018-13379";

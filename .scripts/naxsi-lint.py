@@ -15,8 +15,14 @@ Example:
 	$ python naxsi-lint.py --rule /path/to/file.rules --output output.rules --begin-id 4200000
 '''
 
+def clean_token(token):
+	if not token.startswith('"'):
+		return token
+	return token[1:-1]
+
 def find_keyword(keyword, tokens):
 	for token in tokens:
+		token = clean_token(token)
 		if token.startswith(keyword):
 			return token
 	return None
@@ -151,7 +157,7 @@ def parse_file(filename, rules, whitelists, ruleid):
 			sys.exit(1)
 
 		line = re.sub(r';$', " ;", line)
-		tokens = shlex.split(line)
+		tokens = shlex.split(line, posix=False)
 		# print("{}: {}".format(line_num, tokens))
 
 		rule = Rule(tokens, line_num, comments)
