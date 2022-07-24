@@ -65,8 +65,8 @@ MainRule id:20000046 "s:$UWA:8" "str:autodiscover/autodiscover.json" "mz:URL" "m
 MainRule id:20000047 "s:$UWA:8" "str:autodiscover/autodiscover.xml " "mz:URL" "msg:";
 
 # Ignition 2.5.1 Remote Code Execution CVE-2021-3129
-MainRule id:20000071 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
+MainRule id:20000048 "s:$UWA:8" "str:/_ignition/execute-solution" "mz:URL" "msg:CVE-2021-3129";
 
 # CVE-2018-13379 path traversal vulnerability in Fortinet's FortiGate SSL VPN
 # https://x.x.x.x/remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession
-MainRule id:20000072 "s:$UWA:8" "str:/sslvpn_websession" "mz:ARGS|BODY|HEADERS" "msg:CVE-2018-13379";
+MainRule id:20000049 "s:$UWA:8" "str:/sslvpn_websession" "mz:ARGS|BODY|HEADERS" "msg:CVE-2018-13379";
