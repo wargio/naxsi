@@ -181,33 +181,6 @@ def parse_file(filename, rules, whitelists, ruleid):
 
 		rules[rule.id] = rule
 
-def write_rules_to_file(filename, rules_ids, rules, whitelists):
-	fd = sys.stdout
-	if filename != '-':
-		sys.stdout = open(filename, 'w')
-
-	header = len(rules_ids) < 1
-	if len(whitelists) > 0:
-		for whitelist in whitelists:
-			if not header:
-				header = True
-				print('#############')
-				print("# Whitelist #")
-				print('#############')
-			whitelist.print()
-
-	for idx in rules_ids:
-		if header:
-			header = False
-			print('#########')
-			print("# Rules #")
-			print('#########')
-		rules[idx].print()
-
-	if filename != '-':
-		sys.stdout.close()
-		sys.stdout = fd
-
 def print_rules(rules_ids, rules, whitelists):
 	header = len(rules_ids) < 1
 	if len(whitelists) > 0:
