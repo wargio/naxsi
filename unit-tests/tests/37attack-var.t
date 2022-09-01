@@ -3,7 +3,7 @@
 use lib 'lib';
 use Test::Nginx::Socket;
 
-plan tests => repeat_each(1) * blocks();
+plan tests => repeat_each(1) * 2 * blocks();
 no_root_location();
 no_long_string();
 $ENV{TEST_NGINX_SERVROOT} = server_root();
@@ -104,7 +104,7 @@ location /RequestDenied {
 --- request
 POST /
 --- error_code: 412
---- response_body: $OTHERS
+--- response_body: $INTERNAL
 
 
 === TEST 4: Custom tag
@@ -442,7 +442,7 @@ location /RequestDenied {
 --- request
 GET /bla?a=--select
 --- error_code: 412
---- response_body: 0:$SQL:8
+--- response_body: $SQL:8
 
 
 === TEST 14.2: Vars - naxsi_score
@@ -469,7 +469,7 @@ use URI::Escape;
 "POST /select--?a=../..
 "
 --- error_code: 200
---- response_body: $OTHERS,0:$SQL:8,1:$TRAVERSAL:8
+--- response_body: $INTERNAL,$SQL:8,$TRAVERSAL:8
 
 
 === TEST 15.1: Vars - naxsi_match
@@ -496,5 +496,5 @@ use URI::Escape;
 "POST /select--?a=../..
 "
 --- error_code: 200
---- response_body: 0:1000:URL:-,1:1007:URL:-,2:1200:ARGS:a,3:16:BODY:-
+--- response_body: 1000:URL:-,1007:URL:-,1200:ARGS:a,16:BODY:-
 

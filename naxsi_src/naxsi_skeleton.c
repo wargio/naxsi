@@ -1735,20 +1735,19 @@ ngx_http_naxsi_score_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
     return NGX_OK;
   }
 
-  const char*               fmt = "%d:%.*s:%d,"; /* id:cscore:score */
-  ngx_http_matched_rule_t*  mr;
-  ngx_http_special_score_t* sc;
-  ngx_uint_t                others = 0;
-  ngx_uint_t                i;
-  size_t                    sz = 0;
-  char*                     p;
+  const char*               fmt    = "%s:%d,"; /* cscore:score */
+  ngx_http_matched_rule_t*  mr     = NULL;
+  ngx_http_special_score_t* sc     = NULL;
+  ngx_uint_t                others = 0, i = 0;
+  size_t                    size = 0, written = 0;
+  char*                     p = NULL;
 
   if (ctx->matched) {
     mr = ctx->matched->elts;
     for (i = 0; i < ctx->matched->nelts; i++) {
       if (mr[i].rule->rule_id < 1000) {
         others = 1;
-        sz += strlen("$OTHERS,");
+        size += strlen("$INTERNAL,");
         break;
       }
     }
@@ -1757,38 +1756,42 @@ ngx_http_naxsi_score_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
   if (ctx->special_scores) {
     sc = ctx->special_scores->elts;
     for (i = 0; i < ctx->special_scores->nelts; i++) {
-      if (sc[i].sc_score != 0) {
-        sz += snprintf(NULL, 0, fmt, i, sc[i].sc_tag->len, sc[i].sc_tag->data, sc[i].sc_score);
+      if (sc[i].sc_score == 0) {
+        continue;
       }
+      size += snprintf(NULL, 0, fmt, sc[i].sc_tag->data, sc[i].sc_score);
     }
   }
 
-  if (sz == 0) {
+  if (size < 1) {
     v->not_found = 1;
     return NGX_OK;
   }
 
-  v->len  = sz - 1; /* - last ',' */
-  v->data = ngx_palloc(r->pool, sz);
+  v->len  = size - 1; /* - last ',' */
+  v->data = ngx_palloc(r->pool, size);
   if (v->data == NULL) {
     return NGX_ERROR;
   }
   p = (char*)v->data;
 
   if (others) {
-    memcpy(p, strlen("$OTHERS,"), 8);
-    p += 8;
-    sz -= 8;
+    written = strlen("$INTERNAL,");
+    memcpy(p, "$INTERNAL,", written + 1);
   }
 
   if (ctx->special_scores) {
     sc = ctx->special_scores->elts;
     for (i = 0; i < ctx->special_scores->nelts; i++) {
-      if (sc[i].sc_score != 0) {
-        size_t sub = snprintf(p, sz, fmt, i, sc[i].sc_tag->len, sc[i].sc_tag->data, sc[i].sc_score);
-        p += sub;
-        sz -= sub;
+      if (sc[i].sc_score == 0) {
+        continue;
       }
+
+      int sub = snprintf(p + written, size - written, fmt, sc[i].sc_tag->data, sc[i].sc_score);
+      if (sub < 0) {
+        break;
+      }
+      written += sub;
     }
   }
 
@@ -1807,28 +1810,29 @@ ngx_http_naxsi_match_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
     return NGX_OK;
   }
 
-  const char*              fmt = "%d:%d:%s:%.*s,"; /* id:rule_id:zone:var_name */
-  ngx_http_matched_rule_t* mr;
-  ngx_uint_t               i;
-  size_t                   sz = 0;
-  char*                    p;
+  const char*              fmt     = "%d:%s%s:%s,"; /* rule_id:zone:var_name */
+  ngx_http_matched_rule_t* mr      = NULL;
+  ngx_uint_t               i       = 0;
+  size_t                   size    = 0;
+  size_t                   written = 0;
+  char*                    p       = NULL;
 
   if (ctx->matched) {
     mr = ctx->matched->elts;
     for (i = 0; i < ctx->matched->nelts; i++) {
+      const char* var_name = mr[i].name->len ? (const char*)mr[i].name->data : "-";
+      ngx_uint_t  rule_id  = mr[i].rule->rule_id;
       /* FILE_EXT|NAME is the longest zone we may have */
-      sz += snprintf(
-        NULL, 0, fmt, i, mr[i].rule->rule_id, "FILE_EXT|NAME", mr[i].name->len, mr[i].name->data);
+      size += snprintf(NULL, 0, fmt, rule_id, "FILE_EXT", "|NAME", var_name);
     }
   }
 
-  if (sz == 0) {
+  if (size < 1) {
     v->not_found = 1;
     return NGX_OK;
   }
 
-  v->len  = 0;
-  v->data = ngx_palloc(r->pool, sz);
+  v->data = ngx_palloc(r->pool, size);
   if (v->data == NULL) {
     return NGX_ERROR;
   }
@@ -1836,32 +1840,34 @@ ngx_http_naxsi_match_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
   p  = (char*)v->data;
   mr = ctx->matched->elts;
   for (i = 0; i < ctx->matched->nelts; i++) {
-    const char* name_data = mr[i].name->len ? (const char*)mr[i].name->data : "-";
-    size_t      name_len  = mr[i].name->len ? mr[i].name->len : 1;
+    const char* var_name = mr[i].name->len ? (const char*)mr[i].name->data : "-";
+    const char* zone     = NULL;
+    const char* name     = mr[i].target_name ? "|NAME" : "";
+    ngx_uint_t  rule_id  = mr[i].rule->rule_id;
 
-    char zone[sizeof("FILE_EXT|NAME")] = { 0 };
     if (mr[i].body_var) {
-      strcat(zone, "BODY");
+      zone = "BODY";
     } else if (mr[i].args_var) {
-      strcat(zone, "ARGS");
+      zone = "ARGS";
     } else if (mr[i].headers_var) {
-      strcat(zone, "HEADERS");
+      zone = "HEADERS";
     } else if (mr[i].url) {
-      strcat(zone, "URL");
+      zone = "URL";
     } else if (mr[i].file_ext) {
-      strcat(zone, "FILE_EXT");
-    }
-    if (mr[i].target_name) {
-      strcat(zone, "|NAME");
+      zone = "FILE_EXT";
+    } else {
+      /* should never happen.. */
+      continue;
     }
 
-    size_t sub = snprintf(p, sz, fmt, i, mr[i].rule->rule_id, zone, name_len, name_data);
-    v->len += sub;
-    p += sub;
-    sz -= sub;
+    int sub = snprintf(p + written, size - written, fmt, rule_id, zone, name, var_name);
+    if (sub < 0) {
+      break;
+    }
+    written += sub;
   }
 
-  v->len -= 1; /* - last ',' */
+  v->len          = written > 0 ? written - 1 : 0; /* - last ',' */
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
@@ -1904,7 +1910,7 @@ ngx_http_naxsi_attack_family_variable(ngx_http_request_t*        r,
     for (i = 0; i < ctx->matched->nelts; i++) {
       if (mr[i].rule->rule_id < 1000) {
         others = 1;
-        sz     = strlen("$OTHERS,");
+        sz     = strlen("$INTERNAL,");
         break;
       }
     }
@@ -1919,7 +1925,7 @@ ngx_http_naxsi_attack_family_variable(ngx_http_request_t*        r,
     }
   }
 
-  if (sz == 0) {
+  if (sz < 1) {
     v->not_found = 1;
     return NGX_OK;
   }
@@ -1931,8 +1937,8 @@ ngx_http_naxsi_attack_family_variable(ngx_http_request_t*        r,
   p = str;
 
   if (others) {
-    memcpy(p, "$OTHERS,", 8);
-    p += 8;
+    memcpy(p, "$INTERNAL,", sizeof("$INTERNAL,"));
+    p += strlen("$INTERNAL,");
   }
 
   if (ctx->special_scores) {
@@ -1961,11 +1967,11 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data)
 {
-  ngx_http_request_ctx_t* ctx;
-  ngx_pool_cleanup_t*     cln;
-  size_t                  sz = 0;
-  u_char*                 str;
-  u_char*                 p;
+  ngx_http_request_ctx_t* ctx      = NULL;
+  ngx_pool_cleanup_t*     cln      = NULL;
+  size_t                  sz       = 0;
+  u_char*                 str      = NULL;
+  const char*             variable = NULL;
   // least significant bit represents if action is pass or block
   // second least significant bit represents if naxsi is in learning mode
   u_int learning_block_bits = 0;
@@ -1990,52 +1996,37 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
 
   switch (learning_block_bits) {
     case 0: // pass
-      sz = strlen("$PASS");
+      variable = "$PASS";
       break;
     case 1: // block
-      sz = strlen("$BLOCK");
+      variable = "$BLOCK";
       break;
     case 2: // learning pass
-      sz = strlen("$LEARNING-PASS");
+      variable = "$LEARNING-PASS";
       break;
     case 3: // learning block
-      sz = strlen("$LEARNING-BLOCK");
+      variable = "$LEARNING-BLOCK";
       break;
     default:
       break;
   }
 
-  if (sz == 0) {
+  if (!variable) {
     v->not_found = 1;
     return NGX_OK;
   }
 
+  sz  = strlen(variable);
   str = (u_char*)ngx_pcalloc(r->pool, sz);
   if (str == NULL) {
     return NGX_ERROR;
   }
-  p = str;
-  // p will not be updated, we only write to it once
-  switch (learning_block_bits) {
-    case 0: // pass
-      memcpy(p, "$PASS", sz);
-      break;
-    case 1: // block
-      memcpy(p, "$BLOCK", sz);
-      break;
-    case 2: // learning pass
-      memcpy(p, "$LEARNING-PASS", sz);
-      break;
-    case 3: // learning block
-      memcpy(p, "$LEARNING-BLOCK", sz);
-      break;
-  }
+  memcpy(str, variable, sz);
 
   v->data         = str;
   v->len          = sz;
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
-
   return NGX_OK;
 }
