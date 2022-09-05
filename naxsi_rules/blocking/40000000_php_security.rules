@@ -46,3 +46,9 @@ MainRule id:40000029 "s:$UWA:8" "str:phpinfo" "mz:URL|BODY|ARGS" "msg:PHPinfo ac
 
 # Block known php installer exploit
 MainRule id:40000030 "s:$UWA:8" "str:install.php" "mz:URL" "msg:Access to php install";
+
+# Block more sql admin interface
+MainRule id:40000031 "s:$UWA:8" "str:/mysql-admin" "mz:URL" "msg:SQL Admin Interface";
+MainRule id:40000032 "s:$UWA:8" "str:/mysqladmin" "mz:URL" "msg:SQL Admin Interface";
+MainRule id:40000033 "s:$UWA:8" "str:/sqlmanager" "mz:URL" "msg:SQL Admin Interface";
+MainRule id:40000034 "s:$UWA:8" "str:/mysql/" "mz:URL" "msg:SQL Admin Interface";
