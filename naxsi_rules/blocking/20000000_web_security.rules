@@ -112,3 +112,7 @@ MainRule id:20000068 "s:$UWA:8" "str:/manager/text/list" "mz:URL" "msg:Exposed A
 
 # Spring Cloud Gateway Code Injection Vulnerability
 MainRule id:20000069 "s:$UWA:8" "str:/actuator/gateway/routes" "mz:URL" "msg:CVE-2022-22947";
+
+# Block Spring4Shell
+MainRule id:20000070 "s:$UWA:8" "str:class.module.classLoader.resources." "mz:RAW_BODY" "msg:CVE-2022-22965";
+MainRule id:20000071 "s:$UWA:8" "rx:<%|%>" "mz:HEADERS" "msg:CVE-2022-22965";
