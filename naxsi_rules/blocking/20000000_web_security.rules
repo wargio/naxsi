@@ -109,3 +109,6 @@ MainRule id:20000067 "s:$UWA:8" "str:\Windows\win.ini" "mz:URL|BODY|ARGS|$HEADER
 
 # Exposed Apache Host Manager App
 MainRule id:20000068 "s:$UWA:8" "str:/manager/text/list" "mz:URL" "msg:Exposed Apache Host Manager App";
+
+# Spring Cloud Gateway Code Injection Vulnerability
+MainRule id:20000069 "s:$UWA:8" "str:/actuator/gateway/routes" "mz:URL" "msg:CVE-2022-22947";
