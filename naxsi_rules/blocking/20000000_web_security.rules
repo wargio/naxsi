@@ -106,3 +106,6 @@ MainRule id:20000064 "s:$UWA:8" "str:${env:NaN:-" "mz:URL|ARGS|BODY|HEADERS" "ms
 MainRule id:20000065 "s:$UWA:8" "str:\Windows\system.ini" "mz:URL|BODY|ARGS|$HEADERS_VAR:User-Agent|$HEADERS_VAR:Cookie" "msg:\Windows\system.ini in URI";
 MainRule id:20000066 "s:$UWA:8" "str:/Windows/win.ini" "mz:URL|BODY|ARGS|$HEADERS_VAR:User-Agent|$HEADERS_VAR:Cookie" "msg:/Windows/win.ini in URI";
 MainRule id:20000067 "s:$UWA:8" "str:\Windows\win.ini" "mz:URL|BODY|ARGS|$HEADERS_VAR:User-Agent|$HEADERS_VAR:Cookie" "msg:\Windows\win.ini in URI";
+
+# Exposed Apache Host Manager App
+MainRule id:20000068 "s:$UWA:8" "str:/manager/text/list" "mz:URL" "msg:Exposed Apache Host Manager App";
