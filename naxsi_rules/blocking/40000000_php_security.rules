@@ -52,3 +52,6 @@ MainRule id:40000031 "s:$UWA:8" "str:/mysql-admin" "mz:URL" "msg:SQL Admin Inter
 MainRule id:40000032 "s:$UWA:8" "str:/mysqladmin" "mz:URL" "msg:SQL Admin Interface";
 MainRule id:40000033 "s:$UWA:8" "str:/sqlmanager" "mz:URL" "msg:SQL Admin Interface";
 MainRule id:40000034 "s:$UWA:8" "str:/mysql/" "mz:URL" "msg:SQL Admin Interface";
+
+# Block access to Lavarel telescope since it allows to read logs and SQL queries
+MainRule id:40000035 "s:$UWA:8" "str:/telescope/" "mz:URL" "msg:Access to Lavarel telescope";

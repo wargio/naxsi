@@ -116,3 +116,12 @@ MainRule id:20000069 "s:$UWA:8" "str:/actuator/gateway/routes" "mz:URL" "msg:CVE
 # Block Spring4Shell
 MainRule id:20000070 "s:$UWA:8" "str:class.module.classLoader.resources." "mz:RAW_BODY" "msg:CVE-2022-22965";
 MainRule id:20000071 "s:$UWA:8" "rx:<%|%>" "mz:HEADERS" "msg:CVE-2022-22965";
+
+# Block Microsoft Exchange Server Remote Code Execution
+MainRule id:20000072 "s:$UWA:8" "str:/ecp/Current/exporttool/microsoft.exchange.ediscovery.exporttool.application" "mz:URL" "msg:CVE-2021-28481";
+
+# Prevent IndoXploit/IDX Shell dump access
+# A website that has been infected will have a world-browsable folder called `idx_config`
+# which contains text versions of the configuration file of every CMS installation the shell
+# is able to find (impacts WordPress, Joomla and Magento).
+MainRule id:20000073 "s:$UWA:8" "str:/idx_config" "mz:URL" "msg:Prevent IndoXploit/IDX Shell dump access";

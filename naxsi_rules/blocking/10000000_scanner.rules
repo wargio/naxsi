@@ -76,3 +76,6 @@ MainRule id:10000035 "s:$UWA:8" "str:libwww-perl" "mz:$HEADERS_VAR:User-Agent" "
 
 # zgrab in User-Agent
 MainRule id:10000036 "s:$UWA:8" "str:zgrab" "mz:$HEADERS_VAR:User-Agent" "msg:zgrab in user-agent";
+
+# l9explore in User-Agent
+MainRule id:10000037 "s:$UWA:8" "str:l9explore" "mz:$HEADERS_VAR:User-Agent" "msg:l9explore in user-agent";
