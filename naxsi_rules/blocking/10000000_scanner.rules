@@ -8,7 +8,7 @@
 MainRule id:10000000 "s:$UWA:8" "str:wordpress/" "mz:$HEADERS_VAR:User-Agent" "msg:Wordpress-UA, probably Botnet-Attack";
 
 # https://github.com/robertdavidgraham/masscan
-MainRule id:10000001 "s:$UWA:8" "str:masscan/" "mz:$HEADERS_VAR:User-Agent" "msg:MASSCAN - UA Detected";
+MainRule id:10000001 "s:$UWA:8" "str:masscan" "mz:$HEADERS_VAR:User-Agent" "msg:masscan in user-agent";
 
 # block acunetix scan
 MainRule id:10000002 "s:$UWA:8" "str:99999999999999999999999" "mz:$HEADERS_VAR:Content-length" "msg:acunetix scan nginx buffer size";
@@ -79,3 +79,6 @@ MainRule id:10000036 "s:$UWA:8" "str:zgrab" "mz:$HEADERS_VAR:User-Agent" "msg:zg
 
 # l9explore in User-Agent
 MainRule id:10000037 "s:$UWA:8" "str:l9explore" "mz:$HEADERS_VAR:User-Agent" "msg:l9explore in user-agent";
+
+# WPScan in User-Agent
+MainRule id:10000038 "s:$UWA:8" "str:wpscan" "mz:$HEADERS_VAR:User-Agent" "msg:WPScan in user-agent";
