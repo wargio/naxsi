@@ -12,7 +12,11 @@
 #include <sys/types.h>
 #endif
 
+#ifndef _WIN32
 #include <arpa/inet.h>
+#else
+#include <winsock2.h>
+#endif // !_WIN32
 #include <stdint.h>
 #include <string.h>
 

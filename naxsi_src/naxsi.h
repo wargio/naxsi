@@ -18,6 +18,13 @@
 #include "libinjection/src/libinjection_sqli.h"
 #include "libinjection/src/libinjection_xss.h"
 
+#ifdef _WIN32
+#include "naxsi_windows.h"
+
+#pragma warning(disable:4214)
+
+#endif // _WIN32
+
 extern ngx_module_t ngx_http_naxsi_module;
 
 /**

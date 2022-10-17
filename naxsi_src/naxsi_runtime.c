@@ -1,9 +1,19 @@
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <ngx_config.h>
+
 #include <naxsi.h>
 #include <naxsi_macros.h>
 #include <naxsi_net.h>
+
+#ifdef _WIN32
+#pragma warning(disable:4204)
+#pragma warning(disable:4221)
+#pragma warning(disable:4456)
+#pragma warning(disable:4701)
+#pragma warning(disable:4702)
+#endif // _WIN32
 
 /* used to store locations during the configuration time.
    then, accessed by the hashtable building feature during "init" time. */

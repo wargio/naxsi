@@ -7,12 +7,24 @@
 ** aware of nginx's modules can skip most of this.
 */
 
+#include <ngx_config.h>
+
 #include <naxsi.h>
 #include <naxsi_net.h>
 
 #include <ctype.h>
+
+#ifndef _WIN32
 #include <strings.h>
 #include <sys/times.h>
+#else
+#include <process.h>
+#endif // !_WIN32
+
+#ifdef _WIN32
+#pragma warning(disable:4204)
+#pragma warning(disable:4996)
+#endif // _WIN32
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
