@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1999 Markus Kuhn <mgk25@cl.cam.ac.uk>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#include <ngx_config.h>
+
 #include <naxsi.h>
 
 /* @file naxsi_utf8.c

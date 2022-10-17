@@ -1,8 +1,14 @@
 // SPDX-FileCopyrightText: 2019, Giovanni Dante Grazioli <gda@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <ngx_config.h>
+
 #include <naxsi.h>
 #include <naxsi_net.h>
+
+#ifdef _WIN32
+#pragma warning(disable:4702)
+#endif // _WIN32
 
 int
 parse_ipv6(const char* addr, ip_t* ip, char* ip_str)
