@@ -82,3 +82,6 @@ MainRule id:10000037 "s:$UWA:8" "str:l9explore" "mz:$HEADERS_VAR:User-Agent" "ms
 
 # WPScan in User-Agent
 MainRule id:10000038 "s:$UWA:8" "str:wpscan" "mz:$HEADERS_VAR:User-Agent" "msg:WPScan in user-agent";
+
+# WinHttpReq in User-Agent
+MainRule id:10000039 "s:$UWA:8" "str:WinHttpReq" "mz:$HEADERS_VAR:User-Agent" "msg:WinHttpReq in user-agent";
