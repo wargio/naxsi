@@ -1,0 +1,22 @@
+name: "Windows CI Build"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        persist-credentials: false
+    - name: Windows build
+      run: .scripts\ci-windows.bat
