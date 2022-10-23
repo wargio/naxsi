@@ -8,7 +8,14 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        nginx:
+          - 1.23.2
+          - 1.22.1
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: cmd
@@ -19,4 +26,4 @@ jobs:
         submodules: recursive
         persist-credentials: false
     - name: Windows build
-      run: .scripts\ci-windows.bat
+      run: .scripts\ci-windows.bat ${{ matrix.nginx }}
