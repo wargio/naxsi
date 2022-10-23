@@ -10,11 +10,11 @@ naxsi_includes="
 "
 
 # prepend ngx_config.h to libinjection sources, copy headers
-mkdir -p $ngx_addon_dir/libinjection/ngxbuild
-cp $ngx_addon_dir/libinjection/src/*.h $ngx_addon_dir/libinjection/ngxbuild/
+mkdir -p $ngx_addon_dir/libinjection_ngxbuild
+cp $ngx_addon_dir/libinjection/src/*.h $ngx_addon_dir/libinjection_ngxbuild/
 for src_file in libinjection_html5.c libinjection_sqli.c libinjection_xss.c ; do
-    echo "#include <ngx_config.h>" > $ngx_addon_dir/libinjection/ngxbuild/$src_file
-    cat $ngx_addon_dir/libinjection/src/$src_file >> $ngx_addon_dir/libinjection/ngxbuild/$src_file
+    echo "#include <ngx_config.h>" > $ngx_addon_dir/libinjection_ngxbuild/$src_file
+    cat $ngx_addon_dir/libinjection/src/$src_file >> $ngx_addon_dir/libinjection_ngxbuild/$src_file
 done;
 
 # NAXSI C source files
@@ -28,9 +28,9 @@ naxsi_sources="
     $ngx_addon_dir/naxsi_utf8.c \
     $ngx_addon_dir/naxsi_utils.c \
     $ngx_addon_dir/naxsi_windows.c \
-    $ngx_addon_dir/libinjection/ngxbuild/libinjection_html5.c \
-    $ngx_addon_dir/libinjection/ngxbuild/libinjection_sqli.c \
-    $ngx_addon_dir/libinjection/ngxbuild/libinjection_xss.c \
+    $ngx_addon_dir/libinjection_ngxbuild/libinjection_html5.c \
+    $ngx_addon_dir/libinjection_ngxbuild/libinjection_sqli.c \
+    $ngx_addon_dir/libinjection_ngxbuild/libinjection_xss.c \
 "
 
 # NGINX module condfiguration.
