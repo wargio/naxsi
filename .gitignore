@@ -4,3 +4,4 @@ nginx-source
 nginx-tmp
 *.log
 .scripts/.tmp/
+/naxsi_src/libinjection_ngxbuild/
