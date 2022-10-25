@@ -19,7 +19,7 @@ MainRule id:20000012 "s:$UWA:8" "str:/svn/" "mz:URL" "msg:svn version control fo
 MainRule id:20000013 "s:$UWA:8" "str:.htpasswd" "mz:ARGS|BODY|URL|FILE_EXT" "msg:file access to .htpasswd";
 MainRule id:20000014 "s:$UWA:8" "str:.htaccess" "mz:ARGS|BODY|URL|FILE_EXT" "msg:file access to .htaccess";
 MainRule id:20000015 "s:$UWA:8" "str:.ds_store" "mz:URL" "msg:file access to .ds_store";
-MainRule id:20000016 "s:$UWA:8" "str:changelog." "mz:URL" "msg:file access to changelog";
+MainRule id:20000016 "s:$UWA:8" "str:changelog" "mz:URL" "msg:file access to changelog";
 MainRule id:20000017 "s:$UWA:8" "rx:^/core.\d+$" "mz:URL" "msg:file access to core dumps";
 MainRule id:20000018 "s:$UWA:8" "rx:\.module$" "mz:URL" "msg:file access to .module (drupal)";
 MainRule id:20000019 "s:$UWA:8" "str:web.config" "mz:URL" "msg:file access to web.config (drupal)";
@@ -135,5 +135,10 @@ MainRule id:20000075 "s:$UWA:8" "str:.yml" "mz:URL" "msg:file access to .yml";
 MainRule id:20000076 "s:$UWA:8" "str:.yaml" "mz:URL" "msg:file access to .yaml";
 
 # Block access to HashiCorp Consul/Vault template files
-MainRule id:20000077 "s:$UWA:8" "str:.ctmpl" "mz:URL" "msg:file access to .ctmpl";
-MainRule id:20000078 "s:$UWA:8" "str:.hcl" "mz:URL" "msg:file access to .hcl";
+MainRule id:20000077 "s:$UWA:8" "rx:\.ctmpl$" "mz:URL" "msg:file access to .ctmpl";
+MainRule id:20000078 "s:$UWA:8" "rx:\.hcl$" "mz:URL" "msg:file access to .hcl";
+
+# Block access to known files used for fingerprinting
+MainRule id:20000079 "s:$UWA:8" "rx:\.md$" "mz:URL" "msg:file access to .md";
+MainRule id:20000080 "s:$UWA:8" "rx:read[-_]?me" "mz:URL" "msg:file access to readme";
+MainRule id:20000081 "s:$UWA:8" "rx:\.toml$" "mz:URL" "msg:file access to .toml";
