@@ -129,3 +129,7 @@ MainRule id:20000073 "s:$UWA:8" "str:/idx_config" "mz:URL" "msg:Prevent IndoXplo
 # Prevents old grafana to return all folders
 # https://github.com/grafana/grafana/pull/44175
 MainRule id:20000074 "s:$UWA:8" "rx:^0$" "mz:$URL:/api/search|$ARGS_VAR:folderIds" "msg:Access all grafana folders";
+
+# Block access to yaml files
+MainRule id:20000075 "s:$UWA:8" "str:.yml" "mz:URL" "msg:file access to .yml";
+MainRule id:20000076 "s:$UWA:8" "str:.yaml" "mz:URL" "msg:file access to .yaml";
