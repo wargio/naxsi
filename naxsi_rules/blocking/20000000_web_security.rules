@@ -133,3 +133,7 @@ MainRule id:20000074 "s:$UWA:8" "rx:^0$" "mz:$URL:/api/search|$ARGS_VAR:folderId
 # Block access to yaml files
 MainRule id:20000075 "s:$UWA:8" "str:.yml" "mz:URL" "msg:file access to .yml";
 MainRule id:20000076 "s:$UWA:8" "str:.yaml" "mz:URL" "msg:file access to .yaml";
+
+# Block access to HashiCorp Consul/Vault template files
+MainRule id:20000077 "s:$UWA:8" "str:.ctmpl" "mz:URL" "msg:file access to .ctmpl";
+MainRule id:20000078 "s:$UWA:8" "str:.hcl" "mz:URL" "msg:file access to .hcl";
