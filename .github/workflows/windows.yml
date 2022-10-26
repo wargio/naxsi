@@ -1,4 +1,4 @@
-name: "Windows CI Build"
+name: "Windows CI Unit Tests"
 
 on:
   push:
@@ -25,5 +25,7 @@ jobs:
       with:
         submodules: recursive
         persist-credentials: false
-    - name: Windows build
+    - name: Build
       run: .scripts\ci-windows.bat ${{ matrix.nginx }}
+    - name: Unit Tests
+      run: python -u .scripts\naxsi-windows-test.py ..\nginx-windows\build\dist unit-tests\tests
