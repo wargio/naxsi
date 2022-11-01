@@ -1,4 +1,4 @@
-name: "Windows CI Build"
+name: "Windows CI Unit Tests"
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build-windows:
+  build-test:
     strategy:
       fail-fast: false
       matrix:
@@ -26,4 +26,6 @@ jobs:
         submodules: recursive
         persist-credentials: false
     - name: Windows build
-      run: .scripts\ci-windows.bat ${{ matrix.nginx }}
+      run: .scripts\ci-windows-build.bat ${{ matrix.nginx }}
+    - name: Unit Tests
+      run: .scripts\ci-windows-test.bat
