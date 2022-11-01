@@ -267,8 +267,6 @@ def gen_function_header(test):
     fun_name = "test_{}".format(fun_name)
   while fun_name in unique_fun_names:
     fun_name += "_"
-  if "TEST 1.7: test very long post (url-encoded) - legit (var content)" == test.name:
-    fun_name = "DISABLED_" + fun_name
   unique_fun_names.add(fun_name)
   docstring = test.name.replace("\\x", "\\\\x")
   return '''
