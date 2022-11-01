@@ -235,7 +235,7 @@ ngx_http_wlr_push_disabled(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* dlc, ngx_h
 static ngx_int_t
 ngx_http_wlr_merge(ngx_conf_t* cf, ngx_http_whitelist_rule_t* father_wl, ngx_http_rule_t* curr)
 {
-  uint       i;
+  ngx_uint_t i;
   ngx_int_t* tmp_ptr;
 
   NX_LOG_DEBUG(_debug_whitelist, NGX_LOG_EMERG, cf, 0, "[naxsi] merging similar wl(s)");
@@ -268,7 +268,7 @@ ngx_http_wlr_identify(ngx_conf_t*                cf,
                       int*                       name_idx)
 {
 
-  uint i;
+  ngx_uint_t i;
 
   /*
     identify global match zones (|ARGS|BODY|HEADERS|URL|FILE_EXT)
@@ -369,7 +369,7 @@ ngx_http_wlr_find(ngx_conf_t*                cf,
                   int                        name_idx,
                   char**                     fullname)
 {
-  uint i;
+  ngx_uint_t i;
 
   /* Create unique string for rule, and try to find it in existing rules.*/
   /*name AND uri*/
@@ -432,7 +432,7 @@ ngx_http_wlr_find(ngx_conf_t*                cf,
   for (i = 0; i < dlc->tmp_wlr->nelts; i++)
     if (!strcmp((const char*)*fullname,
                 (const char*)((ngx_http_whitelist_rule_t*)dlc->tmp_wlr->elts)[i].name->data) &&
-        ((ngx_http_whitelist_rule_t*)dlc->tmp_wlr->elts)[i].zone == (uint)zone) {
+        ((ngx_http_whitelist_rule_t*)dlc->tmp_wlr->elts)[i].zone == (ngx_uint_t)zone) {
       NX_LOG_DEBUG(_debug_whitelist_heavy,
                    NGX_LOG_EMERG,
                    cf,
@@ -452,7 +452,7 @@ ngx_http_wlr_finalize_hashtables(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* dlc)
   ngx_array_t *   get_ar = NULL, *headers_ar = NULL, *body_ar = NULL, *uri_ar = NULL;
   ngx_hash_key_t* arr_node;
   ngx_hash_init_t hash_init;
-  uint            i;
+  ngx_uint_t      i;
 
   NX_LOG_DEBUG(_debug_whitelist_heavy, NGX_LOG_EMERG, cf, 0, "finalizing hashtables");
 
@@ -664,7 +664,7 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
   ngx_http_rule_t**          rptr;
   ngx_regex_compile_t*       rgc;
   char*                      fullname;
-  uint                       i;
+  ngx_uint_t                 i;
 
   if (!dlc->whitelist_rules || dlc->whitelist_rules->nelts < 1) {
     NX_LOG_DEBUG(

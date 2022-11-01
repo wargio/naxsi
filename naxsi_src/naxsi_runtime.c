@@ -7,14 +7,6 @@
 #include <naxsi_macros.h>
 #include <naxsi_net.h>
 
-#ifdef _WIN32
-#pragma warning(disable:4204)
-#pragma warning(disable:4221)
-#pragma warning(disable:4456)
-#pragma warning(disable:4701)
-#pragma warning(disable:4702)
-#endif // _WIN32
-
 /* used to store locations during the configuration time.
    then, accessed by the hashtable building feature during "init" time. */
 
@@ -543,7 +535,7 @@ nx_can_ignore_cidr(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
   if (!cf->ignore_cidrs) {
     return 0;
   }
-  uint        i;
+  ngx_uint_t  i;
   ip_t        ip;
   const char* ipstr   = (const char*)mstr->data;
   int         is_ipv6 = strchr(ipstr, ':') != NULL;
@@ -607,7 +599,7 @@ ngx_http_naxsi_is_rule_whitelisted_rx(ngx_http_request_t*        req,
                                       ngx_int_t                  target_name)
 {
   ngx_http_rule_t* p;
-  uint             i, x;
+  ngx_uint_t       i, x;
   int              rx_match, violation;
 
   /* Look it up in regexed whitelists for matchzones */
@@ -1090,7 +1082,11 @@ ngx_http_append_log(ngx_http_request_t* r, ngx_array_t* ostr, ngx_str_t* fragmen
   /*
   ** extra space has been reserved to append the seed.
   */
+#ifndef _WIN32
   while ((seed = random() % 1000) == prev_seed)
+#else // _WIN32
+  while ((seed = rand() % 1000) == prev_seed)
+#endif // !_WIN32
     ;
   sub           = snprintf((char*)(fragment->data + *offset), MAX_SEED_LEN, "&seed_start=%d", seed);
   fragment->len = *offset + sub;
@@ -1371,9 +1367,9 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
       json[0] = '{';
       json[1] = '"';
 
-      size_t i;
-      for (i = 0; line[i] && curr < end; i++) {
-        if (line[i] == '=') {
+      size_t j;
+      for (j = 0; line[j] && curr < end; j++) {
+        if (line[j] == '=') {
           *curr = '"';
           curr++;
           break_if(curr >= end);
@@ -1381,7 +1377,7 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
           curr++;
           break_if(curr >= end);
           *curr = '"';
-        } else if (line[i] == '&') {
+        } else if (line[j] == '&') {
           *curr = '"';
           curr++;
           break_if(curr >= end);
@@ -1389,38 +1385,38 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
           curr++;
           break_if(curr >= end);
           *curr = '"';
-        } else if (line[i] == '"' || line[i] == '\\' /* || line[i] == '/'*/) {
+        } else if (line[j] == '"' || line[j] == '\\' /* || line[i] == '/'*/) {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
-          *curr = line[i];
-        } else if (line[i] == '\b') {
+          *curr = line[j];
+        } else if (line[j] == '\b') {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
           *curr = 'b';
-        } else if (line[i] == '\f') {
+        } else if (line[j] == '\f') {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
           *curr = 'f';
-        } else if (line[i] == '\n') {
+        } else if (line[j] == '\n') {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
           *curr = 'n';
-        } else if (line[i] == '\r') {
+        } else if (line[j] == '\r') {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
           *curr = 'r';
-        } else if (line[i] == '\t') {
+        } else if (line[j] == '\t') {
           *curr = '\\';
           curr++;
           break_if(curr >= end);
           *curr = 't';
-        } else if (is_printable(line[i])) {
-          *curr = line[i];
+        } else if (is_printable(line[j])) {
+          *curr = line[j];
         } else {
           *curr = '\\';
           curr++;
@@ -1434,10 +1430,10 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
           *curr = '0';
           curr++;
           break_if(curr >= end);
-          *curr = hex[line[i] >> 8];
+          *curr = hex[line[j] >> 8];
           curr++;
           break_if(curr >= end);
-          *curr = hex[line[i] & 0x0F];
+          *curr = hex[line[j] & 0x0F];
         }
         curr++;
       }
@@ -1549,7 +1545,6 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
     ngx_http_internal_redirect(r, cf->denied_url, &empty);
     return (NGX_HTTP_OK);
   }
-  return (NGX_ERROR);
 }
 
 /*
@@ -2945,13 +2940,11 @@ ngx_http_naxsi_data_parse(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r)
   if (r->headers_in.x_forwarded_for.nelts >= 1) {
     a = r->headers_in.x_forwarded_for;
     n = a.nelts;
-  }
-  if (n >= 1)
-    h = a.elts;
-  if (n >= 1) {
-    ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "xfor %s", h[0]->value.data);
-
-    ngx_http_naxsi_update_current_ctx_status(ctx, cf, r, &tag, (ngx_str_t*)h[0]->value.data);
+    if (n >= 1) {
+      h = a.elts;
+      ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "xfor %s", h[0]->value.data);
+      ngx_http_naxsi_update_current_ctx_status(ctx, cf, r, &tag, (ngx_str_t*)h[0]->value.data);
+    }
   }
 #else
   ngx_table_elt_t* xff = NULL;

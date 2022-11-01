@@ -7,16 +7,6 @@
 #include <naxsi_config.h>
 #include <naxsi_macros.h>
 
-#ifdef _WIN32
-#pragma warning(disable:4214)
-#pragma warning(disable:4204)
-#pragma warning(disable:4221)
-#pragma warning(disable:4456)
-#pragma warning(disable:4702)
-#pragma warning(disable:4701)
-#pragma warning(disable:4706)
-#endif // _WIN32
-
 /*
 ** TOP LEVEL configuration parsing code
 */
@@ -114,15 +104,15 @@ naxsi_score(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
       NX_LOG_DEBUG(
         _debug_score, NGX_LOG_EMERG, r, 0, "XX-(debug) special scoring rule (%s)", tmp_ptr);
 
-      return_value_if(!(tmp_end = strchr(tmp_ptr, ':')), NGX_CONF_ERROR);
+      return_value_if(NULL == (tmp_end = strchr(tmp_ptr, ':')), NGX_CONF_ERROR);
 
       return_value_if((len = tmp_end - tmp_ptr) < 1, NGX_CONF_ERROR);
 
-      return_value_if(!(sc = ngx_array_push(rule->sscores)), NGX_CONF_ERROR);
+      return_value_if(NULL == (sc = ngx_array_push(rule->sscores)), NGX_CONF_ERROR);
 
-      return_value_if(!(sc->sc_tag = ngx_pcalloc(r->pool, sizeof(ngx_str_t))), NGX_CONF_ERROR);
+      return_value_if(NULL == (sc->sc_tag = ngx_pcalloc(r->pool, sizeof(ngx_str_t))), NGX_CONF_ERROR);
 
-      return_value_if(!(sc->sc_tag->data = ngx_pcalloc(r->pool, len + 1)), NGX_CONF_ERROR);
+      return_value_if(NULL == (sc->sc_tag->data = ngx_pcalloc(r->pool, len + 1)), NGX_CONF_ERROR);
 
       memcpy(sc->sc_tag->data, tmp_ptr, len);
       sc->sc_tag->len = len;
@@ -257,7 +247,7 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
         return_value_if(!rule->br->custom_locations, NGX_CONF_ERROR);
       }
 
-      return_value_if(!(custom_rule = ngx_array_push(rule->br->custom_locations)), NGX_CONF_ERROR);
+      return_value_if(NULL == (custom_rule = ngx_array_push(rule->br->custom_locations)), NGX_CONF_ERROR);
 
       memset(custom_rule, 0, sizeof(ngx_http_custom_rule_location_t));
       if (!strncmp(tmp_ptr, MZ_GET_VAR_T, strlen(MZ_GET_VAR_T))) {
@@ -374,13 +364,13 @@ void*
 naxsi_str(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 {
   ngx_str_t* str;
-  uint       i;
+  ngx_uint_t   i;
 
   return_value_if(!rule->br, NGX_CONF_ERROR);
 
   rule->br->match_type = STR;
 
-  return_value_if(!(str = ngx_pcalloc(r->pool, sizeof(ngx_str_t))), NGX_CONF_ERROR);
+  return_value_if(NULL == (str = ngx_pcalloc(r->pool, sizeof(ngx_str_t))), NGX_CONF_ERROR);
 
   str->data = tmp->data + strlen(STR_T);
   str->len  = tmp->len - strlen(STR_T);
