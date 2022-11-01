@@ -134,6 +134,9 @@ def kill_nginx(proc=None):
       for pid in pid_list:
         subprocess.run(["/usr/bin/kill", "-9", str(pid)],
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+      for pid in pid_list:
+        subprocess.run(["/usr/bin/tail", "--pid={}".format(pid), "-f", "/dev/null"],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     else:
       subprocess.run(["c:/windows/system32/taskkill.exe", "/f", "/t", "/pid", str(proc.pid)],
           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
