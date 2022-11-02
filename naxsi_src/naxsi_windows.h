@@ -18,12 +18,8 @@ gettimeofday(struct timeval* t, void* timezone);
 #define __need_clock_t
 #include <time.h>
 
-#define uint        ngx_uint_t
-#define random      rand
 #define strncasecmp _strnicmp
 #define strcasecmp  _stricmp
-#define srandom     srand
-#define getpid      _getpid
 
 // From http://www.linuxjournal.com/article/5574
 

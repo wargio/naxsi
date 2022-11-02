@@ -21,11 +21,6 @@
 #include <process.h>
 #endif // !_WIN32
 
-#ifdef _WIN32
-#pragma warning(disable:4204)
-#pragma warning(disable:4996)
-#endif // _WIN32
-
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 /*
@@ -594,7 +589,11 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
   }
 
   /* initialize prng (used for fragmented logs) */
+#ifndef _WIN32
   srandom(time(0) * getpid());
+#else // _WIN32
+  srand(time(0) * _getpid());
+#endif // !_WIN32
 
   /*
   ** initalise internal rules for libinjection sqli/xss

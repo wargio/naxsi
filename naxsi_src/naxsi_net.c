@@ -6,10 +6,6 @@
 #include <naxsi.h>
 #include <naxsi_net.h>
 
-#ifdef _WIN32
-#pragma warning(disable:4702)
-#endif // _WIN32
-
 int
 parse_ipv6(const char* addr, ip_t* ip, char* ip_str)
 {
@@ -70,11 +66,11 @@ is_in_subnet(const cidr_t* cidr, const ip_t* ip, int is_ipv6)
   if ((cidr->version == IPv6 && !is_ipv6) || (cidr->version == IPv4 && is_ipv6)) {
     return 0;
   }
+
   if (cidr->version == IPv4) {
     return (ip->v4 & cidr->mask.v4) == (cidr->subnet.v4 & cidr->mask.v4);
-  } else {
-    return (ip->v6[0] & cidr->mask.v6[0]) == (cidr->subnet.v6[0] & cidr->mask.v6[0]) &&
-           (ip->v6[1] & cidr->mask.v6[1]) == (cidr->subnet.v6[1] & cidr->mask.v6[1]);
   }
-  return 0;
+
+  return (ip->v6[0] & cidr->mask.v6[0]) == (cidr->subnet.v6[0] & cidr->mask.v6[0]) &&
+          (ip->v6[1] & cidr->mask.v6[1]) == (cidr->subnet.v6[1] & cidr->mask.v6[1]);
 }
