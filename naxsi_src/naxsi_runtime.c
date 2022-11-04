@@ -3021,14 +3021,17 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
 #endif
 #endif
     {
-      ngx_str_t* ip = &r->connection->addr_text;
+      ngx_str_t ip;
+      ip.len  = r->connection->addr_text.len;
+      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
+      memcpy(ip.data, r->connection->addr_text.data, ip.len);
       NX_DEBUG(_debug_whitelist_ignore,
                NGX_LOG_DEBUG_HTTP,
                r->connection->log,
                0,
                "XX- lookup ignore client ip: %s",
-               ip->data);
-      ignore = nx_can_ignore_ip(ip, cf) || nx_can_ignore_cidr(ip, cf);
+               ip.data);
+      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
     }
 
     NX_DEBUG(_debug_custom_score,
