@@ -172,7 +172,8 @@ def read_response(sock):
   data_begin_pos, write_pos = read_headers(sock, buf)
   status, headers = parse_headers(buf, data_begin_pos)
   clen = int(headers["Content-Length"])
-  remaining = write_pos - data_begin_pos - clen
+  buffered = write_pos - data_begin_pos
+  remaining = clen - buffered
   if remaining > 0:
     view = memoryview(buf)
     for _ in range(32):
