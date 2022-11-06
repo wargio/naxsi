@@ -2993,13 +2993,18 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                  NGX_LOG_DEBUG_HTTP,
                  r->connection->log,
                  0,
-                 "XX- lookup ignore X-Forwarded-For: %s",
-                 h[0]->value.data);
+                 "XX- lookup ignore X-Forwarded-For: %V",
+                 h[0]->value);
         ngx_str_t ip;
-        ip.len  = strlen((char*)h[0]->value.data);
+        ip.len  = h[0]->value.len;
         ip.data = ngx_pcalloc(r->pool, ip.len + 1);
+        if (!ip.data) {
+          naxsi_error_fatal(ctx, r, "failed alloc");
+          return;
+        }
         memcpy(ip.data, h[0]->value.data, ip.len);
         ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
+        ngx_pfree(r->pool, ip.data);
       }
     } else
 #else
@@ -3010,25 +3015,38 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                NGX_LOG_DEBUG_HTTP,
                r->connection->log,
                0,
-               "XX- lookup ignore X-Forwarded-For: %s",
-               xff->value.data);
+               "XX- lookup ignore X-Forwarded-For: %V",
+               xff->value);
       ngx_str_t ip;
-      ip.len  = strlen((char*)xff->value.data);
+      ip.len  = xff->value.len;
       ip.data = ngx_pcalloc(r->pool, ip.len + 1);
+      if (!ip.data) {
+        naxsi_error_fatal(ctx, r, "failed alloc");
+        return;
+      }
       memcpy(ip.data, xff->value.data, ip.len);
       ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
+      ngx_pfree(r->pool, ip.data);
     } else
 #endif
 #endif
     {
-      ngx_str_t* ip = &r->connection->addr_text;
+      ngx_str_t ip;
+      ip.len  = r->connection->addr_text.len;
+      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
+      if (!ip.data) {
+        naxsi_error_fatal(ctx, r, "failed alloc");
+        return;
+      }
+      memcpy(ip.data, r->connection->addr_text.data, ip.len);
       NX_DEBUG(_debug_whitelist_ignore,
                NGX_LOG_DEBUG_HTTP,
                r->connection->log,
                0,
-               "XX- lookup ignore client ip: %s",
-               ip->data);
-      ignore = nx_can_ignore_ip(ip, cf) || nx_can_ignore_cidr(ip, cf);
+               "XX- lookup ignore client ip: %V",
+               ip);
+      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
+      ngx_pfree(r->pool, ip.data);
     }
 
     NX_DEBUG(_debug_custom_score,
