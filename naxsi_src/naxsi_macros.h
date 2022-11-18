@@ -8,6 +8,10 @@
 #define is_printable(c)  ((c) >= ' ' && (c) <= '~')
 #define is_numeric(c)    ((c) >= '0' && (c) <= '9')
 #define const_len(s)     (sizeof(s) - sizeof(s[0]))
+#define array_size(x)    (sizeof(x) / sizeof((x)[0]))
+
+#define U64_MAX 0xffffffffffffffffull
+#define U32_MAX 0xffffffffu
 
 #define return_value_if(cond, val)                                                                 \
   if ((cond))                                                                                      \

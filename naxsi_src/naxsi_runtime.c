@@ -22,7 +22,8 @@ ngx_http_rule_t nx_int__weird_request = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -32,7 +33,8 @@ ngx_http_rule_t nx_int__big_request = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -42,7 +44,8 @@ ngx_http_rule_t nx_int__uncommon_hex_encoding = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -52,7 +55,8 @@ ngx_http_rule_t nx_int__uncommon_content_type = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -62,7 +66,8 @@ ngx_http_rule_t nx_int__uncommon_url = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -72,7 +77,8 @@ ngx_http_rule_t nx_int__uncommon_post_format = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -82,7 +88,8 @@ ngx_http_rule_t nx_int__uncommon_post_boundary = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -92,7 +99,8 @@ ngx_http_rule_t nx_int__empty_post_body = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -105,7 +113,8 @@ ngx_http_rule_t nx_int__no_rules = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,          /*drop*/ 1, /*log*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -115,7 +124,19 @@ ngx_http_rule_t nx_int__bad_utf8 = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,          /*drop*/ 1, /*log*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
+  /*br ptrs*/ NULL
+};
+
+ngx_http_rule_t nx_int__illegal_host_header = {
+  /*type*/ 0,         /*whitelist flag*/ 0,
+  /*wl_id ptr*/ NULL, /*rule_id*/ 21,
+  /*log_msg*/ NULL,   /*score*/ 0,
+  /*sscores*/ NULL,
+  /*sc_block*/ 0,     /*sc_allow*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -2876,12 +2897,19 @@ ngx_http_naxsi_headers_parse(ngx_http_naxsi_main_conf_t* main_cf,
       ngx_http_apply_rulematch_v_n(
         &nx_int__uncommon_hex_encoding, ctx, r, &h[i].key, &h[i].value, HEADERS, 1, 0);
     }
-    if (cf->header_rules)
+    if (cf->header_rules) {
       ngx_http_basestr_ruleset_n(
         r->pool, &lowcase_header, &(h[i].value), cf->header_rules, r, ctx, HEADERS);
-    if (main_cf->header_rules)
+    }
+    if (main_cf->header_rules) {
       ngx_http_basestr_ruleset_n(
         r->pool, &lowcase_header, &(h[i].value), main_cf->header_rules, r, ctx, HEADERS);
+    }
+  }
+
+  if (naxsi_is_illegal_host_name(&r->headers_in.server) > 0) {
+    ngx_http_apply_rulematch_v_n(
+      &nx_int__illegal_host_header, ctx, r, NULL, &r->headers_in.server, HEADERS, 1, 0);
   }
   return;
 }

@@ -40,15 +40,33 @@ typedef struct
   {
     uint64_t v6[2];
     uint32_t v4;
-  };
+  } u;
   uint32_t version;
 } ip_t;
+
+#define c_ipv4(addr4)                                                                              \
+  {                                                                                                \
+    .u.v4 = addr4, .version = IPv4                                                                 \
+  }
+#define c_ipv6(addr6hi, addr6lo)                                                                   \
+  {                                                                                                \
+    .u.v6 = { addr6hi, addr6lo }, .version = IPv6                                                  \
+  }
 
 typedef struct
 {
   ip_t mask;
   ip_t subnet;
 } cidr_t;
+
+#define c_cidr4(m, s)                                                                              \
+  {                                                                                                \
+    .mask = c_ipv4(m), .subnet = c_ipv4(s)                                                         \
+  }
+#define c_cidr6(mhi, mlo, shi, slo)                                                                \
+  {                                                                                                \
+    .mask = c_ipv6(mhi, mlo), .subnet = c_ipv6(shi, slo)                                           \
+  }
 
 int
 naxsi_parse_ip(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str);

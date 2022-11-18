@@ -4,7 +4,7 @@
 #include <ngx_config.h>
 
 #ifdef _WIN32
-#include "naxsi_windows.h"
+#include <naxsi_windows.h>
 
 int
 gettimeofday(struct timeval* t, void* timezone)

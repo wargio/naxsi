@@ -14,6 +14,7 @@
 #@MainRule "msg:libinjection_xss" id:18;
 #@MainRule "msg:no generic rules" id:19;
 #@MainRule "msg:bad utf8" id:20;
+#@MainRule "msg:illegal host header" id:21;
 
 ##################################
 ## SQL Injections IDs:1000-1099 ##

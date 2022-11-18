@@ -5,6 +5,7 @@
 #include <ngx_config.h>
 
 #include <naxsi.h>
+#include <naxsi_macros.h>
 #include <naxsi_net.h>
 
 static int
@@ -22,24 +23,24 @@ parse_ipv6(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str)
   if (ip) {
     ip->version = IPv6;
     // ipv6 hi
-    ip->v6[0] = ipv6.s6_addr[0];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[1];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[2];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[3];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[4];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[5];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[6];
-    ip->v6[0] = (ip->v6[0] << 8) | ipv6.s6_addr[7];
+    ip->u.v6[0] = ipv6.s6_addr[0];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[1];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[2];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[3];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[4];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[5];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[6];
+    ip->u.v6[0] = (ip->u.v6[0] << 8) | ipv6.s6_addr[7];
 
     // ipv6 low
-    ip->v6[1] = ipv6.s6_addr[8];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[9];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[10];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[11];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[12];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[13];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[14];
-    ip->v6[1] = (ip->v6[1] << 8) | ipv6.s6_addr[15];
+    ip->u.v6[1] = ipv6.s6_addr[8];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[9];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[10];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[11];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[12];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[13];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[14];
+    ip->u.v6[1] = (ip->u.v6[1] << 8) | ipv6.s6_addr[15];
   }
 
   if (ip_str) {
@@ -62,7 +63,7 @@ parse_ipv4(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str)
 
   if (ip) {
     ip->version = IPv4;
-    ip->v4      = htonl(ipv4.s_addr);
+    ip->u.v4    = htonl(ipv4.s_addr);
   }
 
   if (ip_str) {
@@ -111,14 +112,14 @@ naxsi_parse_cidr(const ngx_str_t* nx_cidr, cidr_t* cidr)
   /* Generate IPv[46] mask (optimized) */
   if (ip.version == IPv6) {
     if (mask > 63) {
-      cidr->mask.v6[0] = 0xffffffffffffffff;
-      cidr->mask.v6[1] = 0xffffffffffffffff << (128 - mask);
+      cidr->mask.u.v6[0] = U64_MAX;
+      cidr->mask.u.v6[1] = U64_MAX << (128 - mask);
     } else {
-      cidr->mask.v6[0] = 0xffffffffffffffff << (64 - mask);
-      cidr->mask.v6[1] = 0;
+      cidr->mask.u.v6[0] = U64_MAX << (64 - mask);
+      cidr->mask.u.v6[1] = 0;
     }
   } else {
-    cidr->mask.v4 = 0xffffffff << (32 - mask);
+    cidr->mask.u.v4 = U32_MAX << (32 - mask);
   }
 
   return CIDR_OK;
@@ -128,14 +129,13 @@ int
 naxsi_is_in_subnet(const cidr_t* cidr, const ip_t* ip)
 {
   if (cidr->subnet.version != ip->version) {
-    ngx_log_stderr(0, "version %d == %d\n", cidr->subnet.version, ip->version);
     return 0;
   }
 
   if (cidr->subnet.version == IPv4) {
-    return (ip->v4 & cidr->mask.v4) == (cidr->subnet.v4 & cidr->mask.v4);
+    return (ip->u.v4 & cidr->mask.u.v4) == (cidr->subnet.u.v4 & cidr->mask.u.v4);
   }
 
-  return (ip->v6[0] & cidr->mask.v6[0]) == (cidr->subnet.v6[0] & cidr->mask.v6[0]) &&
-         (ip->v6[1] & cidr->mask.v6[1]) == (cidr->subnet.v6[1] & cidr->mask.v6[1]);
+  return (ip->u.v6[0] & cidr->mask.u.v6[0]) == (cidr->subnet.u.v6[0] & cidr->mask.u.v6[0]) &&
+         (ip->u.v6[1] & cidr->mask.u.v6[1]) == (cidr->subnet.u.v6[1] & cidr->mask.u.v6[1]);
 }
