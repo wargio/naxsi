@@ -20,19 +20,19 @@ MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:foo" "s:$XSS:8";
 MainRule id:4241 "str:ratz" "mz:$ARGS_VAR:foo1" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo=ratataXXX
@@ -47,19 +47,19 @@ MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:foo" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:foo/$URL:/zz" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foox=ratataXXX
@@ -75,19 +75,19 @@ MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^foa[0-9]+$|$URL_X:/ff" "s:$XSS:8"
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^foa[0-9]+$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo888=ratataXXX
@@ -102,19 +102,19 @@ MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^foo[0-9]+$" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^fo1[0-9]+$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foob=ratataXXX
@@ -129,19 +129,19 @@ MainRule id:4241 "str:ratata" "mz:$BODY_VAR_X:^foo[0-9]+$" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$BODY_VAR_X:^fo1[0-9]+$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo88=ratataXXX
@@ -156,19 +156,19 @@ MainRule id:4241 "str:ratata" "mz:$BODY_VAR:foo|$URL:/f" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$BODY_VAR:foo" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo=ratataXXX
@@ -183,19 +183,19 @@ MainRule id:4241 "str:ratata" "mz:$URL:/zz|$ARGS_VAR:aaa|$ARGS_VAR:foo|$ARGS_VAR
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:aaa|$ARGS_VAR:foo|$ARGS_VAR:nope" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo=ratataXXX
@@ -210,19 +210,19 @@ MainRule id:4241 "str:ratata" "mz:$URL_X:^/z$|$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^foo
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^foo$|$ARGS_VAR_X:^nope$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo=ratataXXX
@@ -237,19 +237,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^foo$|$ARGS_VAR_X:^nope$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo1=ratataXXX
@@ -264,19 +264,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^foo$|$ARGS_VAR_X:^nope$|ARGS" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo1=ratataXXX
@@ -291,19 +291,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:^aaa$|$ARGS_VAR:^foo$|$ARGS_VAR:^nope$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo1=ratataXXX
@@ -318,19 +318,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$ARGS_VAR:^aaa$|$ARGS_VAR:^foo$|$ARGS_VAR:^nope$|ARGS" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /?foo1=ratataXXX
@@ -346,19 +346,19 @@ MainRule id:4241 "str:ratata" "mz:$URL:/foo|$ARGS_VAR:aaa" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$URL:/fooz|$ARGS_VAR:aaa" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?aaa=ratataXXX
@@ -375,19 +375,19 @@ MainRule id:4241 "str:ratata" "mz:$URL:/foo|$ARGS_VAR:aaa" "s:$XSS:8";
 MainRule id:4241 "str:ratata" "mz:$URL:/foo2|$ARGS_VAR:aaa" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foox?aaa=ratataXXX
@@ -403,19 +403,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL:/foo|$ARGS_VAR:aaa" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?axaa=ratataXXX
@@ -429,19 +429,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL:/foo|$ARGS_VAR:aaa|$ARGS_VAR:tutu" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?tutu=ratataXXX
@@ -456,19 +456,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL_X:^/foo$|$ARGS_VAR_X:^aaa[0-9]+$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?aaa4242=ratataXXX
@@ -483,19 +483,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL_X:^/foo$|$ARGS_VAR_X:^aaa$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foox?aaa=ratataXXX
@@ -511,19 +511,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL_X:^/foo$|$ARGS_VAR_X:^aaa$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?axaa=ratataXXX
@@ -537,19 +537,19 @@ include $TEST_NGINX_NAXSI_RULES;
 MainRule id:4241 "str:ratata" "mz:$URL_X:^/foo$|$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^tutu$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
 }
 location /RequestDenied {
-	 return 412;
+	return 412;
 }
 --- request
 GET /foo?tutu=ratataXXX
@@ -565,16 +565,24 @@ MainRule "str:foobar" "mz:$ARGS_VAR_X:^foo.*" "msg:lol" "s:DROP" id:42424242;
 #MainRule id:4241 "str:ratata" "mz:$URL_X:^/foo$|$ARGS_VAR_X:^aaa$|$ARGS_VAR_X:^tutu$" "s:$XSS:8";
 --- config
 location / {
-	 SecRulesEnabled;
-	 DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-	 CheckRule "$RFI >= 8" BLOCK;
-	 CheckRule "$TRAVERSAL >= 4" BLOCK;
-	 CheckRule "$XSS >= 8" BLOCK;
-	 CheckRule "$TEST >= 8" ALLOW;
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
 
-  	 root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
+}
+location /RequestDenied {
+	return 412;
+}
+--- request
+GET /?fooxxxad=foobar
+--- error_code: 412
+
 }
 location /RequestDenied {
 	 return 412;
