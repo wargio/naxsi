@@ -5,6 +5,7 @@
 import os, sys
 from collections import namedtuple
 from os import path, replace
+import re
 
 NginxTest = namedtuple("NginxTest", "filename name user_files main_config http_config config more_headers request raw_request error_code, error_log no_error_log response_body")
 
@@ -261,8 +262,8 @@ from _test_utils import nginx_runner
 class {}(unittest.TestCase):""".format(cls_name)
 
 def gen_function_header(test):
-  fun_name = test.name.split(":")[0].strip().\
-      replace(" ", "_").replace(".", "_").replace("-", "_").lower()
+  fun_name = test.name.strip()
+  fun_name = re.sub(r'[^a-zA-Z\d_]', '_', fun_name)
   if not fun_name.startswith("test_"):
     fun_name = "test_{}".format(fun_name)
   while fun_name in unique_fun_names:
