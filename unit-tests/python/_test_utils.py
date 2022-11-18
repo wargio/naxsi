@@ -196,12 +196,13 @@ def includes_header(headers, name):
 def send_request(port, url_path, method, headers, data):
   header_lines = [
     "{} {} HTTP/1.1".format(method, url_path),
-    "Host: 127.0.0.1:{}".format(port)
   ]
+  if not includes_header(headers, "Host"):
+    header_lines.append("Host: 127.0.0.1:{}".format(port))
+  if not includes_header(headers, "User-Agent"):
+    header_lines.append("User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10")
   for name, val in headers.items():
     header_lines.append("{}: {}".format(name, val))
-  if not includes_header(headers, "User-Agent"):
-      header_lines.append("User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10")
   if data is not None and len(data) > 0 and not includes_header(headers, "Content-Length"):
     header_lines.append("Content-Length: {}".format(len(data)))
   header_lines.extend(["", ""])
