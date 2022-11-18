@@ -20,5 +20,5 @@ echo "############################"
 cp -v "$NAXSI_TST_PATH/nginx-ci.conf" "$NAXSI_TMP_PATH/naxsi_ut/nginx.conf"
 openssl req -batch -x509 -nodes -days 365 -newkey rsa:2048 -keyout "$NAXSI_TMP_PATH/nginx.key" -out "$NAXSI_TMP_PATH/nginx.crt"
 
-python ./.scripts/naxsi-gen-tests.py
+python .scripts/naxsi-gen-tests.py
 python -m unittest discover ./unit-tests/python/ -v
