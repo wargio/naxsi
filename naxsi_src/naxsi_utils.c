@@ -4,10 +4,8 @@
 #include <ngx_config.h>
 
 #include <naxsi.h>
+#include <naxsi_macros.h>
 #include <naxsi_net.h>
-
-static int
-naxsi_unescape_uri(u_char** dst, u_char** src, size_t size, ngx_uint_t type);
 
 char*
 strnchr(const char* s, int c, int len)
@@ -86,32 +84,6 @@ naxsi_escape_nullbytes(ngx_str_t* str)
     }
   }
   return nullbytes;
-}
-
-/*
-   unescape routine returns a sum of :
- - number of nullbytes present
- - number of invalid url-encoded characters
-*/
-int
-naxsi_unescape(ngx_str_t* str)
-{
-  u_char *dst, *src;
-  u_int   nullbytes = 0, bad = 0, i;
-
-  dst = str->data;
-  src = str->data;
-
-  bad      = naxsi_unescape_uri(&src, &dst, str->len, 0);
-  str->len = src - str->data;
-  // tmp hack fix, avoid %00 & co (null byte) encoding :p
-  for (i = 0; i < str->len; i++) {
-    if (str->data[i] == 0x0) {
-      nullbytes++;
-      str->data[i] = '0';
-    }
-  }
-  return (nullbytes + bad);
 }
 
 /*
@@ -211,6 +183,32 @@ naxsi_unescape_uri(u_char** dst, u_char** src, size_t size, ngx_uint_t type)
   *src = s;
 
   return (bad);
+}
+
+/*
+   unescape routine returns a sum of :
+ - number of nullbytes present
+ - number of invalid url-encoded characters
+*/
+int
+naxsi_unescape(ngx_str_t* str)
+{
+  u_char *dst, *src;
+  u_int   nullbytes = 0, bad = 0, i;
+
+  dst = str->data;
+  src = str->data;
+
+  bad      = naxsi_unescape_uri(&src, &dst, str->len, 0);
+  str->len = src - str->data;
+  // tmp hack fix, avoid %00 & co (null byte) encoding :p
+  for (i = 0; i < str->len; i++) {
+    if (str->data[i] == 0x0) {
+      nullbytes++;
+      str->data[i] = '0';
+    }
+  }
+  return (nullbytes + bad);
 }
 
 /* push rule into disabled rules. */
@@ -913,4 +911,73 @@ nx_check_ids(ngx_int_t match_id, ngx_array_t* wl_ids)
     }
   }
   return (negative == 1);
+}
+
+static const cidr_t _illegal_cidrs_ipv4[] = {
+  /* 0.0.0.0/8 */
+  c_cidr4(0xFF000000u, 0u),
+  /* 255.255.255.255/32 */
+  c_cidr4(U32_MAX, U32_MAX),
+};
+
+static const cidr_t _illegal_cidrs_ipv6[] = {
+  /* 0000:0000:0000:0000:0000:0000:0000:0000/128 */
+  c_cidr6(U64_MAX, U64_MAX, 0, 0),
+  /* ff00:0000:0000:0000:0000:0000:0000:0000/8 */
+  c_cidr6(0xFF00000000000000ull, 0, 0xFF00000000000000ull, 0),
+};
+
+/*
+** Checks if the host name is illegal
+** Returns 1 if the ip is illegal
+*/
+int
+naxsi_is_illegal_host_name(const ngx_str_t* host_name)
+{
+  if (host_name->len < 1) {
+    return (0);
+  }
+
+  const size_t plen = host_name->len;
+  const char*  ptr  = (const char*)host_name->data;
+
+  if (!isalnum(ptr[0])) {
+    // RFC says host must start with a num or letter
+    return (1);
+  }
+
+  for (size_t i = 1; i < plen; ++i) {
+    if (!isalnum(ptr[i]) && ptr[i] != '-' && ptr[i] != '.' && ptr[i] != ':') {
+      // RFC only allows letters, numbers, dashes, dots and colon in the Host header
+      return (1);
+    }
+  }
+
+  // check if the host name is an ip and if it is in the reserved cidrs
+  ip_t ip;
+  if (!naxsi_parse_ip(host_name, &ip, NULL)) {
+    // ignore if is not an ip.
+    return (0);
+  }
+
+  const cidr_t* i_cidrs = NULL;
+  size_t        n_cidrs = 0;
+
+  if (ip.version == IPv4) {
+    i_cidrs = _illegal_cidrs_ipv4;
+    n_cidrs = array_size(_illegal_cidrs_ipv4);
+  } else {
+    i_cidrs = _illegal_cidrs_ipv6;
+    n_cidrs = array_size(_illegal_cidrs_ipv6);
+  }
+
+  // must check if the ip against illegal ip ranges
+  for (size_t i = 0; i < n_cidrs; ++i) {
+    const cidr_t* cidr = &i_cidrs[i];
+    if (naxsi_is_in_subnet(cidr, &ip)) {
+      return (1);
+    }
+  }
+
+  return (0);
 }

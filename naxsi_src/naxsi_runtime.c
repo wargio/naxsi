@@ -22,7 +22,8 @@ ngx_http_rule_t nx_int__weird_request = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -32,7 +33,8 @@ ngx_http_rule_t nx_int__big_request = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -42,7 +44,8 @@ ngx_http_rule_t nx_int__uncommon_hex_encoding = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -52,7 +55,8 @@ ngx_http_rule_t nx_int__uncommon_content_type = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -62,7 +66,8 @@ ngx_http_rule_t nx_int__uncommon_url = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -72,7 +77,8 @@ ngx_http_rule_t nx_int__uncommon_post_format = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -82,7 +88,8 @@ ngx_http_rule_t nx_int__uncommon_post_boundary = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -92,7 +99,8 @@ ngx_http_rule_t nx_int__empty_post_body = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,          /*drop*/ 0, /*log*/ 0,
+  /*block*/ 1,        /*allow*/ 0,
+  /*drop*/ 0,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -105,7 +113,8 @@ ngx_http_rule_t nx_int__no_rules = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,          /*drop*/ 1, /*log*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -115,7 +124,19 @@ ngx_http_rule_t nx_int__bad_utf8 = {
   /*log_msg*/ NULL,   /*score*/ 0,
   /*sscores*/ NULL,
   /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,          /*drop*/ 1, /*log*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
+  /*br ptrs*/ NULL
+};
+
+ngx_http_rule_t nx_int__illegal_host_header = {
+  /*type*/ 0,         /*whitelist flag*/ 0,
+  /*wl_id ptr*/ NULL, /*rule_id*/ 21,
+  /*log_msg*/ NULL,   /*score*/ 0,
+  /*sscores*/ NULL,
+  /*sc_block*/ 0,     /*sc_allow*/ 0,
+  /*block*/ 0,        /*allow*/ 0,
+  /*drop*/ 1,         /*log*/ 0,
   /*br ptrs*/ NULL
 };
 
@@ -508,20 +529,14 @@ nx_find_wl_in_hash(ngx_http_request_t*        req,
 }
 
 int
-nx_can_ignore_ip(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
+naxsi_can_ignore_ip(const ngx_str_t* ipstr, ngx_http_naxsi_loc_conf_t* cf)
 {
   if (!cf->ignore_ips || cf->ignore_ips_ha.keys.nelts < 1) {
     return 0;
   }
-  char ip_str[INET6_ADDRSTRLEN] = { 0 };
-  if (strchr((const char*)mstr->data, ':') != NULL) {
-    if (!parse_ipv6((const char*)mstr->data, NULL, ip_str)) {
-      return 0;
-    }
-  } else {
-    if (!parse_ipv4((const char*)mstr->data, NULL, ip_str)) {
-      return 0;
-    }
+  char ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
+  if (!naxsi_parse_ip(ipstr, NULL, ip_str)) {
+    return 0;
   }
 
   ngx_str_t  scratch = { .data = (unsigned char*)ip_str, .len = strlen(ip_str) };
@@ -530,27 +545,20 @@ nx_can_ignore_ip(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
 }
 
 int
-nx_can_ignore_cidr(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
+naxsi_can_ignore_cidr(const ngx_str_t* ipstr, ngx_http_naxsi_loc_conf_t* cf)
 {
   if (!cf->ignore_cidrs) {
     return 0;
   }
-  ngx_uint_t  i;
-  ip_t        ip;
-  const char* ipstr   = (const char*)mstr->data;
-  int         is_ipv6 = strchr(ipstr, ':') != NULL;
-  if (is_ipv6) {
-    if (!parse_ipv6(ipstr, &ip, NULL)) {
-      return 0;
-    }
-  } else {
-    if (!parse_ipv4(ipstr, &ip, NULL)) {
-      return 0;
-    }
+  ngx_uint_t i;
+  ip_t       ip = { 0 };
+  if (!naxsi_parse_ip(ipstr, &ip, NULL)) {
+    return 0;
   }
+
   for (i = 0; i < cf->ignore_cidrs->nelts; i++) {
     cidr_t* cidr = &((cidr_t*)cf->ignore_cidrs->elts)[i];
-    if (is_in_subnet(cidr, &ip, is_ipv6)) {
+    if (naxsi_is_in_subnet(cidr, &ip)) {
       return 1;
     }
   }
@@ -1084,7 +1092,7 @@ ngx_http_append_log(ngx_http_request_t* r, ngx_array_t* ostr, ngx_str_t* fragmen
   */
 #ifndef _WIN32
   while ((seed = random() % 1000) == prev_seed)
-#else // _WIN32
+#else  // _WIN32
   while ((seed = rand() % 1000) == prev_seed)
 #endif // !_WIN32
     ;
@@ -2889,12 +2897,19 @@ ngx_http_naxsi_headers_parse(ngx_http_naxsi_main_conf_t* main_cf,
       ngx_http_apply_rulematch_v_n(
         &nx_int__uncommon_hex_encoding, ctx, r, &h[i].key, &h[i].value, HEADERS, 1, 0);
     }
-    if (cf->header_rules)
+    if (cf->header_rules) {
       ngx_http_basestr_ruleset_n(
         r->pool, &lowcase_header, &(h[i].value), cf->header_rules, r, ctx, HEADERS);
-    if (main_cf->header_rules)
+    }
+    if (main_cf->header_rules) {
       ngx_http_basestr_ruleset_n(
         r->pool, &lowcase_header, &(h[i].value), main_cf->header_rules, r, ctx, HEADERS);
+    }
+  }
+
+  if (naxsi_is_illegal_host_name(&r->headers_in.server) > 0) {
+    ngx_http_apply_rulematch_v_n(
+      &nx_int__illegal_host_header, ctx, r, NULL, &r->headers_in.server, HEADERS, 1, 0);
   }
   return;
 }
@@ -2995,16 +3010,8 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                  0,
                  "XX- lookup ignore X-Forwarded-For: %V",
                  h[0]->value);
-        ngx_str_t ip;
-        ip.len  = h[0]->value.len;
-        ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-        if (!ip.data) {
-          naxsi_error_fatal(ctx, r, "failed alloc");
-          return;
-        }
-        memcpy(ip.data, h[0]->value.data, ip.len);
-        ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-        ngx_pfree(r->pool, ip.data);
+        ngx_str_t* ip = &h[0]->value;
+        ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
       }
     } else
 #else
@@ -3017,36 +3024,20 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                0,
                "XX- lookup ignore X-Forwarded-For: %V",
                xff->value);
-      ngx_str_t ip;
-      ip.len  = xff->value.len;
-      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-      if (!ip.data) {
-        naxsi_error_fatal(ctx, r, "failed alloc");
-        return;
-      }
-      memcpy(ip.data, xff->value.data, ip.len);
-      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-      ngx_pfree(r->pool, ip.data);
+      ngx_str_t* ip = &xff->value;
+      ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     } else
 #endif
 #endif
     {
-      ngx_str_t ip;
-      ip.len  = r->connection->addr_text.len;
-      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-      if (!ip.data) {
-        naxsi_error_fatal(ctx, r, "failed alloc");
-        return;
-      }
-      memcpy(ip.data, r->connection->addr_text.data, ip.len);
+      ngx_str_t* ip = &r->connection->addr_text;
       NX_DEBUG(_debug_whitelist_ignore,
                NGX_LOG_DEBUG_HTTP,
                r->connection->log,
                0,
                "XX- lookup ignore client ip: %V",
                ip);
-      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-      ngx_pfree(r->pool, ip.data);
+      ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     }
 
     NX_DEBUG(_debug_custom_score,

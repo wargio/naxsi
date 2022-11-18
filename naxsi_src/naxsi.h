@@ -14,12 +14,13 @@
 #include <ctype.h>
 
 #include <naxsi_const.h>
+#include <naxsi_net.h>
 
 #include "libinjection/src/libinjection_sqli.h"
 #include "libinjection/src/libinjection_xss.h"
 
 #ifdef _WIN32
-#include "naxsi_windows.h"
+#include <naxsi_windows.h>
 #endif // _WIN32
 
 extern ngx_module_t ngx_http_naxsi_module;
@@ -536,7 +537,10 @@ strfaststr(const unsigned char* haystack,
 
 #define sstrfaststr(h, hl, n, nl)                                                                  \
   strfaststr(                                                                                      \
-    (const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), (unsigned int)(nl));
+    (const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), (unsigned int)(nl))
+
+#define cstrfaststr(h, hl, n)                                                                      \
+  strfaststr((const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), strlen(n))
 
 char*
 strnchr(const char* s, int c, int len);
@@ -638,6 +642,9 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
                              naxsi_match_zone_t      zone,
                              ngx_int_t               nb_match,
                              ngx_int_t               target_name);
+
+int
+naxsi_is_illegal_host_name(const ngx_str_t* server_name);
 
 /*
 ** externs for internal rules that requires it.

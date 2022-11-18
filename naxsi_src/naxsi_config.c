@@ -110,7 +110,8 @@ naxsi_score(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 
       return_value_if(NULL == (sc = ngx_array_push(rule->sscores)), NGX_CONF_ERROR);
 
-      return_value_if(NULL == (sc->sc_tag = ngx_pcalloc(r->pool, sizeof(ngx_str_t))), NGX_CONF_ERROR);
+      return_value_if(NULL == (sc->sc_tag = ngx_pcalloc(r->pool, sizeof(ngx_str_t))),
+                      NGX_CONF_ERROR);
 
       return_value_if(NULL == (sc->sc_tag->data = ngx_pcalloc(r->pool, len + 1)), NGX_CONF_ERROR);
 
@@ -247,7 +248,8 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
         return_value_if(!rule->br->custom_locations, NGX_CONF_ERROR);
       }
 
-      return_value_if(NULL == (custom_rule = ngx_array_push(rule->br->custom_locations)), NGX_CONF_ERROR);
+      return_value_if(NULL == (custom_rule = ngx_array_push(rule->br->custom_locations)),
+                      NGX_CONF_ERROR);
 
       memset(custom_rule, 0, sizeof(ngx_http_custom_rule_location_t));
       if (!strncmp(tmp_ptr, MZ_GET_VAR_T, strlen(MZ_GET_VAR_T))) {
@@ -364,7 +366,7 @@ void*
 naxsi_str(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 {
   ngx_str_t* str;
-  ngx_uint_t   i;
+  ngx_uint_t i;
 
   return_value_if(!rule->br, NGX_CONF_ERROR);
 

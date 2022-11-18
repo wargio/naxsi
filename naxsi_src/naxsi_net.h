@@ -20,11 +20,13 @@
 #include <stdint.h>
 #include <string.h>
 
-typedef union
+typedef enum
 {
-  uint64_t v6[2];
-  uint32_t v4;
-} ip_t;
+  CIDR_OK = 0,
+  CIDR_ERROR_MISSING_MASK,
+  CIDR_ERROR_INVALID_IP_NET,
+  CIDR_ERROR_INVALID_CIDR_MASK,
+} cidr_error_t;
 
 typedef enum
 {
@@ -34,17 +36,45 @@ typedef enum
 
 typedef struct
 {
+  union
+  {
+    uint64_t v6[2];
+    uint32_t v4;
+  } u;
   uint32_t version;
-  ip_t     mask;
-  ip_t     subnet;
+} ip_t;
+
+#define c_ipv4(addr4)                                                                              \
+  {                                                                                                \
+    .u.v4 = addr4, .version = IPv4                                                                 \
+  }
+#define c_ipv6(addr6hi, addr6lo)                                                                   \
+  {                                                                                                \
+    .u.v6 = { addr6hi, addr6lo }, .version = IPv6                                                  \
+  }
+
+typedef struct
+{
+  ip_t mask;
+  ip_t subnet;
 } cidr_t;
 
-int
-parse_ipv6(const char* addr, ip_t* ip, char* ip_str);
-int
-parse_ipv4(const char* addr, ip_t* ip, char* ip_str);
+#define c_cidr4(m, s)                                                                              \
+  {                                                                                                \
+    .mask = c_ipv4(m), .subnet = c_ipv4(s)                                                         \
+  }
+#define c_cidr6(mhi, mlo, shi, slo)                                                                \
+  {                                                                                                \
+    .mask = c_ipv6(mhi, mlo), .subnet = c_ipv6(shi, slo)                                           \
+  }
 
 int
-is_in_subnet(const cidr_t* cidr, const ip_t* ip, int is_ipv6);
+naxsi_parse_ip(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str);
+
+int /*cidr_error_t*/
+naxsi_parse_cidr(const ngx_str_t* nx_cidr, cidr_t* cidr);
+
+int
+naxsi_is_in_subnet(const cidr_t* cidr, const ip_t* ip);
 
 #endif /* __NAXSI_NET_H__ */

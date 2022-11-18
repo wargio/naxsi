@@ -163,4 +163,54 @@ location /RequestDenied {
 GET /foobar
 --- error_code: 200
 
+=== TEST 1.6: IgnoreCIDR request with X-Forwarded-For allow (ipv6)
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR "2001:4860:4860::/112";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 2001:4860:4860::8888
+--- request
+GET /?a=<>
+--- error_code: 200
 
+=== TEST 1.7: Verify IgnoreCIDR 2001:4860:4860::8888/128 is converted to IgnoreIP
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR "2001:4860:4860::8888/128";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 2001:4860:4860::8888
+--- request
+GET /?a=<>
+--- error_code: 200
