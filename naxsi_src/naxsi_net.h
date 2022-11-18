@@ -20,11 +20,13 @@
 #include <stdint.h>
 #include <string.h>
 
-typedef union
+typedef enum
 {
-  uint64_t v6[2];
-  uint32_t v4;
-} ip_t;
+  CIDR_OK = 0,
+  CIDR_ERROR_MISSING_MASK,
+  CIDR_ERROR_INVALID_IP_NET,
+  CIDR_ERROR_INVALID_CIDR_MASK,
+} cidr_error_t;
 
 typedef enum
 {
@@ -34,17 +36,27 @@ typedef enum
 
 typedef struct
 {
+  union
+  {
+    uint64_t v6[2];
+    uint32_t v4;
+  };
   uint32_t version;
-  ip_t     mask;
-  ip_t     subnet;
+} ip_t;
+
+typedef struct
+{
+  ip_t mask;
+  ip_t subnet;
 } cidr_t;
 
 int
-parse_ipv6(const char* addr, ip_t* ip, char* ip_str);
-int
-parse_ipv4(const char* addr, ip_t* ip, char* ip_str);
+naxsi_parse_ip(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str);
+
+int /*cidr_error_t*/
+naxsi_parse_cidr(const ngx_str_t* nx_cidr, cidr_t* cidr);
 
 int
-is_in_subnet(const cidr_t* cidr, const ip_t* ip, int is_ipv6);
+naxsi_is_in_subnet(const cidr_t* cidr, const ip_t* ip);
 
 #endif /* __NAXSI_NET_H__ */

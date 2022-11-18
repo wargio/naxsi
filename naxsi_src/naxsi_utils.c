@@ -6,9 +6,6 @@
 #include <naxsi.h>
 #include <naxsi_net.h>
 
-static int
-naxsi_unescape_uri(u_char** dst, u_char** src, size_t size, ngx_uint_t type);
-
 char*
 strnchr(const char* s, int c, int len)
 {
@@ -86,32 +83,6 @@ naxsi_escape_nullbytes(ngx_str_t* str)
     }
   }
   return nullbytes;
-}
-
-/*
-   unescape routine returns a sum of :
- - number of nullbytes present
- - number of invalid url-encoded characters
-*/
-int
-naxsi_unescape(ngx_str_t* str)
-{
-  u_char *dst, *src;
-  u_int   nullbytes = 0, bad = 0, i;
-
-  dst = str->data;
-  src = str->data;
-
-  bad      = naxsi_unescape_uri(&src, &dst, str->len, 0);
-  str->len = src - str->data;
-  // tmp hack fix, avoid %00 & co (null byte) encoding :p
-  for (i = 0; i < str->len; i++) {
-    if (str->data[i] == 0x0) {
-      nullbytes++;
-      str->data[i] = '0';
-    }
-  }
-  return (nullbytes + bad);
 }
 
 /*
@@ -211,6 +182,32 @@ naxsi_unescape_uri(u_char** dst, u_char** src, size_t size, ngx_uint_t type)
   *src = s;
 
   return (bad);
+}
+
+/*
+   unescape routine returns a sum of :
+ - number of nullbytes present
+ - number of invalid url-encoded characters
+*/
+int
+naxsi_unescape(ngx_str_t* str)
+{
+  u_char *dst, *src;
+  u_int   nullbytes = 0, bad = 0, i;
+
+  dst = str->data;
+  src = str->data;
+
+  bad      = naxsi_unescape_uri(&src, &dst, str->len, 0);
+  str->len = src - str->data;
+  // tmp hack fix, avoid %00 & co (null byte) encoding :p
+  for (i = 0; i < str->len; i++) {
+    if (str->data[i] == 0x0) {
+      nullbytes++;
+      str->data[i] = '0';
+    }
+  }
+  return (nullbytes + bad);
 }
 
 /* push rule into disabled rules. */

@@ -508,20 +508,14 @@ nx_find_wl_in_hash(ngx_http_request_t*        req,
 }
 
 int
-nx_can_ignore_ip(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
+naxsi_can_ignore_ip(const ngx_str_t* ipstr, ngx_http_naxsi_loc_conf_t* cf)
 {
   if (!cf->ignore_ips || cf->ignore_ips_ha.keys.nelts < 1) {
     return 0;
   }
-  char ip_str[INET6_ADDRSTRLEN] = { 0 };
-  if (strchr((const char*)mstr->data, ':') != NULL) {
-    if (!parse_ipv6((const char*)mstr->data, NULL, ip_str)) {
-      return 0;
-    }
-  } else {
-    if (!parse_ipv4((const char*)mstr->data, NULL, ip_str)) {
-      return 0;
-    }
+  char ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
+  if (!naxsi_parse_ip(ipstr, NULL, ip_str)) {
+    return 0;
   }
 
   ngx_str_t  scratch = { .data = (unsigned char*)ip_str, .len = strlen(ip_str) };
@@ -530,27 +524,20 @@ nx_can_ignore_ip(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
 }
 
 int
-nx_can_ignore_cidr(const ngx_str_t* mstr, ngx_http_naxsi_loc_conf_t* cf)
+naxsi_can_ignore_cidr(const ngx_str_t* ipstr, ngx_http_naxsi_loc_conf_t* cf)
 {
   if (!cf->ignore_cidrs) {
     return 0;
   }
-  ngx_uint_t  i;
-  ip_t        ip;
-  const char* ipstr   = (const char*)mstr->data;
-  int         is_ipv6 = strchr(ipstr, ':') != NULL;
-  if (is_ipv6) {
-    if (!parse_ipv6(ipstr, &ip, NULL)) {
-      return 0;
-    }
-  } else {
-    if (!parse_ipv4(ipstr, &ip, NULL)) {
-      return 0;
-    }
+  ngx_uint_t i;
+  ip_t       ip = { 0 };
+  if (!naxsi_parse_ip(ipstr, &ip, NULL)) {
+    return 0;
   }
+
   for (i = 0; i < cf->ignore_cidrs->nelts; i++) {
     cidr_t* cidr = &((cidr_t*)cf->ignore_cidrs->elts)[i];
-    if (is_in_subnet(cidr, &ip, is_ipv6)) {
+    if (naxsi_is_in_subnet(cidr, &ip)) {
       return 1;
     }
   }
@@ -1084,7 +1071,7 @@ ngx_http_append_log(ngx_http_request_t* r, ngx_array_t* ostr, ngx_str_t* fragmen
   */
 #ifndef _WIN32
   while ((seed = random() % 1000) == prev_seed)
-#else // _WIN32
+#else  // _WIN32
   while ((seed = rand() % 1000) == prev_seed)
 #endif // !_WIN32
     ;
@@ -2995,16 +2982,8 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                  0,
                  "XX- lookup ignore X-Forwarded-For: %V",
                  h[0]->value);
-        ngx_str_t ip;
-        ip.len  = h[0]->value.len;
-        ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-        if (!ip.data) {
-          naxsi_error_fatal(ctx, r, "failed alloc");
-          return;
-        }
-        memcpy(ip.data, h[0]->value.data, ip.len);
-        ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-        ngx_pfree(r->pool, ip.data);
+        ngx_str_t* ip = &h[0]->value;
+        ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
       }
     } else
 #else
@@ -3017,36 +2996,20 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                0,
                "XX- lookup ignore X-Forwarded-For: %V",
                xff->value);
-      ngx_str_t ip;
-      ip.len  = xff->value.len;
-      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-      if (!ip.data) {
-        naxsi_error_fatal(ctx, r, "failed alloc");
-        return;
-      }
-      memcpy(ip.data, xff->value.data, ip.len);
-      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-      ngx_pfree(r->pool, ip.data);
+      ngx_str_t* ip = &xff->value;
+      ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     } else
 #endif
 #endif
     {
-      ngx_str_t ip;
-      ip.len  = r->connection->addr_text.len;
-      ip.data = ngx_pcalloc(r->pool, ip.len + 1);
-      if (!ip.data) {
-        naxsi_error_fatal(ctx, r, "failed alloc");
-        return;
-      }
-      memcpy(ip.data, r->connection->addr_text.data, ip.len);
+      ngx_str_t* ip = &r->connection->addr_text;
       NX_DEBUG(_debug_whitelist_ignore,
                NGX_LOG_DEBUG_HTTP,
                r->connection->log,
                0,
                "XX- lookup ignore client ip: %V",
                ip);
-      ignore = nx_can_ignore_ip(&ip, cf) || nx_can_ignore_cidr(&ip, cf);
-      ngx_pfree(r->pool, ip.data);
+      ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     }
 
     NX_DEBUG(_debug_custom_score,

@@ -536,7 +536,10 @@ strfaststr(const unsigned char* haystack,
 
 #define sstrfaststr(h, hl, n, nl)                                                                  \
   strfaststr(                                                                                      \
-    (const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), (unsigned int)(nl));
+    (const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), (unsigned int)(nl))
+
+#define cstrfaststr(h, hl, n)                                                                      \
+  strfaststr((const unsigned char*)(h), (unsigned int)(hl), (const unsigned char*)(n), strlen(n))
 
 char*
 strnchr(const char* s, int c, int len);
