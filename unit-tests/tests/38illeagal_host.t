@@ -36,7 +36,7 @@ Host: 0.0.0.0
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
 
 === TEST: Illegal Host (0.1.0.6)
 --- main_config
@@ -63,7 +63,7 @@ Host: 0.1.0.6
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
 
 === TEST: Illegal Host (255.255.255.255)
 --- main_config
@@ -90,7 +90,7 @@ Host: 255.255.255.255
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
 
 === TEST: Illegal Host (--dddd)
 --- main_config
@@ -117,7 +117,7 @@ Host: --dddd
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
 
 === TEST: Illegal Host ([ipaddr])
 --- main_config
@@ -144,7 +144,7 @@ Host: [ipaddr]
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=21&var_name0=, client: 127\.0\.0\.1,@
 
 === TEST: Legal Host (127.0.0.1)
 --- main_config

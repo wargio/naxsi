@@ -124,6 +124,9 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data);
 
+static ngx_int_t
+ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data);
+
 /* command handled by the module */
 static ngx_command_t ngx_http_naxsi_commands[] = {
   /* BasicRule (in main) */
@@ -388,6 +391,13 @@ static ngx_http_variable_t ngx_http_naxsi_variables[] = {
     0,                                     /* Data */
     NGX_HTTP_VAR_NOCACHEABLE,              /* Flags */
     0 },                                   /* Index */
+
+  { ngx_string("naxsi_request_id"), /* Name */
+    NULL,                           /* Set handler */
+    ngx_http_naxsi_request_id,      /* Get handler */
+    0,                              /* Data */
+    NGX_HTTP_VAR_NOCACHEABLE,       /* Flags */
+    0 },                            /* Index */
 
   { ngx_null_string, NULL, NULL, 0, 0, 0 } /* Sentinel */
 };
@@ -1282,7 +1292,6 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     ctx = ngx_pcalloc(r->pool, sizeof(ngx_http_request_ctx_t));
     if (ctx == NULL)
       return NGX_ERROR;
-
     cln = ngx_pool_cleanup_add(r->pool, 0);
     if (cln == NULL) {
       return NGX_ERROR;
@@ -1291,6 +1300,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     cln->handler = ngx_http_module_cleanup_handler;
     cln->data    = ctx;
 
+    naxsi_generate_request_id(ctx->request_id);
     ngx_http_set_ctx(r, ctx, ngx_http_naxsi_module);
     NX_DEBUG(_debug_modifier,
              NGX_LOG_DEBUG_HTTP,
@@ -2024,5 +2034,31 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
+  return NGX_OK;
+}
+
+static ngx_int_t
+ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data)
+{
+  u_char*                 id  = NULL;
+  const size_t            len = NAXSI_REQUEST_ID_SIZE << 1;
+  ngx_http_request_ctx_t* ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
+
+  if (ctx == NULL) {
+    return NGX_ERROR;
+  }
+
+  id = ngx_pnalloc(r->pool, len);
+  if (id == NULL) {
+    return NGX_ERROR;
+  }
+
+  v->valid        = 1;
+  v->no_cacheable = 0;
+  v->not_found    = 0;
+  v->len          = len;
+  v->data         = id;
+
+  ngx_hex_dump(id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
   return NGX_OK;
 }

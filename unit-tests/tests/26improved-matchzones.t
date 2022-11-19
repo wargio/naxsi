@@ -609,7 +609,7 @@ location /RequestDenied {
 GET /?fooxxxad=foobar
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=ARGS&id0=42424242&var_name0=fooxxxad, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=ARGS&id0=42424242&var_name0=fooxxxad, client: 127\.0\.0\.1,@
 
 
 === TEST 9.1: ANY in MainRule (ARGS|NAME)
@@ -637,7 +637,7 @@ location /RequestDenied {
 GET /?foobar=fooxxxad
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=ARGS|NAME&id0=42424242&var_name0=foobar, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=ARGS|NAME&id0=42424242&var_name0=foobar, client: 127\.0\.0\.1,@
 
 
 === TEST 9.2: ANY in MainRule (BODY)
@@ -679,7 +679,7 @@ aaaa=foobar\r
 "
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=BODY&id0=42424242&var_name0=aaaa, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=BODY&id0=42424242&var_name0=aaaa, client: 127\.0\.0\.1,@
 
 
 === TEST 9.2: ANY in MainRule (BODY|NAME)
@@ -721,7 +721,7 @@ foobar=aaaa\r
 "
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=BODY|NAME&id0=42424242&var_name0=foobar, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=BODY|NAME&id0=42424242&var_name0=foobar, client: 127\.0\.0\.1,@
 
 
 === TEST 9.3: ANY in MainRule (HEADERS)
@@ -752,7 +752,7 @@ SomeWeirdHeader: foobar32
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS&id0=42424242&var_name0=someweirdheader, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS&id0=42424242&var_name0=someweirdheader, client: 127\.0\.0\.1,@
 
 
 === TEST 9.4: ANY in MainRule (HEADERS|NAME)
@@ -783,7 +783,7 @@ FooBar: SomeValue234
 GET /
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=HEADERS|NAME&id0=42424242&var_name0=FooBar, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=HEADERS|NAME&id0=42424242&var_name0=FooBar, client: 127\.0\.0\.1,@
 
 
 === TEST 9.5: ANY in MainRule (URL)
@@ -812,7 +812,7 @@ location /RequestDenied {
 GET /foobar32
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=URL&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=URL&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
 
 
 === TEST 9.6: ANY in MainRule (RAW_BODY)
@@ -855,7 +855,7 @@ This is an example of post body with foobar in it. very simple, but works.\r
 "
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=BODY&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=BODY&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
 
 
 === TEST 9.6: ANY in MainRule (FILE_EXT)
@@ -909,7 +909,7 @@ Content-Type: application/octet-stream\r
 "
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=FILE_EXT&id0=42424242&var_name0=datafile, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=FILE_EXT&id0=42424242&var_name0=datafile, client: 127\.0\.0\.1,@
 
 
 === TEST 9.7: ANY in whitelist (URL)
@@ -970,7 +970,7 @@ location /RequestDenied {
 GET /foobar32
 --- error_code: 412
 --- error_log eval
-qr@config=drop&zone0=URL&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=URL&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
 
 
 === TEST 9.9: ANY in whitelist but with URL filter ALLOW (RAW_BODY)
