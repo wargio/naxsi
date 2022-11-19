@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Check debug logs are disabled
       run: /bin/bash .scripts/ci-debug-check.sh
 
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Reuse Compliance Check
       uses: fsfe/reuse-action@v1.1
 
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install wget, software-properties-common, lsb-release (dependencies of LLVM install script)
       run: sudo apt --assume-yes install wget software-properties-common lsb-release
     - name: Install automatic LLVM 13
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install python3
       run: sudo apt --assume-yes install python3
     - name: Format check rules
