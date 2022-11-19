@@ -1119,8 +1119,7 @@ ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
   u_int                     sz_left, sub, offset = 0, i;
   ngx_str_t *               fragment, *tmp_uri;
   ngx_http_special_score_t* sc;
-  const char*               fmt_base   = "ip=%.*s&server=%.*s&uri=%.*s&vers=%.*s&total_"
-                                         "processed=%zu&total_blocked=%zu&config=%.*s";
+  const char*               fmt_base   = "ip=%.*s&server=%.*s&uri=%.*s&config=%.*s&rid=";
   const char*               fmt_score  = "&cscore%d=%.*s&score%d=%zu";
   const char*               fmt_rm     = "&zone%d=%s&id%d=%d&var_name%d=%.*s";
   const char*               fmt_config = "";
@@ -1135,11 +1134,8 @@ ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
     fmt_config = "ignore";
   }
 
-  ngx_http_naxsi_loc_conf_t* cf;
-  ngx_http_matched_rule_t*   mr;
-  char                       tmp_zone[30];
-
-  cf = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
+  ngx_http_matched_rule_t* mr;
+  char                     tmp_zone[30];
 
   tmp_uri = ngx_pcalloc(r->pool, sizeof(ngx_str_t));
   if (!tmp_uri)
@@ -1155,11 +1151,13 @@ ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
   ngx_escape_uri(tmp_uri->data, r->uri.data, r->uri.len, NGX_ESCAPE_ARGS);
 
   fragment = ngx_array_push(ostr);
-  if (!fragment)
+  if (!fragment) {
     return (NGX_ERROR);
+  }
   fragment->data = ngx_pcalloc(r->pool, MAX_LINE_SIZE + 1);
-  if (!fragment->data)
+  if (!fragment->data) {
     return (NGX_ERROR);
+  }
   sub = offset = 0;
   /* we keep extra space for seed*/
   sz_left = MAX_LINE_SIZE - MAX_SEED_LEN - 1;
@@ -1177,17 +1175,25 @@ ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
                  r->headers_in.server.data,
                  tmp_uri->len,
                  tmp_uri->data,
-                 strlen(NAXSI_VERSION),
-                 NAXSI_VERSION,
-                 cf->request_processed,
-                 cf->request_blocked,
                  strlen(fmt_config),
                  fmt_config);
 
-  if (sub >= sz_left)
+  if (sub >= sz_left) {
     sub = sz_left - 1;
+  }
   sz_left -= sub;
   offset += sub;
+
+  sub = NAXSI_REQUEST_ID_SIZE << 1;
+  if (sz_left > (100 + sub)) {
+    ngx_hex_dump(fragment->data + offset, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+    if (sub >= sz_left) {
+      sub = sz_left - 1;
+    }
+    sz_left -= sub;
+    offset += sub;
+  }
+
   /*
   ** if URI exceeds the MAX_LINE_SIZE, log directly, avoid null deref (#178)
   */
@@ -1223,8 +1229,9 @@ ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
                      sc[i].sc_tag->data,
                      i,
                      sc[i].sc_score);
-      if (sub >= sz_left)
+      if (sub >= sz_left) {
         sub = sz_left - 1;
+      }
       offset += sub;
       sz_left -= sub;
     }

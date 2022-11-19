@@ -447,6 +447,7 @@ typedef struct
   /* did libinjection sql/xss matched ? */
   ngx_flag_t libinjection_sql : 1;
   ngx_flag_t libinjection_xss : 1;
+  u_char     request_id[NAXSI_REQUEST_ID_SIZE];
 } ngx_http_request_ctx_t;
 
 /*
@@ -645,6 +646,9 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
 
 int
 naxsi_is_illegal_host_name(const ngx_str_t* server_name);
+
+void
+naxsi_generate_request_id(u_char* bytes);
 
 /*
 ** externs for internal rules that requires it.

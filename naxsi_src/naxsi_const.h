@@ -6,6 +6,8 @@
 
 #define NAXSI_VERSION "1.4"
 
+#define NAXSI_REQUEST_ID_SIZE 16
+
 /**
  * All possible keywords to be defined in nginx.cfg to setup naxsi
  */

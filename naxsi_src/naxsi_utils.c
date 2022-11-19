@@ -981,3 +981,21 @@ naxsi_is_illegal_host_name(const ngx_str_t* host_name)
 
   return (0);
 }
+
+/*
+** Creates a random request id and writes it into bytes
+*/
+void
+naxsi_generate_request_id(u_char* bytes)
+{
+#if (NGX_OPENSSL)
+  if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) == 1) {
+    return;
+  }
+#endif
+  uint32_t*    bytes32 = (uint32_t*)bytes;
+  const size_t len     = (NAXSI_REQUEST_ID_SIZE / sizeof(uint32_t));
+  for (size_t i = 0; i < len; i++) {
+    bytes32[i] = (uint32_t)ngx_random();
+  }
+}
