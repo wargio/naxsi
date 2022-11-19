@@ -848,14 +848,14 @@ Accept-Language: en-us,en;q=0.5\r
 Accept-Encoding: gzip, deflate\r
 Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r
 Referer: http://127.0.0.1/\r
-Content-Type: plain/text\r
-Content-Length: 74\r
+Content-Type: application/x-www-form-urlencoded\r
+Content-Length: 81\r
 \r
-This is an example of post body with foobar in it. very simple, but works.\r
+txtName=This+is+an+example+of+post+body+with+foobar+in+it.+very+simple,+but+works\r
 "
 --- error_code: 412
 --- error_log eval
-qr@config=drop&rid=[^&]+&zone0=BODY&id0=42424242&var_name0=, client: 127\.0\.0\.1,@
+qr@config=drop&rid=[^&]+&zone0=BODY&id0=42424242&var_name0=txtName, client: 127\.0\.0\.1,@
 
 
 === TEST 9.6: ANY in MainRule (FILE_EXT)
@@ -980,7 +980,8 @@ eh yo
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
-MainRule "str:foobar" "mz:RAW_BODY" "msg:RAW_BODY matchzone" "s:DROP" id:42424242;
+include $TEST_NGINX_NAXSI_RULES;
+MainRule "str:RANDOMTHINGS" "mz:RAW_BODY" "s:DROP" id:42424242;
 --- config
 location / {
     SecRulesEnabled;
@@ -989,31 +990,53 @@ location / {
     CheckRule "$RFI >= 8" BLOCK;
     CheckRule "$TRAVERSAL >= 4" BLOCK;
     CheckRule "$XSS >= 8" BLOCK;
-    CheckRule "$TEST >= 8" ALLOW;
-    BasicRule wl:19 "mz:URL";
-    BasicRule wl:42424242 "mz:$URL:index|ANY";
-
     root $TEST_NGINX_SERVROOT/html/;
     index index.html index.htm;
+    error_page 405 = $uri;
+    BasicRule wl:11 "mz:$URL:/toto|BODY";
+    BasicRule wl:42424242 "mz:$URL:/toto|ANY";
 }
 location /RequestDenied {
-    return 412;
+         return 412;
+}
+--- more_headers
+Content-Type: RAFARAFA
+--- request eval
+use URI::Escape;
+"POST /toto
+
+RANDOMTHINGS
+"
+--- error_code: 200
+
+
+=== TEST 9.10: ANY in whitelist but with URL filter ALLOW (URL)
+--- user_files
+>>> foobar32
+eh yo
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+MainRule "str:foobar" "mz:URL" "msg:ANY matchzone" "s:DROP" id:42424242;
+--- config
+location / {
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$SQL >= 8" BLOCK;
+	CheckRule "$RFI >= 8" BLOCK;
+	CheckRule "$TRAVERSAL >= 4" BLOCK;
+	CheckRule "$XSS >= 8" BLOCK;
+	CheckRule "$TEST >= 8" ALLOW;
+	BasicRule wl:42424242 "mz:$URL:/foobar32|ANY" "msg:ANY matchzone whitelist";
+
+  	root $TEST_NGINX_SERVROOT/html/;
+	index index.html index.htm;
+}
+location /RequestDenied {
+	return 412;
 }
 
---- raw_request eval
-"POST /toto HTTP/1.1\r
-Host: 127.0.0.1\r
-Connection: Close\r
-User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10\r
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r
-Accept-Language: en-us,en;q=0.5\r
-Accept-Encoding: gzip, deflate\r
-Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r
-Referer: http://127.0.0.1/\r
-Content-Type: plain/text\r
-Content-Length: 74\r
-\r
-This is an example of post body with foobar in it. very simple, but works.\r
-"
---- error_code: 405
+--- request
+GET /foobar32
+--- error_code: 200
 

@@ -1558,8 +1558,8 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     if (ctx->block || ctx->drop) {
       cf->request_blocked++;
       rc = ngx_http_output_forbidden_page(ctx, r);
-      // nothing:      return (NGX_OK);
-      // redirect : return (NGX_HTTP_OK);
+      // nothing:  return (NGX_OK);
+      // redirect: return (NGX_HTTP_OK);
       return rc;
     } else if (ctx->log) {
       rc = ngx_http_output_forbidden_page(ctx, r);

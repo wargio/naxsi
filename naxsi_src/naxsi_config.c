@@ -194,6 +194,7 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
     /* match global zones */
     if (!strncmp(tmp_ptr, "ANY", strlen("ANY"))) {
       return_value_if(has_zone, NGX_CONF_ERROR); // ANY can only be joined with $URL/$URL_X
+      rule->br->any       = 1;
       rule->br->raw_body  = 1;
       rule->br->body      = 1;
       rule->br->body_rule = 1;
