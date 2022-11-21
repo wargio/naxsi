@@ -1040,3 +1040,65 @@ location /RequestDenied {
 GET /foobar32
 --- error_code: 200
 
+
+=== TEST 9.11: Main rules and URL ANY whitelist (subpath)
+--- user_files
+>>> foobar32
+eh yo
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+include $TEST_NGINX_NAXSI_BLOCKING_RULES/*;
+--- config
+location / {
+    include $TEST_NGINX_NAXSI_WHITELISTS_RULES/*;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    CheckRule "$UWA >= 8" BLOCK;
+    BasicRule wl:1000,1011,1013 "mz:$URL:/foobar32|ANY";
+
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+}
+location /RequestDenied {
+    return 412;
+}
+
+--- request
+GET /foobar32?id=)union%27select
+--- error_code: 200
+
+=== TEST 9.12: Main rules and URL ANY whitelist (root)
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+include $TEST_NGINX_NAXSI_BLOCKING_RULES/*;
+--- config
+location / {
+    include $TEST_NGINX_NAXSI_WHITELISTS_RULES/*;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    CheckRule "$UWA >= 8" BLOCK;
+    BasicRule wl:1000,1011,1013 "mz:$URL:/|ANY";
+
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+}
+location /RequestDenied {
+    return 412;
+}
+
+--- request
+GET /?id=)union%27select
+--- error_code: 200
+
