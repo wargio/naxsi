@@ -19,8 +19,9 @@ ngx_http_naxsi_rawbody_parse(ngx_http_request_ctx_t* ctx,
 
   NX_DEBUG(
     _debug_rawbody, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-RAWBODY CALLED len:%d", len);
-  if (len <= 0 || !src)
+  if (len <= 0 || !src) {
     return;
+  }
   cf      = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
   main_cf = ngx_http_get_module_main_conf(r, ngx_http_naxsi_module);
 
