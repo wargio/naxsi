@@ -112,7 +112,8 @@ jobs:
       if: matrix.package == 'deb'
       run: |
         rm -rf naxsi_src/libinjection
-        git submodules update --init
+        git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
+        git -C naxsi_src/libinjection checkout 88f0faa849995ef6aafa32a9da32eaca38a213c8
         git clone --depth=1 https://github.com/wargio/deb-creator.git
         chmod 777 .
         apt-get source nginx
