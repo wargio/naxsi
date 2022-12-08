@@ -987,7 +987,7 @@ naxsi_is_illegal_host_name(const ngx_str_t* host_name)
   }
 
   // check if the host name is an ip and if it is in the reserved cidrs
-  ip_t ip;
+  ip_t ip = ip_zero;
   if (!naxsi_parse_ip(host_name, &ip, NULL)) {
     // ignore if is not an ip.
     return (0);

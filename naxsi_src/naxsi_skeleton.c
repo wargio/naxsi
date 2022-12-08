@@ -858,7 +858,7 @@ ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
       return (NGX_CONF_OK); /* LCOV_EXCL_LINE */
     }
 
-    cidr_t cidr = { 0 };
+    cidr_t cidr = cidr_zero;
     int    err  = naxsi_parse_cidr(&value[1], &cidr);
     switch (err) {
       case CIDR_OK:

@@ -52,6 +52,7 @@ typedef struct
   {                                                                                                \
     .u.v6 = { addr6hi, addr6lo }, .version = IPv6                                                  \
   }
+#define ip_zero c_ipv4(0)
 
 typedef struct
 {
@@ -67,6 +68,7 @@ typedef struct
   {                                                                                                \
     .mask = c_ipv6(mhi, mlo), .subnet = c_ipv6(shi, slo)                                           \
   }
+#define cidr_zero c_cidr4(0, 0)
 
 int
 naxsi_parse_ip(const ngx_str_t* nx_ip, ip_t* ip, char* ip_str);

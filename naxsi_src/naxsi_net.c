@@ -90,7 +90,7 @@ naxsi_parse_cidr(const ngx_str_t* nx_cidr, cidr_t* cidr)
     return (CIDR_ERROR_MISSING_MASK);
   }
 
-  ip_t   ip       = { 0 };
+  ip_t   ip       = ip_zero;
   size_t orig_len = copy.len;
 
   copy.len = smask - (const char*)copy.data;

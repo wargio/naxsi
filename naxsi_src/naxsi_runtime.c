@@ -573,7 +573,7 @@ naxsi_can_ignore_cidr(const ngx_str_t* ipstr, ngx_http_naxsi_loc_conf_t* cf)
     return 0;
   }
   ngx_uint_t i;
-  ip_t       ip = { 0 };
+  ip_t       ip = ip_zero;
   if (!naxsi_parse_ip(ipstr, &ip, NULL)) {
     return 0;
   }
