@@ -16,15 +16,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -65,15 +65,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -117,15 +117,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -166,15 +166,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -215,15 +215,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -265,15 +265,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -314,15 +314,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -363,15 +363,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -412,15 +412,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -439,15 +439,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -488,15 +488,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -537,15 +537,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -566,15 +566,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -595,15 +595,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -627,15 +627,15 @@ include $TEST_NGINX_NAXSI_RULES;
 set $naxsi_extensive_log 1;
 location / {
 	 BasicRule wl:1001,1205;
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -657,15 +657,15 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -687,15 +687,15 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -717,15 +717,15 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -749,15 +749,15 @@ include $TEST_NGINX_NAXSI_RULES;
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -875,15 +875,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -925,15 +925,15 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 include $TEST_NGINX_NAXSI_RULES;
 --- config
 location / {
-         SecRulesEnabled;
-         DeniedUrl "/RequestDenied";
-         CheckRule "$SQL >= 8" BLOCK;
-         CheckRule "$RFI >= 8" BLOCK;
-         CheckRule "$TRAVERSAL >= 4" BLOCK;
-         CheckRule "$XSS >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
-         error_page 405 = $uri;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
 }
 location /RequestDenied {
          return 412;
@@ -967,3 +967,49 @@ use URI::Escape;
 }
 "
 --- error_code: 412
+
+=== JSON18 : Valid JSON With exp numbers
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
+}
+location /RequestDenied {
+         return 412;
+}
+--- more_headers
+Content-Type: application/json
+--- request eval
+use URI::Escape;
+"PATCH /
+{
+    \"integer\": 2345678,
+    \"integer_neg\": -1028,
+    \"dotted\": 4.25564,
+    \"dotted_neg\": -232.2719,
+    \"upper_integer_neg_exp\": -1E10,
+    \"upper_integer_exp\": 1E+6,
+    \"upper_integer_exp_neg\": 1E-6,
+    \"upper_dotted_neg_exp\": -7.3E9,
+    \"upper_dotted_exp\": 2.1E+6,
+    \"upper_dotted_exp_neg\": 3.5E-6,
+    \"lower_integer_neg_exp\": -1e10,
+    \"lower_integer_exp\": 1e+6,
+    \"lower_integer_exp_neg\": 1e-6,
+    \"lower_dotted_neg_exp\": -7.3e9,
+    \"lower_dotted_exp\": 2.1e+6,
+    \"lower_dotted_exp_neg\": 3.5e-6
+}
+"
+--- error_code: 200
