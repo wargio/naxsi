@@ -1065,7 +1065,7 @@ naxsi_log_offending(ngx_http_request_ctx_t* ctx,
   }
 
   ngx_http_naxsi_loc_conf_t* cf;
-  ngx_str_t                  tmp_uri, tmp_val, tmp_name;
+  ngx_str_t                  tmp_uri = { 0 }, tmp_val = { 0 }, tmp_name = { 0 };
   ngx_str_t                  empty                               = ngx_string("");
   u_char                     req_id[NAXSI_REQUEST_ID_STRLEN + 1] = { 0 };
 
