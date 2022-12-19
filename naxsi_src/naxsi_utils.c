@@ -838,6 +838,93 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
   return (NGX_OK);
 }
 
+static const char* json_hex = "0123456789abcdef";
+
+static char*
+naxsi_escape_json_string(char* out, const char* end, const u_char* val, size_t length)
+{
+  size_t max_len = end - out;
+  if (length > max_len) {
+    length = max_len;
+  }
+
+  *out++ = '"';
+  size_t i;
+  for (i = 0; i < length && out < end; i++) {
+    if (val[i] == '\n') {
+      // new line
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = 'n';
+    } else if (val[i] == '\r') {
+      // return carriage
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = 'r';
+    } else if (val[i] == '\\') {
+      // slash
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = '\\';
+    } else if (val[i] == '\t') {
+      // tabulation
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = 't';
+    } else if (val[i] == '"') {
+      // double quote
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = '"';
+    } else if (val[i] == '\f') {
+      // form feed
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = 'f';
+    } else if (val[i] == '\b') {
+      // backspace
+      break_if(out + 2 >= end);
+      *out++ = '\\';
+      *out++ = 'b';
+    } else if (!is_printable(val[i])) {
+      break_if(out + 4 >= end);
+      *out++ = '\\';
+      *out++ = 'u';
+      *out++ = '0';
+      *out++ = '0';
+      *out++ = json_hex[(val[i] >> 4) & 0x0f];
+      *out++ = json_hex[val[i] & 0x0f];
+    } else {
+      *out++ = val[i];
+    }
+  }
+  if (out < end) {
+    *out++ = '"';
+  }
+  return out;
+}
+
+char*
+naxsi_log_as_json_string(char*         out,
+                         const char*   end,
+                         const char*   key,
+                         const u_char* val,
+                         size_t        val_len)
+{
+  int offset = snprintf(out, (end - out), "\"%s\":", key);
+  if (offset < 1) {
+    return out;
+  }
+  return naxsi_escape_json_string(out + offset, end, val, val_len);
+}
+
+char*
+naxsi_log_as_json_number(char* out, const char* end, const char* key, int number)
+{
+  int offset = snprintf(out, (end - out), "\"%s\":%d", key, number);
+  return offset < 1 ? out : (out + offset);
+}
+
 /*
   function used for intensive log if dynamic flag is set.
   Output format :
@@ -847,59 +934,159 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
 static const char* naxsi_match_zones[] = { "HEADERS",  "URL", "ARGS",    "BODY",
                                            "FILE_EXT", "ANY", "UNKNOWN", NULL };
 
-void
-naxsi_log_offending(ngx_str_t*          name,
-                    ngx_str_t*          val,
-                    ngx_http_request_t* req,
-                    ngx_http_rule_t*    rule,
-                    naxsi_match_zone_t  zone,
-                    ngx_int_t           target_name)
+static void
+naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
+                            ngx_http_request_t*     req,
+                            ngx_str_t*              name,
+                            ngx_str_t*              val,
+                            ngx_http_rule_t*        rule,
+                            naxsi_match_zone_t      zone,
+                            ngx_int_t               target_name)
 {
-  ngx_http_naxsi_loc_conf_t* cf;
-  ngx_str_t                  tmp_uri, tmp_val, tmp_name;
-  ngx_str_t                  empty = ngx_string("");
 
-  // encode uri
-  tmp_uri.len = req->uri.len +
-                (2 * ngx_escape_uri(NULL, req->uri.data, req->uri.len, NGX_ESCAPE_URI_COMPONENT));
-  tmp_uri.data = ngx_pcalloc(req->pool, tmp_uri.len + 1);
-  if (tmp_uri.data == NULL) {
-    return;
+  ngx_str_t*                 str = NULL;
+  ngx_http_naxsi_loc_conf_t* cf  = NULL;
+
+  char   json[NAXSI_LOG_JSON_STRLEN];
+  char * out = json + 1, *end = (json + sizeof(json)) - 2;
+  u_char req_id[NAXSI_REQUEST_ID_STRLEN];
+
+  ngx_hex_dump(req_id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+
+  // json object begin
+  json[0] = '{';
+
+  // ip address
+  str    = &req->connection->addr_text;
+  out    = naxsi_log_as_json_string(out, end, "ip", str->data, str->len);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
   }
-  ngx_escape_uri(tmp_uri.data, req->uri.data, req->uri.len, NGX_ESCAPE_URI_COMPONENT);
-  // encode val
-  if (val->len <= 0) {
-    tmp_val = empty;
-  } else {
-    tmp_val.len =
-      val->len + (2 * ngx_escape_uri(NULL, val->data, val->len, NGX_ESCAPE_URI_COMPONENT));
-    tmp_val.data = ngx_pcalloc(req->pool, tmp_val.len + 1);
-    if (tmp_val.data == NULL) {
-      return;
-    }
-    ngx_escape_uri(tmp_val.data, val->data, val->len, NGX_ESCAPE_URI_COMPONENT);
+
+  // server
+  str    = &req->headers_in.server;
+  out    = naxsi_log_as_json_string(out, end, "server", str->data, str->len);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
   }
-  // encode name
-  if (name->len <= 0) {
-    tmp_name = empty;
+
+  // request id
+  out    = naxsi_log_as_json_string(out, end, "rid", req_id, NAXSI_REQUEST_ID_STRLEN - 1);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
+  }
+
+  // uri
+  str    = &req->uri;
+  out    = naxsi_log_as_json_string(out, end, "uri", str->data, str->len);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
+  }
+
+  // rule id
+  out    = naxsi_log_as_json_number(out, end, "id", rule->rule_id);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
+  }
+
+  // zone
+  int offset = snprintf(
+    out, (end - out), "\"zone\":\"%s%s\",", naxsi_match_zones[zone], target_name ? "|NAME" : "");
+  if (offset < 1 || (out + offset) >= end) {
+    goto log_json;
+  }
+  out += offset;
+
+  // var_name
+  out    = naxsi_log_as_json_string(out, end, "var_name", name->data, name->len);
+  *out++ = ',';
+  if (out >= end) {
+    goto log_json;
+  }
+
+  // content
+  out = naxsi_log_as_json_string(out, end, "content", val->data, val->len);
+  if (out < end) {
+    // json object end
+    *out++ = '}';
+  }
+
+log_json:
+  // always ensure last byte is zero
+  if (out < end) {
+    *out = 0;
   } else {
-    tmp_name.len =
-      name->len + (2 * ngx_escape_uri(NULL, name->data, name->len, NGX_ESCAPE_URI_COMPONENT));
-    tmp_name.data = ngx_pcalloc(req->pool, tmp_name.len + 1);
-    if (tmp_name.data == NULL) {
-      return;
-    }
-    ngx_escape_uri(tmp_name.data, name->data, name->len, NGX_ESCAPE_URI_COMPONENT);
+    *end = 0;
   }
 
   cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
+  ngx_log_error(NGX_LOG_ERR, cf->log ? cf->log : req->connection->log, 0, "%s", json);
+}
+
+static int
+naxsi_log_escape_string(ngx_http_request_t* req,
+                        ngx_str_t*          escaped,
+                        ngx_str_t*          string,
+                        ngx_str_t*          empty)
+{
+  if (string->len < 1) {
+    *escaped = *empty;
+    return 1;
+  }
+
+  escaped->len =
+    string->len + (2 * ngx_escape_uri(NULL, string->data, string->len, NGX_ESCAPE_URI_COMPONENT));
+  escaped->data = ngx_pcalloc(req->pool, escaped->len + 1);
+  if (escaped->data == NULL) {
+    return 0;
+  }
+  ngx_escape_uri(escaped->data, string->data, string->len, NGX_ESCAPE_URI_COMPONENT);
+  return 1;
+}
+
+void
+naxsi_log_offending(ngx_http_request_ctx_t* ctx,
+                    ngx_http_request_t*     req,
+                    ngx_str_t*              name,
+                    ngx_str_t*              val,
+                    ngx_http_rule_t*        rule,
+                    naxsi_match_zone_t      zone,
+                    ngx_int_t               target_name)
+{
+
+  if (ctx->json_log) {
+    naxsi_log_offending_as_json(ctx, req, name, val, rule, zone, target_name);
+    return;
+  }
+
+  ngx_http_naxsi_loc_conf_t* cf;
+  ngx_str_t                  tmp_uri, tmp_val, tmp_name;
+  ngx_str_t                  empty                               = ngx_string("");
+  u_char                     req_id[NAXSI_REQUEST_ID_STRLEN + 1] = { 0 };
+
+  ngx_hex_dump(req_id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+
+  cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
+
+  if (naxsi_log_escape_string(req, &tmp_uri, &req->uri, &empty) == 0 ||
+      naxsi_log_escape_string(req, &tmp_val, val, &empty) == 0 ||
+      naxsi_log_escape_string(req, &tmp_name, name, &empty) == 0) {
+    goto end;
+  }
+
   ngx_log_error(NGX_LOG_ERR,
                 cf->log ? cf->log : req->connection->log,
                 0,
                 "NAXSI_EXLOG: "
-                "ip=%V&server=%V&uri=%V&id=%d&zone=%s%s&var_name=%V&content=%V",
+                "ip=%V&server=%V&rid=%s&uri=%V&id=%d&zone=%s%s&var_name=%V&content=%V",
                 &(req->connection->addr_text),
                 &(req->headers_in.server),
+                (char*)req_id,
                 &(tmp_uri),
                 rule->rule_id,
                 naxsi_match_zones[zone],
@@ -907,6 +1094,7 @@ naxsi_log_offending(ngx_str_t*          name,
                 &(tmp_name),
                 &(tmp_val));
 
+end:
   if (tmp_val.len > 0) {
     ngx_pfree(req->pool, tmp_val.data);
   }

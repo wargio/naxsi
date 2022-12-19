@@ -20,12 +20,12 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 MainRule "str:," "msg:, in stuff" "mz:BODY|URL|ARGS|$HEADERS_VAR:Cookie" "s:$SQL:4" id:1015;
 --- config
 location / {
-         SecRulesEnabled;
-	 LearningMode;
-         DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+    SecRulesEnabled;
+    LearningMode;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
 }
 location /RequestDenied {
          return 412;
@@ -92,12 +92,12 @@ MainRule "str:," "msg:, in stuff" "mz:BODY|URL|ARGS|$HEADERS_VAR:Cookie" "s:$SQL
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-	 LearningMode;
-         DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+    SecRulesEnabled;
+    LearningMode;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
 }
 location /RequestDenied {
          return 412;
@@ -107,8 +107,8 @@ GET /x,y?uuu=b,c
 --- error_code: 404
 --- error_log eval
 [qr@NAXSI_FMT: ip=127\.0\.0\.1&server=localhost&uri=\/x,y&config=learning&rid=[^&]+&cscore0=\$SQL&score0=8&zone0=URL&id0=1015&var_name0=&zone1=ARGS&id1=1015&var_name1=uuu@,
-qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&uri=%2Fx%2Cy&id=1015&zone=URL&var_name=&content=%2Fx%2Cy@,
-qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&uri=%2Fx%2Cy&id=1015&zone=ARGS&var_name=uuu&content=b%2Cc@
+qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&rid=[^&]+&uri=%2Fx%2Cy&id=1015&zone=URL&var_name=&content=%2Fx%2Cy@,
+qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&rid=[^&]+&uri=%2Fx%2Cy&id=1015&zone=ARGS&var_name=uuu&content=b%2Cc@
 ]
 
 
@@ -120,12 +120,12 @@ MainRule "str:," "msg:, in stuff" "mz:BODY|URL|ARGS|$HEADERS_VAR:Cookie" "s:$SQL
 --- config
 set $naxsi_extensive_log 1;
 location / {
-         SecRulesEnabled;
-	 LearningMode;
-         DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+    SecRulesEnabled;
+    LearningMode;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
 }
 location /RequestDenied {
          return 412;
@@ -134,7 +134,7 @@ location /RequestDenied {
 GET /x,y?uuu=bc
 --- error_code: 404
 --- error_log eval
-qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&uri=%2Fx%2Cy&id=1015&zone=URL&var_name=&content=%2Fx%2Cy, client: 127\.0\.0\.1,@
+qr@NAXSI_EXLOG: ip=127\.0\.0\.1&server=localhost&rid=[^&]+&uri=%2Fx%2Cy&id=1015&zone=URL&var_name=&content=%2Fx%2Cy, client: 127\.0\.0\.1,@
 --- no_error_log
 NAXSI_FMT
 
@@ -146,12 +146,12 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 MainRule "str:foo" "msg:, in stuff" "mz:BODY|URL|ARGS|$HEADERS_VAR:Cookie" "s:$SQL:4" id:1015;
 --- config
 location / {
-         SecRulesEnabled;
-	 LearningMode;
-         DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+    SecRulesEnabled;
+    LearningMode;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
 }
 location /RequestDenied {
          return 412;
@@ -165,19 +165,19 @@ qr@NAXSI_FMT: seed_end=\d+&zone1=ARGS&id1=1015&var_name1=fufooufooufooufooufoouf
 qr@NAXSI_FMT: seed_end=\d+&zone2=ARGS|NAME&id2=1015&var_name2=fufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufoo,@]
 
 
-=== TEST 1.7 : learning + block-score + naxsi_extensive_log, NAXSI_EXLOG only
+=== TEST 1.7 : learning + block-score + no naxsi_extensive_log, NAXSI_FMT only
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
 MainRule "str:foo" "msg:, in stuff" "mz:BODY|URL|ARGS|$HEADERS_VAR:Cookie" "s:$SQL:4" id:1015;
 --- config
 location / {
-         SecRulesEnabled;
-	 LearningMode;
-         DeniedUrl "/RequestDenied";
-	 CheckRule "$SQL >= 8" BLOCK;
-         root $TEST_NGINX_SERVROOT/html/;
-         index index.html index.htm;
+    SecRulesEnabled;
+    LearningMode;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
 }
 location /RequestDenied {
          return 412;
@@ -190,5 +190,4 @@ location /RequestDenied {
 qr@NAXSI_FMT: seed_end=\d+&zone2=ARGS|NAME&id2=1015&var_name2=fufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufooufoo, @]
 --- no_error_log
 NAXSI_EXLOG
-
 
