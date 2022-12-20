@@ -592,13 +592,24 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
                           ngx_http_naxsi_loc_conf_t*  cf,
                           ngx_http_naxsi_main_conf_t* main_cf);
 
+char*
+naxsi_log_as_json_string(char*         out,
+                         const char*   end,
+                         const char*   key,
+                         const u_char* val,
+                         size_t        val_len);
+
+char*
+naxsi_log_as_json_number(char* out, const char* end, const char* key, int number);
+
 void
-naxsi_log_offending(ngx_str_t*          name,
-                    ngx_str_t*          val,
-                    ngx_http_request_t* req,
-                    ngx_http_rule_t*    rule,
-                    naxsi_match_zone_t  zone,
-                    ngx_int_t           target_name);
+naxsi_log_offending(ngx_http_request_ctx_t* ctx,
+                    ngx_http_request_t*     req,
+                    ngx_str_t*              name,
+                    ngx_str_t*              val,
+                    ngx_http_rule_t*        rule,
+                    naxsi_match_zone_t      zone,
+                    ngx_int_t               target_name);
 
 int
 ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,

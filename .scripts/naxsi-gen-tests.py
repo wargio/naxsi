@@ -346,8 +346,9 @@ def gen_checks(test):
     res += '''
       elm = nr.error_log_matches(['''
     for line in test.error_log:
+      line = line.replace("\"", "\\\"")
       res += '''
-        "{}",'''.format(line)
+        r"{}",'''.format(line)
     res += '''
       ])
       self.assertTrue(elm)'''
@@ -355,8 +356,9 @@ def gen_checks(test):
     res += '''
       nelm = nr.error_log_matches(['''
     for line in test.no_error_log:
+      line = line.replace("\"", "\\\"")
       res += '''
-        "{}",'''.format(line)
+        r"{}",'''.format(line)
     res += '''
       ])
       self.assertFalse(nelm)'''

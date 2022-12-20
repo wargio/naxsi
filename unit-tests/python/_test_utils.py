@@ -250,7 +250,7 @@ def error_log_matches_re(regexes):
   error_log = get_error_log_path()
   with open(error_log, encoding="utf-8") as file:
     lines = file.readlines()
-    filtered = list(filter(lambda l: " NAXSI_" in l, lines))
+    filtered = list(filter(lambda l: " NAXSI_" in l or " {\"" in l, lines))
     for rg in regexes:
       for fl in filtered:
         if rg.match(fl) is not None:
@@ -304,5 +304,5 @@ class nginx_runner():
     return status
 
   def error_log_matches(self, lst):
-    regexes = list(map(lambda st: re.compile("^.*{}.*$".format(st)), lst))
+    regexes = list(map(lambda st: re.compile(r"^.*" + st + r".*$"), lst))
     return error_log_matches_re(regexes)

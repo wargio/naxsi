@@ -185,13 +185,7 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
                           ngx_http_request_t*         r,
                           ngx_http_naxsi_loc_conf_t*  cf,
                           ngx_http_naxsi_main_conf_t* main_cf);
-void
-naxsi_log_offending(ngx_str_t*          name,
-                    ngx_str_t*          val,
-                    ngx_http_request_t* req,
-                    ngx_http_rule_t*    rule,
-                    naxsi_match_zone_t  zone,
-                    ngx_int_t           target_name);
+
 void
 ngx_http_naxsi_rawbody_parse(ngx_http_request_ctx_t* ctx,
                              ngx_http_request_t*     r,
@@ -1163,10 +1157,10 @@ ngx_http_append_log(ngx_http_request_t* r, ngx_array_t* ostr, ngx_str_t* fragmen
 }
 
 ngx_int_t
-ngx_http_nx_log(ngx_http_request_ctx_t* ctx,
-                ngx_http_request_t*     r,
-                ngx_array_t*            ostr,
-                ngx_str_t**             ret_uri)
+naxsi_create_log_array(ngx_http_request_ctx_t* ctx,
+                       ngx_http_request_t*     r,
+                       ngx_array_t*            ostr,
+                       ngx_str_t**             ret_uri)
 {
   u_int                     sz_left, sub, offset = 0, i;
   ngx_str_t *               fragment, *tmp_uri;
@@ -1410,8 +1404,9 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
   cf = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
   /* get array of signatures strings */
   ostr = ngx_array_create(r->pool, 1, sizeof(ngx_str_t));
-  if (ngx_http_nx_log(ctx, r, ostr, &tmp_uri) != NGX_HTTP_OK)
+  if (naxsi_create_log_array(ctx, r, ostr, &tmp_uri) != NGX_HTTP_OK) {
     return (NGX_ERROR);
+  }
 
   if (!ctx->json_log) {
     for (i = 0; i < ostr->nelts; i++) {
@@ -1425,7 +1420,7 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
     const char* hex  = "0123456789abcdef";
     ngx_str_t*  elts = (ngx_str_t*)ostr->elts;
     for (i = 0; i < ostr->nelts; i++) {
-      char json[NGX_MAX_ERROR_STR - 100] = { 0 };
+      char json[NAXSI_LOG_JSON_STRLEN] = { 0 };
       // line only
       const char* line = (const char*)elts[i].data;
       char*       curr = json + 2;
@@ -1658,10 +1653,11 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
            ctx->extensive_log);
 
   if (ctx->extensive_log) {
-    if (target_name)
-      naxsi_log_offending(value, name, req, r, zone, target_name);
-    else
-      naxsi_log_offending(name, value, req, r, zone, target_name);
+    if (target_name) {
+      naxsi_log_offending(ctx, req, value, name, r, zone, target_name);
+    } else {
+      naxsi_log_offending(ctx, req, name, value, r, zone, target_name);
+    }
   }
   if (nb_match == 0)
     nb_match = 1;
