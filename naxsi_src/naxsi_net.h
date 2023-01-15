@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2019, Giovanni Dante Grazioli <gda@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef __NAXSI_NET_H__
-#define __NAXSI_NET_H__
+#ifndef NAXSI_NET_H
+#define NAXSI_NET_H
 
 #include <naxsi.h>
 
@@ -79,4 +79,4 @@ naxsi_parse_cidr(const ngx_str_t* nx_cidr, cidr_t* cidr);
 int
 naxsi_is_in_subnet(const cidr_t* cidr, const ip_t* ip);
 
-#endif /* __NAXSI_NET_H__ */
+#endif /* NAXSI_NET_H */

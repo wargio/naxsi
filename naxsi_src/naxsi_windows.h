@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022, Alex <alex@staticlibs.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef __NAXSI_WINDOWS_H__
-#define __NAXSI_WINDOWS_H__
+#ifndef NAXSI_WINDOWS_H
+#define NAXSI_WINDOWS_H
 
 #include <sys/timeb.h>
 #include <sys/types.h>
@@ -50,4 +50,4 @@ inet_pton(int af, const char* src, void* dst);
 const char*
 inet_ntop(int af, const void* src, char* dst, socklen_t size);
 
-#endif // __NAXSI_WINDOWS_H__
+#endif // NAXSI_WINDOWS_H

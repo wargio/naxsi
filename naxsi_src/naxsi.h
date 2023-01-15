@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef __NAXSI_H__
-#define __NAXSI_H__
+#ifndef NAXSI_H
+#define NAXSI_H
 
 #include <ngx_config.h>
 #include <ngx_core.h>
@@ -637,4 +637,4 @@ extern ngx_http_rule_t* nx_int__libinject_xss;
 int
 libinjection_xss(const char* s, size_t len);
 
-#endif /* __NAXSI_H__ */
+#endif /* NAXSI_H */
