@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 wargio <deroad@libero.it>
 // SPDX-License-Identifier: LGPL-3.0-only
 
-#ifndef __NAXSI_CONST_H__
-#define __NAXSI_CONST_H__
+#ifndef NAXSI_CONST_H
+#define NAXSI_CONST_H
 
 #define NAXSI_VERSION "1.4"
 
@@ -49,4 +49,4 @@
 #endif
 #endif
 
-#endif /* __NAXSI_CONST_H__ */
+#endif /* NAXSI_CONST_H */

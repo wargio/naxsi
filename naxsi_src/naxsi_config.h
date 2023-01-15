@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef __NAXSI_CONFIG_H__
-#define __NAXSI_CONFIG_H__
+#ifndef NAXSI_CONFIG_H
+#define NAXSI_CONFIG_H
 
 /* custom match  zones */
 #define MZ_GET_VAR_T      "$ARGS_VAR:"
@@ -19,4 +19,4 @@
 #define MZ_POST_VAR_X     "$BODY_VAR_X:"
 #define MZ_SPECIFIC_URL_X "$URL_X:"
 
-#endif /* __NAXSI_CONFIG_H__ */
+#endif /* NAXSI_CONFIG_H */

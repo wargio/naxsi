@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2019, Giovanni Dante Grazioli <gda@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef __NAXSI_MACROS_H__
-#define __NAXSI_MACROS_H__
+#ifndef NAXSI_MACROS_H
+#define NAXSI_MACROS_H
 
 #define is_whitespace(c) ((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) == '\r')
 #define is_printable(c)  ((c) >= ' ' && (c) <= '~')
@@ -23,4 +23,4 @@
   if ((cond))                                                                                      \
   break
 
-#endif /* __NAXSI_MACROS_H__ */
+#endif /* NAXSI_MACROS_H */
