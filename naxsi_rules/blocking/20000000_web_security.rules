@@ -145,3 +145,6 @@ MainRule id:20000081 "s:$UWA:8" "rx:\.toml$" "mz:URL" "msg:file access to .toml"
 
 # AWS related files
 MainRule id:20000082 "s:$UWA:8" "str:dockerrun.aws.json" "mz:URL" "msg:Exposed AWS Elastic Beanstalk configuration";
+
+# Block access to temporary backup files like .bak,.bak.php, etc...
+MainRule id:20000083 "s:$UWA:8" "str:.bak" "mz:URL" "msg:file access to temporary backup files";
