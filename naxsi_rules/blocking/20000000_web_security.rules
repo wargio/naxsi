@@ -142,3 +142,6 @@ MainRule id:20000078 "s:$UWA:8" "rx:\.hcl$" "mz:URL" "msg:file access to .hcl";
 MainRule id:20000079 "s:$UWA:8" "rx:\.md$" "mz:URL" "msg:file access to .md";
 MainRule id:20000080 "s:$UWA:8" "rx:read[-_]?me" "mz:URL" "msg:file access to readme";
 MainRule id:20000081 "s:$UWA:8" "rx:\.toml$" "mz:URL" "msg:file access to .toml";
+
+# AWS related files
+MainRule id:20000082 "s:$UWA:8" "str:dockerrun.aws.json" "mz:URL" "msg:Exposed AWS Elastic Beanstalk configuration";
