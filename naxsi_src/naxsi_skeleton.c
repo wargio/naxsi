@@ -21,7 +21,7 @@
 #include <process.h>
 #endif // !_WIN32
 
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define NAXSI_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 /*
 ** Macro used to print incorrect configuration lines
@@ -34,7 +34,7 @@
                        "Naxsi-Config : Incorrect line %V %V (%s:%d)...",                           \
                        &(value[0]),                                                                \
                        &(value[1]),                                                                \
-                       __FILENAME__,                                                               \
+                       NAXSI_FILENAME,                                                               \
                        __LINE__);                                                                  \
   } while (0)
 
