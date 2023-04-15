@@ -33,7 +33,7 @@ naxsi_sources="
     $ngx_addon_dir/libinjection_ngxbuild/libinjection_xss.c \
 "
 
-CFLAGS="-DLIBINJECTION_VERSION=\"naxsi\""
+CFLAGS="$CFLAGS -DLIBINJECTION_VERSION=0"
 
 # NGINX module condfiguration.
 ngx_addon_name=naxsi
