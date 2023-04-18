@@ -51,10 +51,11 @@ jobs:
             "debian-buster",
             "debian-stretch",
             "debian-bullseye",
-            "debian-bookworm",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
+            "ubuntu-kinetic",
+            "ubuntu-lunar",
           ]
         include:
           - name: arch-linux
@@ -69,9 +70,6 @@ jobs:
           - name: debian-bullseye
             container: debian:bullseye
             package: deb
-          - name: debian-bookworm
-            container: debian:bookworm
-            package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
             package: deb
@@ -80,6 +78,12 @@ jobs:
             package: deb
           - name: ubuntu-jammy
             container: ubuntu:jammy
+            package: deb
+          - name: ubuntu-kinetic
+            container: ubuntu:kinetic
+            package: deb
+          - name: ubuntu-lunar
+            container: ubuntu:lunar
             package: deb
 
     steps:
@@ -113,7 +117,7 @@ jobs:
       run: |
         rm -rf naxsi_src/libinjection
         git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
-        git -C naxsi_src/libinjection checkout 88f0faa849995ef6aafa32a9da32eaca38a213c8
+        git -C naxsi_src/libinjection checkout 51f3a96e9fcc90a6112f52ac96fd4661e7ab0a44
         git clone --depth=1 https://github.com/wargio/deb-creator.git
         chmod 777 .
         apt-get source nginx
