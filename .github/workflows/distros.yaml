@@ -51,7 +51,6 @@ jobs:
             "debian-buster",
             "debian-stretch",
             "debian-bullseye",
-            "debian-sid",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
@@ -70,9 +69,6 @@ jobs:
             package: deb
           - name: debian-bullseye
             container: debian:bullseye
-            package: deb
-          - name: debian-sid
-            container: debian:sid
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic

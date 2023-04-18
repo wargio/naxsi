@@ -13,6 +13,7 @@ jobs:
       matrix:
         os: [windows-latest]
         nginx:
+          - 1.24.0
           - 1.23.2
           - 1.22.1
     runs-on: ${{ matrix.os }}
