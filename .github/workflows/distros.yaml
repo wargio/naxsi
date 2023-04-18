@@ -51,10 +51,12 @@ jobs:
             "debian-buster",
             "debian-stretch",
             "debian-bullseye",
-            "debian-bookworm",
+            "debian-sid",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
+            "ubuntu-kinetic",
+            "ubuntu-lunar",
           ]
         include:
           - name: arch-linux
@@ -69,8 +71,8 @@ jobs:
           - name: debian-bullseye
             container: debian:bullseye
             package: deb
-          - name: debian-bookworm
-            container: debian:bookworm
+          - name: debian-sid
+            container: debian:sid
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
@@ -80,6 +82,12 @@ jobs:
             package: deb
           - name: ubuntu-jammy
             container: ubuntu:jammy
+            package: deb
+          - name: ubuntu-kinetic
+            container: ubuntu:kinetic
+            package: deb
+          - name: ubuntu-lunar
+            container: ubuntu:lunar
             package: deb
 
     steps:
