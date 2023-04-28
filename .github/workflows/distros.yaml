@@ -32,7 +32,7 @@ jobs:
         fi
         RELEASE_ID=${RELEASE_ID##refs/tags/}
         echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps-tgz" >> $GITHUB_ENV
-        tar -czvf "naxsi-${RELEASE_ID}-src-with-deps.tar.gz" *
+        tar -czvf "naxsi-${RELEASE_ID}-src-with-deps.tar.gz" .
     - name: Upload tarball
       uses: actions/upload-artifact@v3
       with:
