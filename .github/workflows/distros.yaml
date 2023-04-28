@@ -117,6 +117,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Use debian archive repository
+      if: matrix.name == 'debian-buster'
+      run: sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+
     # DEB package
     - name: Update OS & Install deps
       if: matrix.package == 'deb'
