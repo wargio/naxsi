@@ -28,7 +28,7 @@ jobs:
         then
           RELEASE_ID="${{ github.event.ref }}"
         else
-          RELEASE_ID="git-`date "+%Y-%m-%d"`-${{ format('{0}', github.sha) }}"
+          RELEASE_ID="git-`date "+%Y-%m-%d"`-`git rev-parse --short HEAD`"
         fi
         RELEASE_ID=${RELEASE_ID##refs/tags/}
         echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps" >> $GITHUB_ENV
@@ -55,7 +55,7 @@ jobs:
         then
           RELEASE_ID="${{ github.event.ref }}"
         else
-          RELEASE_ID="git-`date "+%Y-%m-%d"`-${{ format('{0}', github.sha) }}"
+          RELEASE_ID="git-`date "+%Y-%m-%d"`-`git rev-parse --short HEAD`"
         fi
         RELEASE_ID=${RELEASE_ID##refs/tags/}
         echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps" >> $GITHUB_ENV
