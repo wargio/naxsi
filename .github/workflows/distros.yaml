@@ -31,7 +31,7 @@ jobs:
           RELEASE_ID="git-`date "+%Y-%m-%d"`-`git rev-parse --short HEAD`"
         fi
         RELEASE_ID=${RELEASE_ID##refs/tags/}
-        echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps" >> $GITHUB_ENV
+        echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps-tgz" >> $GITHUB_ENV
         tar -czvf "naxsi-${RELEASE_ID}-src-with-deps.tar.gz" *
     - name: Upload tarball
       uses: actions/upload-artifact@v3
@@ -58,7 +58,7 @@ jobs:
           RELEASE_ID="git-`date "+%Y-%m-%d"`-`git rev-parse --short HEAD`"
         fi
         RELEASE_ID=${RELEASE_ID##refs/tags/}
-        echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps" >> $GITHUB_ENV
+        echo RELEASE_NAME="naxsi-${RELEASE_ID}-src-with-deps-zip" >> $GITHUB_ENV
     - name: Upload zip
       uses: actions/upload-artifact@v3
       with:
