@@ -78,7 +78,6 @@ jobs:
           [
             "arch-linux",
             "debian-buster",
-            "debian-stretch",
             "debian-bullseye",
             "ubuntu-bionic",
             "ubuntu-focal",
@@ -92,9 +91,6 @@ jobs:
             package: arch
           - name: debian-buster
             container: debian:buster
-            package: deb
-          - name: debian-stretch
-            container: debian:stretch
             package: deb
           - name: debian-bullseye
             container: debian:bullseye
@@ -118,10 +114,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Use debian archive repository
-      if: matrix.name == 'debian-stretch'
-      run: sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 
     # DEB package
     - name: Update OS & Install deps
