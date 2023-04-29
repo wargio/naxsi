@@ -1,1 +1,6 @@
-t/* linguist-vendored
+.github/* linguist-vendored
+.scripts/* linguist-vendored
+distros/* linguist-vendored
+LICENSES/* linguist-vendored
+naxsi_rules/* linguist-vendored
+unit-tests/* linguist-vendored
