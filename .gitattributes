@@ -1,6 +1,7 @@
-.github/* linguist-vendored
-.scripts/* linguist-vendored
-distros/* linguist-vendored
-LICENSES/* linguist-vendored
-naxsi_rules/* linguist-vendored
-unit-tests/* linguist-vendored
+*.txt linguist-detectable=false
+*.conf linguist-detectable=false
+*.script linguist-detectable=false
+*.install linguist-detectable=false
+*.sh linguist-detectable=false
+*.py linguist-detectable=false
+*.t linguist-detectable=false
