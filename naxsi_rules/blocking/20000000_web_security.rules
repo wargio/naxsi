@@ -148,3 +148,7 @@ MainRule id:20000082 "s:$UWA:8" "str:dockerrun.aws.json" "mz:URL" "msg:Exposed A
 
 # Block access to temporary backup files like .bak,.bak.php, etc...
 MainRule id:20000083 "s:$UWA:8" "str:.bak" "mz:URL" "msg:file access to temporary backup files";
+
+# Path traversal in nuxt/framework when in dev mode
+# https://huntr.dev/bounties/4849af83-450c-435e-bc0b-71705f5be440/
+MainRule id:20000084 "s:$UWA:8" "str:_nuxt/@" "mz:URL" "msg:path traversal in nuxt framework";
