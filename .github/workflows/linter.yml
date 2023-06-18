@@ -15,13 +15,13 @@ jobs:
     - name: Check debug logs are disabled
       run: /bin/bash .scripts/ci-debug-check.sh
 
-  libinjection-distro-ci:
+  distro-ci-check:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Check if the git hash matches the ci one.
-      run: /bin/bash .scripts/ci-debug-check.sh
+    - name: Check if the distro info are updated
+      run: /bin/bash .scripts/ci-distro-check.sh
 
   licenses:
     runs-on: ubuntu-latest
