@@ -84,6 +84,7 @@ jobs:
             "arch-linux",
             "debian-buster",
             "debian-bullseye",
+            "debian-bookworm",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
@@ -101,6 +102,9 @@ jobs:
             package: deb
           - name: debian-bullseye
             container: debian:bullseye
+            package: deb
+          - name: debian-bookworm
+            container: debian:bookworm-slim
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
@@ -158,8 +162,10 @@ jobs:
     - name: Update OS & Install deps
       if: matrix.package == 'deb'
       run: |
-        cat /etc/apt/sources.list > /tmp/sources.list.orig
-        cat /tmp/sources.list.orig | grep -v "#" | sed 's/^deb /deb-src /g' >> /etc/apt/sources.list
+        if [ -f "/etc/apt/sources.list" ]; then
+          cat /etc/apt/sources.list > /tmp/sources.list.orig
+          cat /tmp/sources.list.orig | grep -v "#" | sed 's/^deb /deb-src /g' >> /etc/apt/sources.list
+        fi
         apt-get -qqy update
         DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
             build-essential \
@@ -176,6 +182,14 @@ jobs:
             tar \
             wget \
             zlib1g-dev
+        if [ -f "/etc/apt/sources.list.d/debian.sources" ]; then
+          # bookworm only.
+          echo "deb https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
+          echo "deb-src https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
+          apt-get -qqy update
+          DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
+            libperl-dev
+        fi
     - name: Checkout needed repos
       if: matrix.package == 'deb'
       run: |
