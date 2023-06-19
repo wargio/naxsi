@@ -186,8 +186,10 @@ jobs:
           # bookworm only.
           echo "deb https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
           echo "deb-src https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
+          apt-get -qqy update
+          DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
+            libperl-dev
         fi
-        apt-get -qqy update
     - name: Checkout needed repos
       if: matrix.package == 'deb'
       run: |
