@@ -20,6 +20,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        persist-credentials: false
     - name: Check if the distro info are updated
       run: /bin/bash .scripts/ci-distro-check.sh
 

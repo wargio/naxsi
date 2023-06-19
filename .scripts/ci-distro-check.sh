@@ -40,7 +40,7 @@ check_file_for "distros/alpine/1.22.0-r1/APKBUILD" "_add_module \"http-naxsi" "$
 check_file_for "distros/alpine/1.24.0-r3/APKBUILD" "_add_module \"http-naxsi" "$NAXSI_VERSION"
 
 # check libinjection hash
-SUBMODULE_HASH=$(git submodule status | xargs echo | cut -d ' ' -f1)
+SUBMODULE_HASH=$(git -C naxsi_src/libinjection rev-parse HEAD)
 for DISTRO_YAML_HASH in $(grep "git -C naxsi_src/libinjection checkout" .github/workflows/distros.yaml | xargs -L1 echo | cut -d ' ' -f5); do
     if [ "$DISTRO_YAML_HASH" != "$SUBMODULE_HASH" ]; then
         echo "The libinjection hash in .github/workflows/distros.yaml does not match the submodule one."
