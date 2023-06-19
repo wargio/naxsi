@@ -28,8 +28,11 @@ case "v$ALPINE_VERSION" in
   "v3.16.3" | "v3.16.4" | "v3.16.5" | "v3.16.6" | "v3.17.0" | "v3.17.1" | "v3.17.2" | "v3.17.3" | "v3.17.4")
     VERSION="1.22.1-r0"
     ;;
-  "v3.18.0" | "v3.18.1" | "v3.18.2")
+  "v3.18.0")
     VERSION="1.24.0-r3"
+    ;;
+  "v3.18.1" | "v3.18.2")
+    VERSION="1.24.0-r6"
     ;;
   *)
 	echo "error: unsupported version, please open an issue on github."
