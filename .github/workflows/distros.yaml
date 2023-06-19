@@ -125,7 +125,7 @@ jobs:
 
     # APK package
     - name: Install required dependencies
-      if: matrix.package == 'deb'
+      if: matrix.package == 'apk'
       run: apk add alpine-sdk doas
     - name: Checkout needed repos
       if: matrix.package == 'apk'
