@@ -104,7 +104,7 @@ jobs:
             container: debian:bullseye
             package: deb
           - name: debian-bookworm
-            container: debian:bookworm
+            container: debian:bookworm-slim
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
