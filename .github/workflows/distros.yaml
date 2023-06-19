@@ -84,6 +84,7 @@ jobs:
             "arch-linux",
             "debian-buster",
             "debian-bullseye",
+            "debian-bookworm",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
@@ -101,6 +102,9 @@ jobs:
             package: deb
           - name: debian-bullseye
             container: debian:bullseye
+            package: deb
+          - name: debian-bookworm
+            container: debian:bookworm
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
