@@ -1,0 +1,221 @@
+# Maintainer: Giovanni Dante Grazioli <wargio@libero.it>
+pkgname=nginx
+pkgver=1.20.1
+pkgrel=3
+pkgdesc="HTTP and reverse proxy server (stable version)"
+url="https://www.nginx.org/"
+arch="all"
+license="BSD-2-Clause"
+depends=""
+makedepends="
+	brotli-dev
+	gd-dev
+	geoip-dev
+	libmaxminddb-dev
+	libxml2-dev
+	libxslt-dev
+	linux-headers
+	luajit-dev
+	openssl-dev
+	pcre-dev
+	perl-dev
+	pkgconf
+	zeromq-dev
+	zlib-dev
+	"
+checkdepends="
+	gd
+	perl
+	perl-fcgi
+	perl-io-socket-ssl
+	perl-net-ssleay
+	perl-protocol-websocket
+	tzdata
+	uwsgi-python3
+	"
+pkgusers="nginx"
+_grp_ngx="nginx"
+_grp_www="www-data"
+pkggroups="$_grp_ngx $_grp_www"
+install=""
+subpackages=""
+source="https://nginx.org/download/$pkgname-$pkgver.tar.gz"
+builddir="$srcdir/$pkgname-$pkgver"
+
+_modules_dir="usr/lib/$pkgname/modules"
+
+# For simplicity we assume that module is hosted on GitHub.
+_add_module() {
+	local name="$1" ver="$2" url="$3" subdir="$4"
+	local dirname=${url##*/}-${ver#v}
+	local varprefix="_${name//-/_}"
+
+	eval "${varprefix}_ver='$ver'; ${varprefix}_url='$url'"
+
+	# Don't add new flag and source if it's already there, i.e. two or more
+	# modules share the same source (e.g. geoip2 that provides http-geoip2
+	# and stream-geoip2).
+	if ! printf '%s\n' $_extra_flags | grep -qFw "$srcdir/$dirname"; then
+	    _module_path=$(realpath ../../../$subdir)
+		_extra_flags="$_extra_flags --add-dynamic-module=$_module_path"
+	fi
+	subpackages="$subpackages $pkgname-mod-$name:_module"
+}
+
+_add_module "http-naxsi" "1.4" "https://github.com/wargio/naxsi" "naxsi_src"
+_naxsi_provides="$pkgname-naxsi"  # for backward compatibility
+
+prepare() {
+	local file; for file in $source; do
+		file=${file%%::*}
+
+		case $file in
+		*~*.patch)
+			msg $file
+			cd "$srcdir"/${file%%~*}-*
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		*.patch)
+			msg $file
+			cd "$builddir"
+			patch -p 1 -i "$srcdir/$file"
+			;;
+		esac
+	done
+}
+
+_build() {
+	./configure \
+		--prefix=/var/lib/$pkgname \
+		--sbin-path=/usr/sbin/$pkgname \
+		--modules-path=/$_modules_dir \
+		--conf-path=/etc/$pkgname/$pkgname.conf \
+		--pid-path=/run/$pkgname/$pkgname.pid \
+		--lock-path=/run/$pkgname/$pkgname.lock \
+		--http-client-body-temp-path=/var/lib/$pkgname/tmp/client_body \
+		--http-proxy-temp-path=/var/lib/$pkgname/tmp/proxy \
+		--http-fastcgi-temp-path=/var/lib/$pkgname/tmp/fastcgi \
+		--http-uwsgi-temp-path=/var/lib/$pkgname/tmp/uwsgi \
+		--http-scgi-temp-path=/var/lib/$pkgname/tmp/scgi \
+		--with-perl_modules_path=/usr/lib/perl5/vendor_perl \
+		\
+		--user=$pkgusers \
+		--group=$_grp_ngx \
+		--with-threads \
+		--with-file-aio \
+		\
+		--with-http_ssl_module \
+		--with-http_v2_module \
+		--with-http_realip_module \
+		--with-http_addition_module \
+		--with-http_xslt_module=dynamic \
+		--with-http_image_filter_module=dynamic \
+		--with-http_geoip_module=dynamic \
+		--with-http_sub_module \
+		--with-http_dav_module \
+		--with-http_flv_module \
+		--with-http_mp4_module \
+		--with-http_gunzip_module \
+		--with-http_gzip_static_module \
+		--with-http_auth_request_module \
+		--with-http_random_index_module \
+		--with-http_secure_link_module \
+		--with-http_degradation_module \
+		--with-http_slice_module \
+		--with-http_stub_status_module \
+		--with-http_perl_module=dynamic \
+		--with-mail=dynamic \
+		--with-mail_ssl_module \
+		--with-stream=dynamic \
+		--with-stream_ssl_module \
+		--with-stream_realip_module \
+		--with-stream_geoip_module=dynamic \
+		--with-stream_ssl_preread_module \
+		\
+		$_extra_flags \
+		"$@"
+
+	make -j
+}
+
+build() {
+	cd "$builddir"
+
+	_build --with-debug
+	mv objs objs-debug
+
+	make clean
+	_build
+}
+
+check() {
+	msg "Ignore nginx tests..."
+}
+
+package() {
+	cd "$builddir"
+
+	make DESTDIR="$pkgdir" install
+}
+
+debug() {
+	return
+}
+
+vim() {
+	return
+}
+
+_module() {
+	local name="${subpkgname#$pkgname-mod-}"; name="${name//-/_}"
+	local ver=$(getvar _${name}_ver)
+
+	pkgdesc="Nginx module ${name//_/-}"
+	[ "$ver" ] && pkgdesc="Nginx third-party module ${name//_/-} (version $ver)"
+
+	url=$(getvar "_${name}_url" "$url")
+	sonames=$(getvar "_${name}_so" "ngx_${name}_module.so")
+	depends="$pkgname $(getvar "_${name}_depends")"
+	provides=$(getvar "_${name}_provides")
+
+	# Numeric prefix for the module config to ensure that modules with
+	# dependencies on other modules will be loaded after their dependencies.
+	# For simplicity, we don't actually resolve dependency tree. Instead,
+	# we just prefix the module name with a number that reflects number of
+	# the module's dependencies times ten (e.g. 10, 20, 30, ...).
+	local conf_prefix="$(echo "$depends" | wc -w)0_"
+
+	mkdir -p "$subpkgdir"/$_modules_dir
+	mkdir -p "$subpkgdir"/etc/nginx/modules
+
+	cd "$subpkgdir"
+
+	local soname; for soname in $sonames; do
+		mv "$pkgdir"/$_modules_dir/$soname ./$_modules_dir/$soname
+		echo "load_module \"modules/$soname\";" >> ./etc/nginx/modules/${conf_prefix}$name.conf
+	done
+
+	mkdir -p ./etc/nginx/naxsi/blocking/
+	mkdir -p ./etc/nginx/naxsi/whitelists/
+
+	cd "$srcdir/.."
+	case "$name" in
+		http_naxsi)
+			install -m644 -D ../../../naxsi_rules/naxsi_core.rules \
+				"$subpkgdir/etc/nginx/naxsi/"naxsi_core.rules
+			install -m644 -D ../../../naxsi_rules/blocking/*.rules \
+				"$subpkgdir/etc/nginx/naxsi/blocking/"
+			install -m644 -D ../../../naxsi_rules/whitelists/*.rules \
+				"$subpkgdir/etc/nginx/naxsi/whitelists/"
+		;;
+	esac
+}
+
+# Print value of the specified variable, or the default if empty or not defined.
+getvar() {
+	eval "printf '%s\n' \"\${$1:-$2}\""
+}
+
+sha512sums="
+3d9fd4bf2740eaf20fcc3c77260a3556aaf9dff2879afc2dbb5fff364dea27313ffbc51d335e9fc9c0186a2a44dac055ef60fde0d411b8cf842fdf661478c961  nginx-1.20.1.tar.gz
+"

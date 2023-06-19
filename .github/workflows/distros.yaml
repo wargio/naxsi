@@ -11,6 +11,11 @@ on:
     branches:
       - "dist-*"
 
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
 jobs:
   tarball:
     runs-on: ubuntu-latest
@@ -84,6 +89,8 @@ jobs:
             "ubuntu-jammy",
             "ubuntu-kinetic",
             "ubuntu-lunar",
+            "alpine-3.17.4",
+            "alpine-3.18.2",
           ]
         include:
           - name: arch-linux
@@ -110,10 +117,42 @@ jobs:
           - name: ubuntu-lunar
             container: ubuntu:lunar
             package: deb
+          - name: alpine-3.17.4
+            container: alpine:3.17.4
+            package: apk
+          - name: alpine-3.18.2
+            container: alpine:3.18.2
+            package: apk
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    # APK package
+    - name: Install required dependencies
+      if: matrix.package == 'apk'
+      run: apk add alpine-sdk doas
+    - name: Checkout needed repos
+      if: matrix.package == 'apk'
+      run: |
+        rm -rf naxsi_src/libinjection
+        git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
+        git -C naxsi_src/libinjection checkout 51f3a96e9fcc90a6112f52ac96fd4661e7ab0a44
+        chmod 777 .
+    - name: ${{ matrix.name }} package
+      if: matrix.package == 'apk'
+      run:  sh ./distros/alpine/build-ci.sh
+    - name: Test apk package
+      if: matrix.package == 'apk'
+      run: |
+        apk add --no-cache nginx
+        apk add --allow-untrusted build/*.apk
+    - name: Upload apk package
+      if: matrix.package == 'apk'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.name }}
+        path: build/*.apk
 
     # DEB package
     - name: Update OS & Install deps
