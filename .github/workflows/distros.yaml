@@ -11,6 +11,11 @@ on:
     branches:
       - "dist-*"
 
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
 jobs:
   tarball:
     runs-on: ubuntu-latest
