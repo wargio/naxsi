@@ -1,4 +1,4 @@
-name: "CI Unit Tests"
+name: "CI Unit Tests & Efficacy"
 
 on:
   push:
@@ -28,14 +28,29 @@ jobs:
           - 1.14.2
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        persist-credentials: false
-    - name: Install Test::Nginx
-      run: sudo cpan -Ti Test::Nginx Test::Nginx::Socket
-    - name: Build
-      run: /bin/bash .scripts/ci-build.sh "${{ matrix.nginx }}"
-    - name: Unit Tests
-      run: /bin/bash .scripts/ci-test.sh
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Install Test::Nginx
+        run: sudo cpan -Ti Test::Nginx Test::Nginx::Socket
+      - name: Build
+        run: /bin/bash .scripts/ci-build.sh "${{ matrix.nginx }}"
+      - name: Unit Tests
+        run: /bin/bash .scripts/ci-test.sh
+
+  build-efficacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Build
+        run: /bin/bash .scripts/ci-build.sh "1.24.0"
+      - name: Run WAF efficacy tests (core only)
+        run: /bin/bash .scripts/ci-wafefficacy.sh core
+      - name: Run WAF efficacy tests (complete)
+        run: /bin/bash .scripts/ci-wafefficacy.sh complete
