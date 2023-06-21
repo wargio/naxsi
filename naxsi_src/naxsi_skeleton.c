@@ -535,12 +535,6 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
     conf->enabled = prev->enabled;
   if (conf->force_disabled == 0)
     conf->force_disabled = prev->force_disabled;
-
-//  if (conf->pushed == 0)
-//    conf->pushed = prev->pushed;
-  if (ngx_http_naxsi_push_loc_conf(cf, conf) != NGX_OK)
-    return NGX_CONF_ERROR;
-
   if (conf->libinjection_sql_enabled == 0)
     conf->libinjection_sql_enabled = prev->libinjection_sql_enabled;
   if (conf->libinjection_xss_enabled == 0)
@@ -563,6 +557,10 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
     conf->flag_libinjection_sql_h = prev->flag_libinjection_sql_h;
   if (conf->log == NULL)
     conf->log = prev->log;
+
+  if (ngx_http_naxsi_push_loc_conf(cf, conf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   return NGX_CONF_OK;
 }
 
