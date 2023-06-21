@@ -11,6 +11,11 @@ on:
     branches:
       - "dist-*"
 
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
 jobs:
   tarball:
     runs-on: ubuntu-latest
@@ -79,11 +84,14 @@ jobs:
             "arch-linux",
             "debian-buster",
             "debian-bullseye",
+            "debian-bookworm",
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
             "ubuntu-kinetic",
             "ubuntu-lunar",
+            "alpine-3.17.4",
+            "alpine-3.18.2",
           ]
         include:
           - name: arch-linux
@@ -94,6 +102,9 @@ jobs:
             package: deb
           - name: debian-bullseye
             container: debian:bullseye
+            package: deb
+          - name: debian-bookworm
+            container: debian:bookworm-slim
             package: deb
           - name: ubuntu-bionic
             container: ubuntu:bionic
@@ -110,17 +121,51 @@ jobs:
           - name: ubuntu-lunar
             container: ubuntu:lunar
             package: deb
+          - name: alpine-3.17.4
+            container: alpine:3.17.4
+            package: apk
+          - name: alpine-3.18.2
+            container: alpine:3.18.2
+            package: apk
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    # APK package
+    - name: Install required dependencies
+      if: matrix.package == 'apk'
+      run: apk add alpine-sdk doas
+    - name: Checkout needed repos
+      if: matrix.package == 'apk'
+      run: |
+        rm -rf naxsi_src/libinjection
+        git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
+        git -C naxsi_src/libinjection checkout 51f3a96e9fcc90a6112f52ac96fd4661e7ab0a44
+        chmod 777 .
+    - name: ${{ matrix.name }} package
+      if: matrix.package == 'apk'
+      run:  sh ./distros/alpine/build-ci.sh
+    - name: Test apk package
+      if: matrix.package == 'apk'
+      run: |
+        apk add --no-cache nginx
+        apk add --allow-untrusted build/*.apk
+    - name: Upload apk package
+      if: matrix.package == 'apk'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.name }}
+        path: build/*.apk
+
     # DEB package
     - name: Update OS & Install deps
       if: matrix.package == 'deb'
       run: |
-        cat /etc/apt/sources.list > /tmp/sources.list.orig
-        cat /tmp/sources.list.orig | grep -v "#" | sed 's/^deb /deb-src /g' >> /etc/apt/sources.list
+        if [ -f "/etc/apt/sources.list" ]; then
+          cat /etc/apt/sources.list > /tmp/sources.list.orig
+          cat /tmp/sources.list.orig | grep -v "#" | sed 's/^deb /deb-src /g' >> /etc/apt/sources.list
+        fi
         apt-get -qqy update
         DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
             build-essential \
@@ -137,6 +182,14 @@ jobs:
             tar \
             wget \
             zlib1g-dev
+        if [ -f "/etc/apt/sources.list.d/debian.sources" ]; then
+          # bookworm only.
+          echo "deb https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
+          echo "deb-src https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
+          apt-get -qqy update
+          DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
+            libperl-dev
+        fi
     - name: Checkout needed repos
       if: matrix.package == 'deb'
       run: |

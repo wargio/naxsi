@@ -6,6 +6,11 @@ on:
       - main
   pull_request:
 
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
 jobs:
   no-debug:
     runs-on: ubuntu-latest
@@ -15,13 +20,16 @@ jobs:
     - name: Check debug logs are disabled
       run: /bin/bash .scripts/ci-debug-check.sh
 
-  libinjection-distro-ci:
+  distro-ci-check:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Check if the git hash matches the ci one.
-      run: /bin/bash .scripts/ci-debug-check.sh
+      with:
+        submodules: recursive
+        persist-credentials: false
+    - name: Check if the distro info are updated
+      run: /bin/bash .scripts/ci-distro-check.sh
 
   licenses:
     runs-on: ubuntu-latest

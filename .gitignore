@@ -7,3 +7,4 @@ nginx-tmp
 /naxsi_src/libinjection_ngxbuild/
 /unit-tests/python/__pycache__
 /unit-tests/python/test_*
+*.orig
