@@ -43,6 +43,8 @@
 */
 static ngx_int_t
 ngx_http_naxsi_access_handler(ngx_http_request_t* r);
+static ngx_int_t
+ngx_http_naxsi_push_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf);
 static char*
 ngx_http_naxsi_read_main_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
 static ngx_int_t
@@ -458,6 +460,24 @@ ngx_http_naxsi_create_loc_conf(ngx_conf_t* cf)
   return (conf);
 }
 
+/* Push loc conf to main conf */
+static ngx_int_t
+ngx_http_naxsi_push_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf)
+{
+  ngx_http_naxsi_loc_conf_t **bar;
+  ngx_http_naxsi_main_conf_t* main_cf;
+
+  if (!conf->pushed) {
+    main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
+    bar = ngx_array_push(main_cf->locations);
+    if (!bar)
+      return (NGX_ERROR);
+    *bar         = conf;
+    conf->pushed = 1;
+  }
+  return (NGX_OK);
+}
+
 /* merge loc conf */
 /* NOTE/WARNING : This function wasn't tested correctly.
    Actually, we shouldn't merge anything, as configuration is
@@ -515,8 +535,6 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
     conf->enabled = prev->enabled;
   if (conf->force_disabled == 0)
     conf->force_disabled = prev->force_disabled;
-  if (conf->pushed == 0)
-    conf->pushed = prev->pushed;
   if (conf->libinjection_sql_enabled == 0)
     conf->libinjection_sql_enabled = prev->libinjection_sql_enabled;
   if (conf->libinjection_xss_enabled == 0)
@@ -539,6 +557,10 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
     conf->flag_libinjection_sql_h = prev->flag_libinjection_sql_h;
   if (conf->log == NULL)
     conf->log = prev->log;
+
+  if (ngx_http_naxsi_push_loc_conf(cf, conf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   return NGX_CONF_OK;
 }
 
@@ -653,9 +675,8 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
 static char*
 ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t *alcf = conf, **bar;
+  ngx_http_naxsi_loc_conf_t *alcf = conf;
 
-  ngx_http_naxsi_main_conf_t* main_cf;
   ngx_str_t*                  value;
   ngx_http_rule_t             rule, *rule_r;
 
@@ -669,15 +690,11 @@ ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
   if (!alcf || !cf) {
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
   }
+
+  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   value   = cf->args->elts;
-  main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
-  if (!alcf->pushed) {
-    bar = ngx_array_push(main_cf->locations);
-    if (!bar)
-      return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
-    *bar         = alcf;
-    alcf->pushed = 1;
-  }
 
   if (!alcf->ignore_cidrs) {
     alcf->ignore_cidrs = ngx_array_create(cf->pool, 1, sizeof(cidr_t));
@@ -892,8 +909,7 @@ static char*
 ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
 
-  ngx_http_naxsi_loc_conf_t * alcf = conf, **bar;
-  ngx_http_naxsi_main_conf_t* main_cf;
+  ngx_http_naxsi_loc_conf_t * alcf = conf;
   ngx_str_t*                  value;
   ngx_http_check_rule_t*      rule_c;
   unsigned int                i;
@@ -901,15 +917,11 @@ ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR);
+
+  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   value   = cf->args->elts;
-  main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
-  if (!alcf->pushed) {
-    bar = ngx_array_push(main_cf->locations);
-    if (!bar)
-      return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
-    *bar         = alcf;
-    alcf->pushed = 1;
-  }
 
   if (ngx_strcmp(value[0].data, TOP_CHECK_RULE_T) && ngx_strcmp(value[0].data, TOP_CHECK_RULE_N))
     return (NGX_CONF_ERROR);
@@ -1001,21 +1013,16 @@ ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static char*
 ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf, **bar;
-  ngx_http_naxsi_main_conf_t* main_cf;
+  ngx_http_naxsi_loc_conf_t * alcf = conf;
   ngx_str_t*                  value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
+
+  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   value   = cf->args->elts;
-  main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
-  if (!alcf->pushed) {
-    bar = ngx_array_push(main_cf->locations);
-    if (!bar)
-      return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
-    *bar         = alcf;
-    alcf->pushed = 1;
-  }
 
   /* store denied URL for location */
   if ((!ngx_strcmp(value[0].data, TOP_DENIED_URL_N) ||
@@ -1041,21 +1048,16 @@ ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static char*
 ngx_http_naxsi_flags_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf, **bar;
-  ngx_http_naxsi_main_conf_t* main_cf;
+  ngx_http_naxsi_loc_conf_t * alcf = conf;
   ngx_str_t*                  value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR);
+
+  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   value   = cf->args->elts;
-  main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
-  if (!alcf->pushed) {
-    bar = ngx_array_push(main_cf->locations);
-    if (!bar)
-      return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
-    *bar         = alcf;
-    alcf->pushed = 1;
-  }
 
   /* it's a flagrule, just a hack to enable/disable mod */
   if (!ngx_strcmp(value[0].data, TOP_ENABLED_FLAG_T) ||
