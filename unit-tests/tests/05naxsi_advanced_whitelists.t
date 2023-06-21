@@ -412,3 +412,34 @@ location /RequestDenied {
 GET /robots.txt
 --- error_code: 200
 
+=== WL TEST 8: Whitelists inheritance
+--- user_files
+>>> robots.txt
+aaaa
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+MainRule id:20000003 "s:$UWA:8" "rx:\.txt$" "mz:URL" "msg:file access to .txt";
+--- config
+location / {
+    BasicRule wl:20000003 "mz:$URL:/robots.txt|URL";
+    #LearningMode;
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    location /child/     {
+	return 200 "200 $request_uri";
+    }
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+}	
+location /RequestDenied {
+    return 412;
+}
+--- request
+GET /child/robots.txt
+--- error_code: 200
