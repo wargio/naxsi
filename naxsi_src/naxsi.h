@@ -16,8 +16,8 @@
 #include <naxsi_const.h>
 #include <naxsi_net.h>
 
-#include "libinjection/src/libinjection_sqli.h"
-#include "libinjection/src/libinjection_xss.h"
+#include <libinjection_sqli.h>
+#include <libinjection_xss.h>
 
 #ifdef _WIN32
 #include <naxsi_windows.h>
