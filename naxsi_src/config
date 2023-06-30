@@ -1,12 +1,6 @@
 # SPDX-FileCopyrightText: 2019 Giovanni Dante Grazioli <gda@nbs-system.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# libinjection detection
-LIBINJECTION_LIBS="$(pkg-config --libs libinjection)"
-LIBINJECTION_CFLAGS="$(pkg-config --cflags libinjection)"
-
-CFLAGS="$CFLAGS $LIBINJECTION_CFLAGS"
-ngx_feature_libs="$LIBINJECTION_LIBS"
 
 # NAXSI include files
 naxsi_includes="
@@ -29,7 +23,31 @@ naxsi_sources="
     $ngx_addon_dir/naxsi_windows.c \
 "
 
-CFLAGS="$CFLAGS -DLIBINJECTION_VERSION=0"
+# try to use libinjection as system library
+LIBINJECTION_CFLAGS="$(pkg-config --cflags libinjection)"
+LIBINJECTION_LIBS="$(pkg-config --libs libinjection)"
+LIBINJECTION_FOUND="$?"
+
+if [ "$LIBINJECTION_FOUND" != "0" ]; then
+    if [ ! -d "$ngx_addon_dir/libinjection/src/" ]; then
+        echo "Cannot find 'libinjection' submodule."
+        exit 1;
+    fi
+    echo "Using submodule libinjection"
+    # prepend ngx_config.h to libinjection sources, copy headers
+    mkdir -p $ngx_addon_dir/libinjection_ngxbuild
+    cp $ngx_addon_dir/libinjection/src/*.h $ngx_addon_dir/libinjection_ngxbuild/
+    for src_file in libinjection_html5.c libinjection_sqli.c libinjection_xss.c ; do
+        echo "#include <ngx_config.h>" > $ngx_addon_dir/libinjection_ngxbuild/$src_file
+        cat $ngx_addon_dir/libinjection/src/$src_file >> $ngx_addon_dir/libinjection_ngxbuild/$src_file
+        naxsi_sources="$naxsi_sources $ngx_addon_dir/libinjection_ngxbuild/$src_file"
+    done;
+    CFLAGS="$CFLAGS -DLIBINJECTION_VERSION=0 -I$ngx_addon_dir/libinjection_ngxbuild/"
+else
+    echo "Using system libinjection"
+    CFLAGS="$CFLAGS $LIBINJECTION_CFLAGS"
+    ngx_feature_libs="$LIBINJECTION_LIBS"
+fi
 
 # NGINX module condfiguration.
 ngx_addon_name=naxsi
