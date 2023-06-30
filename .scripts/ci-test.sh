@@ -4,6 +4,15 @@
 
 RUN_TEST="$1"
 
+if command -v python &> /dev/null ; then
+    PYTHON=python
+elif command -v python3 &> /dev/null ; then
+    PYTHON=python3
+else
+    echo "Cannot find python.."
+    exit 1
+fi
+
 export NAXSI_CFG_PATH=$(realpath naxsi_rules/)
 export NAXSI_TMP_PATH=$(realpath nginx-tmp/)
 export NAXSI_TST_PATH=$(realpath unit-tests/)
@@ -20,5 +29,5 @@ echo "############################"
 cp -v "$NAXSI_TST_PATH/nginx-ci.conf" "$NAXSI_TMP_PATH/naxsi_ut/nginx.conf"
 openssl req -batch -x509 -nodes -days 365 -newkey rsa:2048 -keyout "$NAXSI_TMP_PATH/nginx.key" -out "$NAXSI_TMP_PATH/nginx.crt"
 
-python .scripts/naxsi-gen-tests.py
-python -m unittest discover ./unit-tests/python/ $RUN_TEST -v
+$PYTHON .scripts/naxsi-gen-tests.py
+$PYTHON -m unittest discover ./unit-tests/python/ $RUN_TEST -v

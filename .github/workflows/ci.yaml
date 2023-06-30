@@ -12,12 +12,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-sys:
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - fedora:37
+          - fedora:38
+          - fedora:39
+    name: libinjection-system ${{ matrix.container }}
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    steps:
+      - name: Checkout repository without submodule
+        uses: actions/checkout@v3
+      - name: Install system libinjection
+        run: |
+          sudo dnf -y install libinjection \
+                              libinjection-devel \
+                              pcre2-devel pcre2 \
+                              zlib-devel zlib \
+                              make automake gcc \
+                              wget openssl
+      - name: Build
+        run: /bin/bash .scripts/ci-build.sh "1.25.1"
+
+
   build-test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
         nginx:
+          - 1.25.1
           - 1.24.0
           - 1.23.4
           - 1.22.0
@@ -33,8 +60,6 @@ jobs:
         with:
           submodules: recursive
           persist-credentials: false
-      - name: Install Test::Nginx
-        run: sudo cpan -Ti Test::Nginx Test::Nginx::Socket
       - name: Build
         run: /bin/bash .scripts/ci-build.sh "${{ matrix.nginx }}"
       - name: Unit Tests
@@ -49,7 +74,7 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Build
-        run: /bin/bash .scripts/ci-build.sh "1.24.0"
+        run: /bin/bash .scripts/ci-build.sh "1.25.1"
       - name: Run WAF efficacy tests (core only)
         run: /bin/bash .scripts/ci-wafefficacy.sh core
       - name: Run WAF efficacy tests (complete)
