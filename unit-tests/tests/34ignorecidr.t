@@ -245,5 +245,5 @@ location /RequestDenied {
 --- request
 GET /foobar?a=update/table
 --- curl
---- curl_options: --interface lo
+--- curl_options: --interface 127.0.0.1
 --- error_code: 200
