@@ -217,3 +217,36 @@ location /RequestDenied {
 --- request
 GET /foobar
 --- error_code: 200
+
+=== TEST 1.8: IgnoreIP request inheritance
+--- user_files
+>>> foobar
+foobar text
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreIP  "127.0.0.1";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+
+     location /foobar {
+          BasicRule wl:10;
+     }
+}
+location /RequestDenied {
+     return 412;
+}
+--- request
+GET /foobar?a=update/table
+--- curl
+--- curl_options: --interface lo
+--- error_code: 200
