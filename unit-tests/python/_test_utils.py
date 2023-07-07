@@ -267,6 +267,8 @@ def send_curl(port, url_path, method, headers, data, curl_protocol, curl_options
   else:
     crlf = "\r\n"
   data_begin_pos = 0
+  print(bytearray(crlf, "utf-8"))
+  print(bytearray(outs, "utf-8"))
   for i in range(len(crlf)*2, len(outs)):
     if crlf+crlf == outs[i - len(crlf)*2:i]:
       data_begin_pos = i

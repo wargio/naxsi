@@ -88,17 +88,15 @@ def parse_test(lines, test_file, line_num):
     curl = True
     idx = idx + 1
   if lines[idx].lstrip().startswith("--- curl_protocol:"):
-    prefix_len = len("--- curl_protocol: ")
-    curl_protocol = lines[idx].strip()[prefix_len:]
+    curl_protocol = lines[idx].strip()[len("--- curl_protocol:"):]
     idx = idx + 1
   if lines[idx].lstrip().startswith("--- curl_options:"):
-    prefix_len = len("--- curl_options: ")
-    curl_options = lines[idx].strip()[prefix_len:]
+    curl_options = lines[idx].strip()[len("--- curl_options:"):]
     idx = idx + 1
   if not lines[idx].lstrip().startswith("--- error_code: "):
     print("ERROR: Cannot parse test defintion, file: [{}], line: [{}]".format(test_file,  line_num + idx - 2))
     sys.exit(1)
-  prefix_len = len("--- error_code: ")
+  prefix_len = len("--- error_code:")
   error_code = int(lines[idx].lstrip()[prefix_len:])
   if idx < len(lines) - 2 and lines[idx + 1].lstrip().startswith("--- error_log"):
     idx += 2
