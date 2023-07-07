@@ -230,7 +230,7 @@ def send_curl(port, url_path, method, headers, data, curl_protocol, curl_options
     curl_exe = ["curl.exe"]
   curl_exe.extend(['-i', '-H', 'User-Agent:', '-H', 'Accept:', '-sS'])
   if curl_options is not None and len(curl_options) > 0:
-    curl_exe.append("'{}'".format(curl_options))
+    curl_exe.extend(curl_options.split())
   if not includes_header(headers, "Host"):
     curl_exe.extend(['-H', "'Host: localhost'"])
   for name, val in headers.items():
@@ -259,8 +259,8 @@ def send_curl(port, url_path, method, headers, data, curl_protocol, curl_options
     if errs is not None and len(errs) > 0:
       raise NaxsiTestException('ERROR: curl command generates stderr output: "{}"'.format(errs))
     raise NaxsiTestException('ERROR: curl command generates no stdout output')
-#  if errs is not None and len(errs) > 0:
-#    print('WARNING: curl command generates stderr output: "{}"'.format(errs))
+  if errs is not None and len(errs) > 0:
+    print('WARNING: curl command generates stderr output: "{}"'.format(errs))
 
   if is_posix():
     crlf = "\n"
