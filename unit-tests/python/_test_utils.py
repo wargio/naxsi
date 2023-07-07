@@ -262,13 +262,8 @@ def send_curl(port, url_path, method, headers, data, curl_protocol, curl_options
   if errs is not None and len(errs) > 0:
     print('WARNING: curl command generates stderr output: "{}"'.format(errs))
 
-  if is_posix():
-    crlf = "\n"
-  else:
-    crlf = "\r\n"
+  crlf = "\n"
   data_begin_pos = 0
-  print(bytearray(crlf, "utf-8"))
-  print(bytearray(outs, "utf-8"))
   for i in range(len(crlf)*2, len(outs)):
     if crlf+crlf == outs[i - len(crlf)*2:i]:
       data_begin_pos = i
