@@ -223,6 +223,59 @@ def send_raw_request(port, data):
       time.sleep(0.1)
   raise NaxsiTestException("Connection failed, port: [{}]".format(port))
 
+def send_curl(port, url_path, method, headers, data, curl_protocol, curl_options):
+  if is_posix():
+    curl_exe = ["curl"]
+  else:
+    curl_exe = ["curl.exe"]
+  curl_exe.extend(['-i', '-H', 'User-Agent:', '-H', 'Accept:', '-sS'])
+  if curl_options is not None and len(curl_options) > 0:
+    curl_exe.extend(curl_options.split())
+  if not includes_header(headers, "Host"):
+    curl_exe.extend(['-H', "'Host: localhost'"])
+  for name, val in headers.items():
+    curl_exe.extend(['-H', "'{}: {}'".format(name, val)])
+  if data is not None and len(data) > 0 and not includes_header(headers, "Content-Length"):
+    curl_exe.extend(['-H', "'Content-Length: {}'".format(len(data))])
+  if data is not None and len(data) > 0:
+    curl_exe.extend(['-d', "'{}'".format(data)])
+  if method is not None and len(method) > 0:
+    if "HEAD" == method:
+      curl_exe.append('-I')
+    elif "GET" != method:
+      curl_exe.extend(['-X', "'{}'".format(method)])
+  curl_exe.append('{}://127.0.0.1:{}{}'.format(curl_protocol, port, url_path))
+#  print(curl_exe)
+#  print(" ".join(curl_exe))
+  curl_proc = subprocess.Popen(curl_exe, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8")
+  curl_proc.wait()
+  try:
+    outs, errs = curl_proc.communicate(timeout=15)
+  except TimeoutExpired:
+    curl_proc.kill()
+    outs, errs = curl_proc.communicate()
+
+  if outs is None or len(outs) == 0:
+    if errs is not None and len(errs) > 0:
+      raise NaxsiTestException('ERROR: curl command generates stderr output: "{}"'.format(errs))
+    raise NaxsiTestException('ERROR: curl command generates no stdout output')
+  if errs is not None and len(errs) > 0:
+    print('WARNING: curl command generates stderr output: "{}"'.format(errs))
+
+  crlf = "\n"
+  data_begin_pos = 0
+  for i in range(len(crlf)*2, len(outs)):
+    if crlf+crlf == outs[i - len(crlf)*2:i]:
+      data_begin_pos = i
+      break
+  lines = outs[:data_begin_pos].split(crlf)
+  status = int(lines[0].split(" ")[1])
+  out_headers = {}
+  for ln in lines[1:-2]:
+    parts = ln.split(": ")
+    out_headers[parts[0]] = parts[1]
+  return status, out_headers, outs[data_begin_pos:]
+
 def write_user_files(files):
   nginx_dir = get_nginx_dir()
   for name, value in files.items():
@@ -285,10 +338,13 @@ class nginx_runner():
       kill_nginx(self.proc)
     delete_user_files(self.user_files)
 
-  def request(self, url, method="GET", headers={}, data=None, resp_body_required=False):
+  def request(self, url, method="GET", headers={}, data=None, resp_body_required=False, curl=False, curl_protocol="http", curl_options=""):
     if data is not None and type(data) == str:
       data = data.encode("utf-8")
-    status, _, body = send_request(self.port, url, method, headers, data)
+    if not curl:
+      status, _, body = send_request(self.port, url, method, headers, data)
+    else:
+      status, _, body = send_curl(self.port, url, method, headers, data, curl_protocol, curl_options)
     if resp_body_required:
       return status, body
     else:

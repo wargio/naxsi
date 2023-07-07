@@ -4,10 +4,10 @@
 
 RUN_TEST="$1"
 
-if command -v python &> /dev/null ; then
-    PYTHON=python
-elif command -v python3 &> /dev/null ; then
+if command -v python3 &> /dev/null ; then
     PYTHON=python3
+elif command -v python &> /dev/null ; then
+    PYTHON=python
 else
     echo "Cannot find python.."
     exit 1

@@ -214,3 +214,36 @@ X-Forwarded-For: 2001:4860:4860::8888
 --- request
 GET /?a=<>
 --- error_code: 200
+
+=== TEST 1.8: IgnoreCIDR request inheritance
+--- user_files
+>>> foobar
+foobar text
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR  "127.0.0.0/24";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+
+     location /foobar {
+          BasicRule wl:10;
+     }
+}
+location /RequestDenied {
+     return 412;
+}
+--- request
+GET /foobar?a=update/table
+--- curl
+--- curl_options: --interface 127.0.0.1
+--- error_code: 200

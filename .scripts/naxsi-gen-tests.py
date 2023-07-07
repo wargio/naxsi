@@ -7,7 +7,7 @@ from collections import namedtuple
 from os import path, replace
 import re
 
-NginxTest = namedtuple("NginxTest", "filename name user_files main_config http_config config more_headers request raw_request error_code, error_log no_error_log response_body")
+NginxTest = namedtuple("NginxTest", "filename name user_files main_config http_config config more_headers request raw_request curl curl_protocol curl_options error_code, error_log no_error_log response_body")
 
 unique_fun_names = set()
 
@@ -58,6 +58,9 @@ def parse_test(lines, test_file, line_num):
   more_headers = []
   request = []
   raw_request = []
+  curl = False
+  curl_protocol = "http"
+  curl_options = ""
   error_code = 0
   error_log = []
   no_error_log = []
@@ -81,10 +84,19 @@ def parse_test(lines, test_file, line_num):
     idx = collect_section(lines, idx, request)
   if lines[idx].lstrip().startswith("--- raw_request"):
     idx = collect_section(lines, idx, raw_request)
+  if lines[idx].lstrip().startswith("--- curl"):
+    curl = True
+    idx = idx + 1
+  if lines[idx].lstrip().startswith("--- curl_protocol:"):
+    curl_protocol = lines[idx].strip()[len("--- curl_protocol:"):]
+    idx = idx + 1
+  if lines[idx].lstrip().startswith("--- curl_options:"):
+    curl_options = lines[idx].strip()[len("--- curl_options:"):]
+    idx = idx + 1
   if not lines[idx].lstrip().startswith("--- error_code: "):
     print("ERROR: Cannot parse test defintion, file: [{}], line: [{}]".format(test_file,  line_num + idx - 2))
     sys.exit(1)
-  prefix_len = len("--- error_code: ")
+  prefix_len = len("--- error_code:")
   error_code = int(lines[idx].lstrip()[prefix_len:])
   if idx < len(lines) - 2 and lines[idx + 1].lstrip().startswith("--- error_log"):
     idx += 2
@@ -101,7 +113,7 @@ def parse_test(lines, test_file, line_num):
   if idx < len(lines) - 1 and lines[idx + 1].lstrip().startswith("--- response_body"):
     idx+=1
     response_body.append(lines[idx][18:].strip())
-  return NginxTest(filename, name, user_files, main_config, http_config, config, more_headers, request, raw_request, error_code, error_log, no_error_log, response_body)
+  return NginxTest(filename, name, user_files, main_config, http_config, config, more_headers, request, raw_request, curl, curl_protocol, curl_options, error_code, error_log, no_error_log, response_body)
 
 def read_list_of_tests(test_file):
   tests = []
@@ -328,6 +340,15 @@ def gen_request(test):
   if data is not None:
     res += '''
         data="""{}""",'''.format(data)
+  if test.curl:
+    res += '''
+        curl=True,'''
+    if len(test.curl_protocol) > 0:
+      res += '''
+        curl_protocol="{}",'''.format(test.curl_protocol)
+    if len(test.curl_options) > 0:
+      res += '''
+        curl_options="{}",'''.format(test.curl_options)
   if len(test.response_body) > 0:
     res += '''
         resp_body_required=True'''

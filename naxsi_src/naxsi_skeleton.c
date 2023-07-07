@@ -50,13 +50,20 @@ ngx_http_naxsi_read_main_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
 static ngx_int_t
 ngx_http_naxsi_init(ngx_conf_t* cf);
 static char*
-ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
+ngx_http_naxsi_br_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
 
 static char*
 ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
 
 static char*
 ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
+
+static ngx_int_t
+ngx_http_naxsi_add_ii_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf, char* ip_str);
+static char*
+ngx_http_naxsi_ii_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
+static char*
+ngx_http_naxsi_ic_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
 
 static char*
 ngx_http_naxsi_flags_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf);
@@ -150,7 +157,7 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
   /* BasicRule (in loc) */
   { ngx_string(TOP_BASIC_RULE_T),
     NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-    ngx_http_naxsi_read_conf,
+    ngx_http_naxsi_br_loc_conf,
     NGX_HTTP_LOC_CONF_OFFSET,
     0,
     NULL },
@@ -158,7 +165,7 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
   /* BasicRule (in loc) - nginx style */
   { ngx_string(TOP_BASIC_RULE_N),
     NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-    ngx_http_naxsi_read_conf,
+    ngx_http_naxsi_br_loc_conf,
     NGX_HTTP_LOC_CONF_OFFSET,
     0,
     NULL },
@@ -182,7 +189,15 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
   /* WhitelistIP */
   { ngx_string(TOP_IGNORE_IP_T),
     NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-    ngx_http_naxsi_read_conf,
+    ngx_http_naxsi_ii_loc_conf,
+    NGX_HTTP_LOC_CONF_OFFSET,
+    0,
+    NULL },
+
+  /* WhitelistIP - nginx style */
+  { ngx_string(TOP_IGNORE_IP_N),
+    NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
+    ngx_http_naxsi_ii_loc_conf,
     NGX_HTTP_LOC_CONF_OFFSET,
     0,
     NULL },
@@ -190,7 +205,15 @@ static ngx_command_t ngx_http_naxsi_commands[] = {
   /* WhitelistCIDR */
   { ngx_string(TOP_IGNORE_CIDR_T),
     NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
-    ngx_http_naxsi_read_conf,
+    ngx_http_naxsi_ic_loc_conf,
+    NGX_HTTP_LOC_CONF_OFFSET,
+    0,
+    NULL },
+
+  /* WhitelistCIDR - nginx style */
+  { ngx_string(TOP_IGNORE_CIDR_N),
+    NGX_HTTP_MAIN_CONF | NGX_HTTP_SRV_CONF | NGX_HTTP_LOC_CONF | NGX_HTTP_LMT_CONF | NGX_CONF_1MORE,
+    ngx_http_naxsi_ic_loc_conf,
     NGX_HTTP_LOC_CONF_OFFSET,
     0,
     NULL },
@@ -673,7 +696,7 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
 **	  see foo_cfg_parse.c for stuff
 */
 static char*
-ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
+ngx_http_naxsi_br_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
   ngx_http_naxsi_loc_conf_t *alcf = conf;
 
@@ -691,32 +714,7 @@ ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
   }
 
-  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
-    return NGX_CONF_ERROR;
-
   value   = cf->args->elts;
-
-  if (!alcf->ignore_cidrs) {
-    alcf->ignore_cidrs = ngx_array_create(cf->pool, 1, sizeof(cidr_t));
-    if (!alcf->ignore_cidrs) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "CIDRs array alloc failed"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                              /* LCOV_EXCL_LINE */
-    }
-  }
-
-  if (!alcf->ignore_ips) {
-    alcf->ignore_ips = (ngx_hash_t*)ngx_pcalloc(cf->pool, sizeof(ngx_hash_t));
-    if (!alcf->ignore_ips) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hashtable alloc failed"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                                /* LCOV_EXCL_LINE */
-    }
-    alcf->ignore_ips_ha.pool      = cf->pool;
-    alcf->ignore_ips_ha.temp_pool = cf->temp_pool;
-    if (ngx_hash_keys_array_init(&alcf->ignore_ips_ha, NGX_HASH_SMALL) != NGX_OK) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hash keys init failed"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                               /* LCOV_EXCL_LINE */
-    }
-  }
 
   /*
   ** if it's a basic rule
@@ -816,89 +814,10 @@ ngx_http_naxsi_read_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
         memcpy(rule_r, &rule, sizeof(ngx_http_rule_t));
       }
     }
-    return (NGX_CONF_OK);
-  } else if (!ngx_strcmp(value[0].data, TOP_IGNORE_IP_T) ||
-             !ngx_strcmp(value[0].data, TOP_IGNORE_IP_N)) {
 
-    char ip_str[INET6_ADDRSTRLEN] = { 0 };
-    if (!naxsi_parse_ip(&value[1], NULL, ip_str)) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid IP"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                /* LCOV_EXCL_LINE */
-    }
-    ngx_str_t key = { .data = NULL, .len = strlen(ip_str) };
-    key.data      = (unsigned char*)ngx_pcalloc(cf->pool, key.len);
-    if (!key.data) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate memory"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                            /* LCOV_EXCL_LINE */
-    }
-    memcpy(key.data, ip_str, key.len);
+    if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+      return NGX_CONF_ERROR;
 
-    if (ngx_hash_add_key(&alcf->ignore_ips_ha, &key, (void*)1234, NGX_HASH_READONLY_KEY) !=
-        NGX_OK) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot add hash value"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                           /* LCOV_EXCL_LINE */
-    }
-    return (NGX_CONF_OK); /* LCOV_EXCL_LINE */
-  } else if (!ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_T) ||
-             !ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_N)) {
-
-    char* smask   = NULL;
-    int   is_ipv6 = strnchr((const char*)value[1].data, ':', value[1].len) != NULL;
-    if ((!is_ipv6 && NULL != (smask = cstrfaststr(value[1].data, value[1].len, "/32"))) ||
-        (is_ipv6 && NULL != (smask = cstrfaststr(value[1].data, value[1].len, "/128")))) {
-
-      // add it directly to IgnoreIP list
-      char   ip_str[INET6_ADDRSTRLEN] = { 0 };
-      size_t orig_len                 = value[1].len;
-
-      value[1].len = smask - (const char*)value[1].data;
-      int ret      = naxsi_parse_ip(&value[1], NULL, ip_str);
-      value[1].len = orig_len;
-      if (!ret) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid IP in CIDR"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                        /* LCOV_EXCL_LINE */
-      }
-
-      ngx_str_t key = { .data = NULL, .len = strlen(ip_str) };
-      key.data      = (unsigned char*)ngx_pcalloc(cf->pool, key.len);
-      if (!key.data) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate memory"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                            /* LCOV_EXCL_LINE */
-      }
-      memcpy(key.data, ip_str, key.len);
-
-      if (ngx_hash_add_key(&alcf->ignore_ips_ha, &key, (void*)1234, NGX_HASH_READONLY_KEY) !=
-          NGX_OK) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot add hash value"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                           /* LCOV_EXCL_LINE */
-      }
-      return (NGX_CONF_OK); /* LCOV_EXCL_LINE */
-    }
-
-    cidr_t cidr = cidr_zero;
-    int    err  = naxsi_parse_cidr(&value[1], &cidr);
-    switch (err) {
-      case CIDR_OK:
-        break;
-      default:
-        /* fall-thru */
-      case CIDR_ERROR_MISSING_MASK:
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "missing CIDR mask"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                       /* LCOV_EXCL_LINE */
-      case CIDR_ERROR_INVALID_IP_NET:
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid CIDR net"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                      /* LCOV_EXCL_LINE */
-      case CIDR_ERROR_INVALID_CIDR_MASK:
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid CIDR mask"); /* LCOV_EXCL_LINE */
-        return (NGX_CONF_ERROR);                                       /* LCOV_EXCL_LINE */
-    }
-
-    cidr_t* tmp = (cidr_t*)ngx_array_push(alcf->ignore_cidrs);
-    if (!tmp) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate array value"); /* LCOV_EXCL_LINE */
-      return (NGX_CONF_ERROR);                                                 /* LCOV_EXCL_LINE */
-    }
-    *tmp = cidr;
     return (NGX_CONF_OK);
   }
   ngx_http_naxsi_line_conf_error(cf, value);
@@ -917,9 +836,6 @@ ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR);
-
-  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
-    return NGX_CONF_ERROR;
 
   value   = cf->args->elts;
 
@@ -1004,6 +920,10 @@ ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
     return (NGX_CONF_ERROR);
     /* LCOV_EXCL_STOP */
   }
+
+  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+    return NGX_CONF_ERROR;
+
   return (NGX_CONF_OK);
 }
 
@@ -1019,9 +939,6 @@ ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
   if (!alcf || !cf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
 
-  if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
-    return NGX_CONF_ERROR;
-
   value   = cf->args->elts;
 
   /* store denied URL for location */
@@ -1036,9 +953,172 @@ ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
       return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
     memcpy(alcf->denied_url->data, value[1].data, value[1].len);
     alcf->denied_url->len = value[1].len;
+
+    if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+      return NGX_CONF_ERROR;
+
     return (NGX_CONF_OK);
   }
 
+  ngx_http_naxsi_line_conf_error(cf, value);
+  return NGX_CONF_ERROR;
+}
+
+/* Add IP to Ignore IP list location configuration */
+static ngx_int_t
+ngx_http_naxsi_add_ii_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf, char* ip_str)
+{
+    ngx_str_t key;
+
+    key.len  = strlen(ip_str);
+    key.data = (unsigned char*)ngx_pcalloc(cf->pool, key.len);
+    if (!key.data) {
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate memory");
+      return (NGX_ERROR);
+    }
+    memcpy(key.data, ip_str, key.len);
+
+    if (!conf->ignore_ips) {
+      conf->ignore_ips = (ngx_hash_t*)ngx_pcalloc(cf->pool, sizeof(ngx_hash_t));
+      if (!conf->ignore_ips) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hashtable alloc failed");
+        return (NGX_ERROR);
+      }
+      conf->ignore_ips_ha.pool      = cf->pool;
+      conf->ignore_ips_ha.temp_pool = cf->temp_pool;
+      if (ngx_hash_keys_array_init(&conf->ignore_ips_ha, NGX_HASH_SMALL) != NGX_OK) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hash keys init failed");
+        return (NGX_ERROR);
+      }
+    }
+    if (ngx_hash_add_key(&conf->ignore_ips_ha, &key, (void*)1234, NGX_HASH_READONLY_KEY) !=
+        NGX_OK) {
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot add hash value");
+      return (NGX_ERROR);
+    }
+    return (NGX_OK);
+}
+
+/*
+** Ignore IP
+*/
+static char*
+ngx_http_naxsi_ii_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
+{
+  ngx_http_naxsi_loc_conf_t * alcf = conf;
+  ngx_str_t*                  value;
+
+  if (!alcf || !cf)
+    return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
+
+  value   = cf->args->elts;
+
+  if (!ngx_strcmp(value[0].data, TOP_IGNORE_IP_T) ||
+      !ngx_strcmp(value[0].data, TOP_IGNORE_IP_N)) {
+
+    char ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
+
+    if (!naxsi_parse_ip(&value[1], NULL, ip_str)) {
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid IP");
+      return (NGX_CONF_ERROR);
+    }
+
+    if (ngx_http_naxsi_add_ii_loc_conf(cf, alcf, ip_str) != NGX_OK)
+      return (NGX_CONF_ERROR);
+
+    if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+      return NGX_CONF_ERROR;
+
+    return (NGX_CONF_OK);
+  }
+  ngx_http_naxsi_line_conf_error(cf, value);
+  return NGX_CONF_ERROR;
+}
+
+/*
+** Ignore CIDR
+*/
+static char*
+ngx_http_naxsi_ic_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
+{
+  ngx_http_naxsi_loc_conf_t * alcf = conf;
+  ngx_str_t*                  value;
+
+  if (!alcf || !cf)
+    return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
+
+  value   = cf->args->elts;
+
+  if (!ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_T) ||
+      !ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_N)) {
+
+    char* smask   = NULL;
+    int   is_ipv6 = strnchr((const char*)value[1].data, ':', value[1].len) != NULL;
+
+    if ((!is_ipv6 && NULL != (smask = cstrfaststr(value[1].data, value[1].len, "/32"))) ||
+        (is_ipv6 && NULL != (smask = cstrfaststr(value[1].data, value[1].len, "/128")))) {
+
+      // add it directly to IgnoreIP list
+      char   ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
+      size_t orig_len                 = value[1].len;
+
+      value[1].len = smask - (const char*)value[1].data;
+      int ret      = naxsi_parse_ip(&value[1], NULL, ip_str);
+      value[1].len = orig_len;
+      if (!ret) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid IP in CIDR");
+        return (NGX_CONF_ERROR);
+      }
+
+      if (ngx_http_naxsi_add_ii_loc_conf(cf, alcf, ip_str) != NGX_OK)
+        return (NGX_CONF_ERROR);
+
+      if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+        return NGX_CONF_ERROR;
+
+      return (NGX_CONF_OK);
+    }
+
+    cidr_t cidr = cidr_zero;
+    int    err  = naxsi_parse_cidr(&value[1], &cidr);
+    switch (err) {
+      case CIDR_OK:
+        break;
+      default:
+        /* fall-thru */
+      case CIDR_ERROR_MISSING_MASK:
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "missing CIDR mask");
+        return (NGX_CONF_ERROR);
+      case CIDR_ERROR_INVALID_IP_NET:
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid CIDR net");
+        return (NGX_CONF_ERROR);
+      case CIDR_ERROR_INVALID_CIDR_MASK:
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "invalid CIDR mask");
+        return (NGX_CONF_ERROR);
+    }
+
+    if (!alcf->ignore_cidrs) {
+      alcf->ignore_cidrs = ngx_array_create(cf->pool, 1, sizeof(cidr_t));
+      if (!alcf->ignore_cidrs) {
+        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "CIDRs array alloc failed");
+        return (NGX_CONF_ERROR);
+      }
+    }
+
+    cidr_t* tmp = (cidr_t*)ngx_array_push(alcf->ignore_cidrs);
+    if (!tmp) {
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate array value");
+      return (NGX_CONF_ERROR);
+    }
+    *tmp = cidr;
+
+    if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
+      return NGX_CONF_ERROR;
+
+    return (NGX_CONF_OK);
+  }
+
+  ngx_http_naxsi_line_conf_error(cf, value);
   return NGX_CONF_ERROR;
 }
 
