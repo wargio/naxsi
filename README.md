@@ -1,4 +1,4 @@
-![naxsi](https://raw.githubusercontent.com/nbs-system/naxsi/master/logo.png)
+![naxsi](logo.png)
 
 ## What is Naxsi?
 
@@ -36,6 +36,10 @@ It depends on `libpcre` for its regexp support, and is reported to work great on
 ## Why using this repository
 
 *The original project is (unofficially) abandoned*, but you can fully ask for support here as i'm willing to keep the project working as last remaining developer.
+
+## Documentation
+
+[docs](docs/index)
 
 ## Build naxsi
 
