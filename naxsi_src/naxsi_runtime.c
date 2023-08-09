@@ -16,129 +16,31 @@
 ** rules at any time ;)
 */
 
-ngx_http_rule_t nx_int__weird_request = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 1,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
+#define InternalRule(var_name, rule_id, block, drop)             \
+  ngx_http_rule_t var_name = {                                   \
+    /*type*/ 0,            /*whitelist flag*/ 0,                 \
+    /*wl_id ptr*/ NULL,    /*rule_id*/ rule_id,                  \
+    /*log_msg*/ NULL,      /*score*/ 0,                          \
+    /*sscores*/ NULL,                                            \
+    /*block*/ block,       /*allow*/ 0,                          \
+    /*drop*/ drop,         /*log*/ 0,                            \
+    /*br ptrs*/ NULL                                             \
+  }
 
-ngx_http_rule_t nx_int__big_request = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 2,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_hex_encoding = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 10,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_content_type = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 11,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_url = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 12,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_post_format = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 13,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_post_boundary = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 14,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__empty_post_body = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 16,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t* nx_int__libinject_sql; /*ID:17*/
-ngx_http_rule_t* nx_int__libinject_xss; /*ID:18*/
-
-ngx_http_rule_t nx_int__no_rules = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 19,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__bad_utf8 = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 20,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__illegal_host_header = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 21,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
+InternalRule(nx_int__weird_request,           1, 1, 0);
+InternalRule(nx_int__big_request,             2, 1, 0);
+InternalRule(nx_int__uncommon_hex_encoding,  10, 1, 0);
+InternalRule(nx_int__uncommon_content_type,  11, 1, 0);
+InternalRule(nx_int__uncommon_url,           12, 1, 0);
+InternalRule(nx_int__uncommon_post_format,   13, 1, 0);
+InternalRule(nx_int__uncommon_post_boundary, 14, 1, 0);
+InternalRule(nx_int__invalid_json,           15, 1, 0);
+InternalRule(nx_int__empty_post_body,        16, 1, 0);
+InternalRule(nx_int__libinject_sql,          17, 1, 0);
+InternalRule(nx_int__libinject_xss,          18, 1, 0);
+InternalRule(nx_int__no_rules,               19, 0, 1);
+InternalRule(nx_int__bad_utf8,               20, 0, 1);
+InternalRule(nx_int__illegal_host_header,    21, 0, 1);
 
 #define naxsi_error_fatal(ctx, r, ...)                                                             \
   do {                                                                                             \
@@ -165,9 +67,7 @@ ngx_http_rule_t nx_int__illegal_host_header = {
 void
 ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                                          ngx_http_naxsi_loc_conf_t* cf,
-                                         ngx_http_request_t*        r,
-                                         ngx_str_t*                 name,
-                                         ngx_str_t*                 value);
+                                         ngx_http_request_t*        r);
 int
 ngx_http_process_basic_rule_buffer(ngx_str_t* str, ngx_http_rule_t* rl, ngx_int_t* match);
 void
@@ -1764,7 +1664,7 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
     ctx->drop = 1;
   if (r->log)
     ctx->log = 1;
-  ngx_http_naxsi_update_current_ctx_status(ctx, cf, req, name, value);
+  ngx_http_naxsi_update_current_ctx_status(ctx, cf, req);
   return (1);
 }
 
@@ -1955,7 +1855,7 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     libinjection_sqli_init(&state, (const char*)name->data, name->len, FLAG_NONE);
     issqli = libinjection_is_sqli(&state);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_sql, ctx, req, name, value, zone, 1, 1);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_sql, ctx, req, name, value, zone, 1, 1);
     }
 
     /* hardcoded call to libinjection on CONTENT, apply internal rule if
@@ -1963,7 +1863,7 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     libinjection_sqli_init(&state, (const char*)value->data, value->len, FLAG_NONE);
     issqli = libinjection_is_sqli(&state);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_sql, ctx, req, name, value, zone, 1, 0);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_sql, ctx, req, name, value, zone, 1, 0);
     }
   }
 
@@ -1971,14 +1871,14 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     /* first on var_name */
     issqli = libinjection_xss((const char*)name->data, name->len);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_xss, ctx, req, name, value, zone, 1, 1);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_xss, ctx, req, name, value, zone, 1, 1);
     }
 
     /* hardcoded call to libinjection on CONTENT, apply internal rule if
      * matched. */
     issqli = libinjection_xss((const char*)value->data, value->len);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_xss, ctx, req, name, value, zone, 1, 0);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_xss, ctx, req, name, value, zone, 1, 0);
     }
   }
 }
@@ -2974,12 +2874,10 @@ ngx_http_naxsi_data_parse(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r)
 {
   ngx_http_naxsi_loc_conf_t*  cf;
   ngx_http_naxsi_main_conf_t* main_cf;
-  ngx_http_core_main_conf_t*  cmcf;
 
   cf      = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
-  cmcf    = ngx_http_get_module_main_conf(r, ngx_http_core_module);
   main_cf = ngx_http_get_module_main_conf(r, ngx_http_naxsi_module);
-  if (!cf || !ctx || !cmcf) {
+  if (!cf || !ctx) {
     ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "naxsi: unable to parse data.");
     return;
   }
@@ -2997,77 +2895,36 @@ ngx_http_naxsi_data_parse(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r)
       /* and the presence of data to parse */
       r->request_body && ((!ctx->block || ctx->learning) && !ctx->drop))
     ngx_http_naxsi_body_parse(ctx, r, cf, main_cf);
-#if (NGX_HTTP_X_FORWARDED_FOR)
-  ngx_str_t tag;
-  tag.len  = 15;
-  tag.data = ngx_pcalloc(r->pool, tag.len + 1);
-  if (tag.data)
-    memcpy(tag.data, "x-forwarded-for", 15);
-#if (nginx_version < 1023000)
-  unsigned int      n = 0;
-  ngx_table_elt_t** h = NULL;
-  ngx_array_t       a;
-  if (r->headers_in.x_forwarded_for.nelts >= 1) {
-    a = r->headers_in.x_forwarded_for;
-    n = a.nelts;
-    if (n >= 1) {
-      h = a.elts;
-      ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "xfor %s", h[0]->value.data);
-      ngx_http_naxsi_update_current_ctx_status(ctx, cf, r, &tag, (ngx_str_t*)h[0]->value.data);
-    }
-  }
-#else
-  ngx_table_elt_t* xff = NULL;
-  if (r->headers_in.x_forwarded_for != NULL) {
-    xff = r->headers_in.x_forwarded_for;
-    ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "xfor %s", xff->value.data);
 
-    ngx_http_naxsi_update_current_ctx_status(ctx, cf, r, &tag, (ngx_str_t*)xff->value.data);
-  }
-#endif
-#endif
+  ngx_http_naxsi_update_current_ctx_status(ctx, cf, r);
 }
 
 void
 ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                                          ngx_http_naxsi_loc_conf_t* cf,
-                                         ngx_http_request_t*        r,
-                                         ngx_str_t*                 name,
-                                         ngx_str_t*                 value)
+                                         ngx_http_request_t*        r)
 {
-  unsigned int           i, z;
-  unsigned int           matched;
-  ngx_http_check_rule_t* cr;
-
+  unsigned int              i, z;
+  unsigned int              matched;
+  ngx_http_check_rule_t*    cr;
   ngx_http_special_score_t* sc;
 
   NX_DEBUG(_debug_custom_score, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-custom check rules");
 
-  int ignore = 0;
-
-  ctx->ignore = 0;
-
-  /*cr, sc, cf, ctx*/
-  if (cf->check_rules && ctx->special_scores) {
+  if (!ctx->ignore && (cf->ignore_ips || cf->ignore_cidrs)) {
 #if (NGX_HTTP_X_FORWARDED_FOR)
 #if (nginx_version < 1023000)
-    unsigned int      n = 0;
     ngx_table_elt_t** h;
-    ngx_array_t       a;
     if (r->headers_in.x_forwarded_for.nelts >= 1) {
-      a = r->headers_in.x_forwarded_for;
-      n = a.nelts;
-      if (n >= 1) {
-        h = a.elts;
-        NX_DEBUG(_debug_whitelist_ignore,
-                 NGX_LOG_DEBUG_HTTP,
-                 r->connection->log,
-                 0,
-                 "XX- lookup ignore X-Forwarded-For: %V",
-                 h[0]->value);
-        ngx_str_t* ip = &h[0]->value;
-        ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
-      }
+      h = r->headers_in.x_forwarded_for.elts;
+      NX_DEBUG(_debug_whitelist_ignore,
+               NGX_LOG_DEBUG_HTTP,
+               r->connection->log,
+               0,
+               "XX- lookup ignore X-Forwarded-For: %V",
+               h[0]->value);
+      ngx_str_t* ip = &h[0]->value;
+      ctx->ignore   = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     } else
 #else
     ngx_table_elt_t* xff;
@@ -3080,7 +2937,7 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                "XX- lookup ignore X-Forwarded-For: %V",
                xff->value);
       ngx_str_t* ip = &xff->value;
-      ignore        = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
+      ctx->ignore   = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     } else
 #endif
 #endif
@@ -3092,9 +2949,11 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                0,
                "XX- lookup ignore client ip: %V",
                ip);
-      ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
+      ctx->ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
     }
+  }
 
+  if (cf->check_rules && ctx->special_scores) {
     NX_DEBUG(_debug_custom_score,
              NGX_LOG_DEBUG_HTTP,
              r->connection->log,
@@ -3150,24 +3009,26 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                      r->connection->log,
                      0,
                      "XX- custom score rule triggered ..");
-            ctx->ignore = ignore;
-            if (cr[i].block && !ignore) {
+            if (cr[i].block) {
               ctx->block = 1;
-            } else {
-              ctx->block = 0;
             }
-            if (cr[i].drop && !ignore) {
+            if (cr[i].drop) {
               ctx->drop = 1;
             }
             if (cr[i].allow) {
               ctx->allow = 1;
             }
-            if (cr[i].log || ignore) {
+            if (cr[i].log) {
               ctx->log = 1;
             }
           }
         }
       }
+  }
+  if (ctx->ignore) {
+    ctx->block = 0;
+    ctx->drop  = 0;
+    ctx->log   = 1;
   }
 }
 

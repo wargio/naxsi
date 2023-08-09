@@ -6,26 +6,11 @@
 #include <naxsi.h>
 #include <naxsi_macros.h>
 
+extern ngx_http_rule_t nx_int__invalid_json;
+
 #define json_char(x) ((x)->src + (x)->off)
 
 //#define _debug_json 1
-
-ngx_http_rule_t nx_int__invalid_json = {
-  0,    /* type */
-  0,    /* whitelist flag */
-  NULL, /* wl_id ptr */
-  15,   /* rule_id */
-  NULL, /* log_msg */
-  0,    /* score */
-  NULL, /* sscores */
-  1,    /* sc_block */
-  0,    /* sc_allow */
-  1,    /* block */
-  0,    /* allow */
-  0,    /* drop */
-  0,    /* log */
-  NULL  /* br ptrs */
-};
 
 ngx_int_t
 ngx_http_nx_json_forward(ngx_json_t* js)
