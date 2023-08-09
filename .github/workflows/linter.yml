@@ -37,7 +37,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Reuse Compliance Check
-      uses: fsfe/reuse-action@v1.1
+      uses: fsfe/reuse-action@v2
+      with:
+        args: --suppress-deprecation lint
+
 
   formatting:
     runs-on: ubuntu-latest

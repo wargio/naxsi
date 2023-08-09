@@ -32,8 +32,8 @@ Copyright: 2019 nbs-system <security@nbs-system.com>
 License: GPL-3.0-or-later
 
 Files: unit-tests/**
-Copyright: 2019 nbs-system <security@nbs-system.com>
-Copyright: 2022 deroad <wargio@libero.it>
+Copyright: 2019 nbs-system <security@nbs-system.com> \
+           2022 deroad <wargio@libero.it>
 License: GPL-3.0-or-later
 
 Files: docs/**
