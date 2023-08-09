@@ -250,3 +250,26 @@ GET /foobar?a=update/table
 --- curl
 --- curl_options: --interface 127.0.0.1
 --- error_code: 200
+
+=== TEST 1.9: IgnoreIP internal rules
+--- user_files
+>>> foobar
+foobar text
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreIP  "127.0.0.1";
+     DeniedUrl "/RequestDenied";
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- request
+PUT /foobar
+--- error_code: 405
