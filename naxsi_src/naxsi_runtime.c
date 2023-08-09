@@ -16,129 +16,31 @@
 ** rules at any time ;)
 */
 
-ngx_http_rule_t nx_int__weird_request = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 1,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
+#define InternalRule(var_name, rule_id, block, drop)             \
+  ngx_http_rule_t var_name = {                                   \
+    /*type*/ 0,            /*whitelist flag*/ 0,                 \
+    /*wl_id ptr*/ NULL,    /*rule_id*/ rule_id,                  \
+    /*log_msg*/ NULL,      /*score*/ 0,                          \
+    /*sscores*/ NULL,                                            \
+    /*block*/ block,       /*allow*/ 0,                          \
+    /*drop*/ drop,         /*log*/ 0,                            \
+    /*br ptrs*/ NULL                                             \
+  }
 
-ngx_http_rule_t nx_int__big_request = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 2,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_hex_encoding = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 10,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_content_type = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 11,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_url = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 12,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_post_format = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 13,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__uncommon_post_boundary = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 14,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__empty_post_body = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 16,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 1,     /*sc_allow*/ 0,
-  /*block*/ 1,        /*allow*/ 0,
-  /*drop*/ 0,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t* nx_int__libinject_sql; /*ID:17*/
-ngx_http_rule_t* nx_int__libinject_xss; /*ID:18*/
-
-ngx_http_rule_t nx_int__no_rules = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 19,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__bad_utf8 = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 20,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
-
-ngx_http_rule_t nx_int__illegal_host_header = {
-  /*type*/ 0,         /*whitelist flag*/ 0,
-  /*wl_id ptr*/ NULL, /*rule_id*/ 21,
-  /*log_msg*/ NULL,   /*score*/ 0,
-  /*sscores*/ NULL,
-  /*sc_block*/ 0,     /*sc_allow*/ 0,
-  /*block*/ 0,        /*allow*/ 0,
-  /*drop*/ 1,         /*log*/ 0,
-  /*br ptrs*/ NULL
-};
+InternalRule(nx_int__weird_request,           1, 1, 0);
+InternalRule(nx_int__big_request,             2, 1, 0);
+InternalRule(nx_int__uncommon_hex_encoding,  10, 1, 0);
+InternalRule(nx_int__uncommon_content_type,  11, 1, 0);
+InternalRule(nx_int__uncommon_url,           12, 1, 0);
+InternalRule(nx_int__uncommon_post_format,   13, 1, 0);
+InternalRule(nx_int__uncommon_post_boundary, 14, 1, 0);
+InternalRule(nx_int__invalid_json,           15, 1, 0);
+InternalRule(nx_int__empty_post_body,        16, 1, 0);
+InternalRule(nx_int__libinject_sql,          17, 1, 0);
+InternalRule(nx_int__libinject_xss,          18, 1, 0);
+InternalRule(nx_int__no_rules,               19, 0, 1);
+InternalRule(nx_int__bad_utf8,               20, 0, 1);
+InternalRule(nx_int__illegal_host_header,    21, 0, 1);
 
 #define naxsi_error_fatal(ctx, r, ...)                                                             \
   do {                                                                                             \
@@ -1953,7 +1855,7 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     libinjection_sqli_init(&state, (const char*)name->data, name->len, FLAG_NONE);
     issqli = libinjection_is_sqli(&state);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_sql, ctx, req, name, value, zone, 1, 1);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_sql, ctx, req, name, value, zone, 1, 1);
     }
 
     /* hardcoded call to libinjection on CONTENT, apply internal rule if
@@ -1961,7 +1863,7 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     libinjection_sqli_init(&state, (const char*)value->data, value->len, FLAG_NONE);
     issqli = libinjection_is_sqli(&state);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_sql, ctx, req, name, value, zone, 1, 0);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_sql, ctx, req, name, value, zone, 1, 0);
     }
   }
 
@@ -1969,14 +1871,14 @@ ngx_http_libinjection(ngx_pool_t*             pool,
     /* first on var_name */
     issqli = libinjection_xss((const char*)name->data, name->len);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_xss, ctx, req, name, value, zone, 1, 1);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_xss, ctx, req, name, value, zone, 1, 1);
     }
 
     /* hardcoded call to libinjection on CONTENT, apply internal rule if
      * matched. */
     issqli = libinjection_xss((const char*)value->data, value->len);
     if (issqli == 1) {
-      ngx_http_apply_rulematch_v_n(nx_int__libinject_xss, ctx, req, name, value, zone, 1, 0);
+      ngx_http_apply_rulematch_v_n(&nx_int__libinject_xss, ctx, req, name, value, zone, 1, 0);
     }
   }
 }
@@ -2972,12 +2874,10 @@ ngx_http_naxsi_data_parse(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r)
 {
   ngx_http_naxsi_loc_conf_t*  cf;
   ngx_http_naxsi_main_conf_t* main_cf;
-  ngx_http_core_main_conf_t*  cmcf;
 
   cf      = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
-  cmcf    = ngx_http_get_module_main_conf(r, ngx_http_core_module);
   main_cf = ngx_http_get_module_main_conf(r, ngx_http_naxsi_module);
-  if (!cf || !ctx || !cmcf) {
+  if (!cf || !ctx) {
     ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "naxsi: unable to parse data.");
     return;
   }

@@ -592,6 +592,10 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
 ** and will call the hashtable creation function
 ** (whitelist aggregation)
 */
+
+extern ngx_http_rule_t nx_int__libinject_sql;
+extern ngx_http_rule_t nx_int__libinject_xss;
+
 static ngx_int_t
 ngx_http_naxsi_init(ngx_conf_t* cf)
 {
@@ -654,21 +658,13 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
   ** initalise internal rules for libinjection sqli/xss
   ** (needs proper special scores)
   */
-  nx_int__libinject_sql = ngx_pcalloc(cf->pool, sizeof(ngx_http_rule_t));
-  nx_int__libinject_xss = ngx_pcalloc(cf->pool, sizeof(ngx_http_rule_t));
-  if (!nx_int__libinject_xss || !nx_int__libinject_sql)
-    return (NGX_ERROR);
-  nx_int__libinject_sql->sscores = ngx_array_create(cf->pool, 2, sizeof(ngx_http_special_score_t));
-  nx_int__libinject_xss->sscores = ngx_array_create(cf->pool, 2, sizeof(ngx_http_special_score_t));
-  if (!nx_int__libinject_sql->sscores || !nx_int__libinject_xss->sscores)
+  nx_int__libinject_sql.sscores = ngx_array_create(cf->pool, 2, sizeof(ngx_http_special_score_t));
+  nx_int__libinject_xss.sscores = ngx_array_create(cf->pool, 2, sizeof(ngx_http_special_score_t));
+  if (!nx_int__libinject_sql.sscores || !nx_int__libinject_xss.sscores)
     return (NGX_ERROR); /* LCOV_EXCL_LINE */
-  /* internal ID sqli - 17*/
-  nx_int__libinject_sql->rule_id = 17;
-  /* internal ID xss - 18*/
-  nx_int__libinject_xss->rule_id = 18;
   /* libinjection sqli/xss - special score init */
-  ngx_http_special_score_t* libjct_sql = ngx_array_push(nx_int__libinject_sql->sscores);
-  ngx_http_special_score_t* libjct_xss = ngx_array_push(nx_int__libinject_xss->sscores);
+  ngx_http_special_score_t* libjct_sql = ngx_array_push(nx_int__libinject_sql.sscores);
+  ngx_http_special_score_t* libjct_xss = ngx_array_push(nx_int__libinject_xss.sscores);
   if (!libjct_sql || !libjct_xss)
     return (NGX_ERROR); /* LCOV_EXCL_LINE */
   libjct_sql->sc_tag = ngx_pcalloc(cf->pool, sizeof(ngx_str_t));

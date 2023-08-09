@@ -278,8 +278,6 @@ typedef struct
 
   /* List of scores increased on rule match. */
   ngx_array_t* sscores;
-  ngx_flag_t   sc_block : 1; //
-  ngx_flag_t   sc_allow : 1; //
   // end of specific score tag stuff
   ngx_flag_t block : 1;
   ngx_flag_t allow : 1;
@@ -624,12 +622,6 @@ naxsi_is_illegal_host_name(const ngx_str_t* server_name);
 
 void
 naxsi_generate_request_id(u_char* bytes);
-
-/*
-** externs for internal rules that requires it.
-*/
-extern ngx_http_rule_t* nx_int__libinject_sql;
-extern ngx_http_rule_t* nx_int__libinject_xss;
 
 /*libinjection_xss wrapper not exported by libinject_xss.h.*/
 int
