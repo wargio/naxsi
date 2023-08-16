@@ -3028,7 +3028,6 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
   if (ctx->ignore) {
     ctx->block = 0;
     ctx->drop  = 0;
-    ctx->log   = 1;
   }
 }
 
