@@ -88,7 +88,6 @@ jobs:
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
-            "ubuntu-kinetic",
             "ubuntu-lunar",
             "alpine-3.17.4",
             "alpine-3.18.2",
@@ -114,9 +113,6 @@ jobs:
             package: deb
           - name: ubuntu-jammy
             container: ubuntu:jammy
-            package: deb
-          - name: ubuntu-kinetic
-            container: ubuntu:kinetic
             package: deb
           - name: ubuntu-lunar
             container: ubuntu:lunar
