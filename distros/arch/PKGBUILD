@@ -38,7 +38,8 @@ prepare() {
 
 build() {
 	cd ${srcdir}/build
-	/usr/src/nginx/configure --with-compat --add-dynamic-module="${srcdir}/${pkgname}/naxsi_src"
+	local GCC_PATH=$(which gcc)
+	/usr/src/nginx/configure --with-cc="$GCC_PATH" --with-compat --add-dynamic-module="${srcdir}/${pkgname}/naxsi_src"
 	make modules
 }
 
