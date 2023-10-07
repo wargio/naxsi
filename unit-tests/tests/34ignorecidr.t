@@ -60,7 +60,7 @@ location /RequestDenied {
 GET /?a=buibui
 --- error_code: 200
 
-=== TEST 1.2: IgnoreCIDR request with X-Forwarded-For allow (no file) 
+=== TEST 1.2.1: IgnoreCIDR request with X-Forwarded-For allow without real_ip config (no file)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
@@ -83,7 +83,35 @@ location /RequestDenied {
 --- more_headers
 X-Forwarded-For: 1.1.1.1
 --- request
-GET /?a=buibui
+GET /?a=<>
+--- error_code: 412
+
+=== TEST 1.2.2: IgnoreCIDR request with X-Forwarded-For allow with real_ip config (no file)
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+set_real_ip_from 127.0.0.1;
+real_ip_header X-Forwarded-For;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR "1.1.1.0/24";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+         index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 1.1.1.1
+--- request
+GET /?a=<>
 --- error_code: 200
 
 === TEST 1.3: IgnoreCIDR request with X-Forwarded-For deny (no file)
@@ -163,7 +191,7 @@ location /RequestDenied {
 GET /foobar
 --- error_code: 200
 
-=== TEST 1.6: IgnoreCIDR request with X-Forwarded-For allow (ipv6)
+=== TEST 1.6.1: IgnoreCIDR request with X-Forwarded-For allow without real_ip config (ipv6)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
@@ -187,13 +215,69 @@ location /RequestDenied {
 X-Forwarded-For: 2001:4860:4860::8888
 --- request
 GET /?a=<>
---- error_code: 200
+--- error_code: 412
 
-=== TEST 1.7: Verify IgnoreCIDR 2001:4860:4860::8888/128 is converted to IgnoreIP
+=== TEST 1.6.2: IgnoreCIDR request with X-Forwarded-For allow with real_ip config (ipv6)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
 include $TEST_NGINX_NAXSI_RULES;
+set_real_ip_from 127.0.0.1;
+real_ip_header X-Forwarded-For;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR "2001:4860:4860::/112";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 2001:4860:4860::8888
+--- request
+GET /?a=<>
+--- error_code: 200
+
+=== TEST 1.7.1: Verify IgnoreCIDR 2001:4860:4860::8888/128 is converted to IgnoreIP without real_ip config
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreCIDR "2001:4860:4860::8888/128";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 2001:4860:4860::8888
+--- request
+GET /?a=<>
+--- error_code: 412
+
+=== TEST 1.7.2: Verify IgnoreCIDR 2001:4860:4860::8888/128 is converted to IgnoreIP with real_ip config
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+set_real_ip_from 127.0.0.1;
+real_ip_header X-Forwarded-For;
 --- config
 location / {
      SecRulesEnabled;
