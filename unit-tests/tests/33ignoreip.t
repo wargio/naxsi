@@ -146,6 +146,7 @@ load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
 include $TEST_NGINX_NAXSI_RULES;
 set_real_ip_from 127.0.0.1;
+set_real_ip_from ::1/128;
 real_ip_header X-Forwarded-For;
 --- config
 location / {
