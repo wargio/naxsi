@@ -60,7 +60,7 @@ location /RequestDenied {
 GET /?a=buibui
 --- error_code: 200
 
-=== TEST 1.2: IgnoreIP request with X-Forwarded-For allow (ipv4) 
+=== TEST 1.2.1: IgnoreIP request with X-Forwarded-For allow without real_ip config (ipv4) 
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
@@ -83,10 +83,38 @@ location /RequestDenied {
 --- more_headers
 X-Forwarded-For: 1.1.1.1
 --- request
-GET /?a=buibui
+GET /?a=<>
+--- error_code: 412
+
+=== TEST 1.2.2: IgnoreIP request with X-Forwarded-For allow with real_ip config (ipv4) 
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+set_real_ip_from 127.0.0.1;
+real_ip_header X-Forwarded-For;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreIP  "1.1.1.1";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 1.1.1.1
+--- request
+GET /?a=<>
 --- error_code: 200
 
-=== TEST 1.3: IgnoreIP request with X-Forwarded-For allow (ipv6)
+=== TEST 1.3.1: IgnoreIP request with X-Forwarded-For allow without reaL_ip config (ipv6)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
@@ -109,7 +137,36 @@ location /RequestDenied {
 --- more_headers
 X-Forwarded-For: 2001:4860:4860::8844
 --- request
-GET /?a=buibui
+GET /?a=<>
+--- error_code: 412
+
+=== TEST 1.3.2: IgnoreIP request with X-Forwarded-For allow with real_ip config (ipv6)
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+set_real_ip_from 127.0.0.1;
+set_real_ip_from ::1/128;
+real_ip_header X-Forwarded-For;
+--- config
+location / {
+     SecRulesEnabled;
+     IgnoreIP "2001:4860:4860::8844";
+     DeniedUrl "/RequestDenied";
+     CheckRule "$SQL >= 8" BLOCK;
+     CheckRule "$RFI >= 8" BLOCK;
+     CheckRule "$TRAVERSAL >= 4" BLOCK;
+     CheckRule "$XSS >= 8" BLOCK;
+     root $TEST_NGINX_SERVROOT/html/;
+     index index.html index.htm;
+}
+location /RequestDenied {
+     return 412;
+}
+--- more_headers
+X-Forwarded-For: 2001:4860:4860::8844
+--- request
+GET /?a=<>
 --- error_code: 200
 
 === TEST 1.4: IgnoreIP request with X-Forwarded-For deny (ipv4)

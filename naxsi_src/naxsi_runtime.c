@@ -2912,36 +2912,6 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
   NX_DEBUG(_debug_custom_score, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-custom check rules");
 
   if (!ctx->ignore && (cf->ignore_ips || cf->ignore_cidrs)) {
-#if (NGX_HTTP_X_FORWARDED_FOR)
-#if (nginx_version < 1023000)
-    ngx_table_elt_t** h;
-    if (r->headers_in.x_forwarded_for.nelts >= 1) {
-      h = r->headers_in.x_forwarded_for.elts;
-      NX_DEBUG(_debug_whitelist_ignore,
-               NGX_LOG_DEBUG_HTTP,
-               r->connection->log,
-               0,
-               "XX- lookup ignore X-Forwarded-For: %V",
-               h[0]->value);
-      ngx_str_t* ip = &h[0]->value;
-      ctx->ignore   = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
-    } else
-#else
-    ngx_table_elt_t* xff;
-    if (r->headers_in.x_forwarded_for != NULL) {
-      xff = r->headers_in.x_forwarded_for;
-      NX_DEBUG(_debug_whitelist_ignore,
-               NGX_LOG_DEBUG_HTTP,
-               r->connection->log,
-               0,
-               "XX- lookup ignore X-Forwarded-For: %V",
-               xff->value);
-      ngx_str_t* ip = &xff->value;
-      ctx->ignore   = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
-    } else
-#endif
-#endif
-    {
       ngx_str_t* ip = &r->connection->addr_text;
       NX_DEBUG(_debug_whitelist_ignore,
                NGX_LOG_DEBUG_HTTP,
@@ -2950,7 +2920,6 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
                "XX- lookup ignore client ip: %V",
                ip);
       ctx->ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
-    }
   }
 
   if (cf->check_rules && ctx->special_scores) {

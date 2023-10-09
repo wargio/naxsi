@@ -49,6 +49,7 @@ if $NEW_BUILD ; then
                 --without-mail_pop3_module \
                 --without-mail_smtp_module \
                 --without-mail_imap_module \
+                --with-http_realip_module \
                 --with-http_v2_module \
                 --without-http_uwsgi_module \
                 --without-http_scgi_module \
