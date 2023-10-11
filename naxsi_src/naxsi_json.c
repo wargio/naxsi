@@ -10,8 +10,6 @@ extern ngx_http_rule_t nx_int__invalid_json;
 
 #define json_char(x) ((x)->src + (x)->off)
 
-//#define _debug_json 1
-
 ngx_int_t
 ngx_http_nx_json_forward(ngx_json_t* js)
 {
@@ -146,9 +144,9 @@ ngx_http_nx_json_val(ngx_json_t* js)
   if ((js->c >= '0' && js->c <= '9') || js->c == '-') {
     val.data = js->src + js->off;
     while (((*(js->src + js->off) >= '0' && *(js->src + js->off) <= '9') ||
-            *(js->src + js->off) == '.' ||
-            *(js->src + js->off) == '+' || *(js->src + js->off) == '-' ||
-            *(js->src + js->off) == 'e' || *(js->src + js->off) == 'E') &&
+            *(js->src + js->off) == '.' || *(js->src + js->off) == '+' ||
+            *(js->src + js->off) == '-' || *(js->src + js->off) == 'e' ||
+            *(js->src + js->off) == 'E') &&
            js->off < js->len) {
       val.len++;
       js->off++;

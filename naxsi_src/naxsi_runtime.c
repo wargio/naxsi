@@ -16,6 +16,7 @@
 ** rules at any time ;)
 */
 
+// clang-format off
 #define InternalRule(var_name, rule_id, block, drop)             \
   ngx_http_rule_t var_name = {                                   \
     /*type*/ 0,            /*whitelist flag*/ 0,                 \
@@ -41,6 +42,7 @@ InternalRule(nx_int__libinject_xss,          18, 1, 0);
 InternalRule(nx_int__no_rules,               19, 0, 1);
 InternalRule(nx_int__bad_utf8,               20, 0, 1);
 InternalRule(nx_int__illegal_host_header,    21, 0, 1);
+// clang-format on
 
 #define naxsi_error_fatal(ctx, r, ...)                                                             \
   do {                                                                                             \
@@ -2912,14 +2914,14 @@ ngx_http_naxsi_update_current_ctx_status(ngx_http_request_ctx_t*    ctx,
   NX_DEBUG(_debug_custom_score, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-custom check rules");
 
   if (!ctx->ignore && (cf->ignore_ips || cf->ignore_cidrs)) {
-      ngx_str_t* ip = &r->connection->addr_text;
-      NX_DEBUG(_debug_whitelist_ignore,
-               NGX_LOG_DEBUG_HTTP,
-               r->connection->log,
-               0,
-               "XX- lookup ignore client ip: %V",
-               ip);
-      ctx->ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
+    ngx_str_t* ip = &r->connection->addr_text;
+    NX_DEBUG(_debug_whitelist_ignore,
+             NGX_LOG_DEBUG_HTTP,
+             r->connection->log,
+             0,
+             "XX- lookup ignore client ip: %V",
+             ip);
+    ctx->ignore = naxsi_can_ignore_ip(ip, cf) || naxsi_can_ignore_cidr(ip, cf);
   }
 
   if (cf->check_rules && ctx->special_scores) {
