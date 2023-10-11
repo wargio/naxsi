@@ -193,7 +193,7 @@ jobs:
       run: |
         rm -rf naxsi_src/libinjection
         git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
-        git -C naxsi_src/libinjection checkout 51f3a96e9fcc90a6112f52ac96fd4661e7ab0a44
+        git -C naxsi_src/libinjection checkout 4aa3894b21d03d9d8fc364505c0617d2aca73fc1
         git clone --depth=1 https://github.com/wargio/deb-creator.git
         chmod 777 .
         apt-get source nginx
