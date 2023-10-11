@@ -34,7 +34,7 @@
                        "Naxsi-Config : Incorrect line %V %V (%s:%d)...",                           \
                        &(value[0]),                                                                \
                        &(value[1]),                                                                \
-                       NAXSI_FILENAME,                                                               \
+                       NAXSI_FILENAME,                                                             \
                        __LINE__);                                                                  \
   } while (0)
 
@@ -487,12 +487,12 @@ ngx_http_naxsi_create_loc_conf(ngx_conf_t* cf)
 static ngx_int_t
 ngx_http_naxsi_push_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf)
 {
-  ngx_http_naxsi_loc_conf_t **bar;
+  ngx_http_naxsi_loc_conf_t** bar;
   ngx_http_naxsi_main_conf_t* main_cf;
 
   if (!conf->pushed) {
     main_cf = ngx_http_conf_get_module_main_conf(cf, ngx_http_naxsi_module);
-    bar = ngx_array_push(main_cf->locations);
+    bar     = ngx_array_push(main_cf->locations);
     if (!bar)
       return (NGX_ERROR);
     *bar         = conf;
@@ -694,10 +694,10 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
 static char*
 ngx_http_naxsi_br_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t *alcf = conf;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
 
-  ngx_str_t*                  value;
-  ngx_http_rule_t             rule, *rule_r;
+  ngx_str_t*      value;
+  ngx_http_rule_t rule, *rule_r;
 
 #ifdef _debug_readconf
   if (cf) {
@@ -710,7 +710,7 @@ ngx_http_naxsi_br_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
   }
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
   /*
   ** if it's a basic rule
@@ -824,16 +824,16 @@ static char*
 ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
 
-  ngx_http_naxsi_loc_conf_t * alcf = conf;
-  ngx_str_t*                  value;
-  ngx_http_check_rule_t*      rule_c;
-  unsigned int                i;
-  u_char*                     var_end;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
+  ngx_str_t*                 value;
+  ngx_http_check_rule_t*     rule_c;
+  unsigned int               i;
+  u_char*                    var_end;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR);
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
   if (ngx_strcmp(value[0].data, TOP_CHECK_RULE_T) && ngx_strcmp(value[0].data, TOP_CHECK_RULE_N))
     return (NGX_CONF_ERROR);
@@ -929,13 +929,13 @@ ngx_http_naxsi_cr_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static char*
 ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf;
-  ngx_str_t*                  value;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
+  ngx_str_t*                 value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
   /* store denied URL for location */
   if ((!ngx_strcmp(value[0].data, TOP_DENIED_URL_N) ||
@@ -964,35 +964,34 @@ ngx_http_naxsi_ud_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static ngx_int_t
 ngx_http_naxsi_add_ii_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf, char* ip_str)
 {
-    ngx_str_t key;
+  ngx_str_t key;
 
-    key.len  = strlen(ip_str);
-    key.data = (unsigned char*)ngx_pcalloc(cf->pool, key.len);
-    if (!key.data) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate memory");
-      return (NGX_ERROR);
-    }
-    memcpy(key.data, ip_str, key.len);
+  key.len  = strlen(ip_str);
+  key.data = (unsigned char*)ngx_pcalloc(cf->pool, key.len);
+  if (!key.data) {
+    ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot allocate memory");
+    return (NGX_ERROR);
+  }
+  memcpy(key.data, ip_str, key.len);
 
+  if (!conf->ignore_ips) {
+    conf->ignore_ips = (ngx_hash_t*)ngx_pcalloc(cf->pool, sizeof(ngx_hash_t));
     if (!conf->ignore_ips) {
-      conf->ignore_ips = (ngx_hash_t*)ngx_pcalloc(cf->pool, sizeof(ngx_hash_t));
-      if (!conf->ignore_ips) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hashtable alloc failed");
-        return (NGX_ERROR);
-      }
-      conf->ignore_ips_ha.pool      = cf->pool;
-      conf->ignore_ips_ha.temp_pool = cf->temp_pool;
-      if (ngx_hash_keys_array_init(&conf->ignore_ips_ha, NGX_HASH_SMALL) != NGX_OK) {
-        ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hash keys init failed");
-        return (NGX_ERROR);
-      }
-    }
-    if (ngx_hash_add_key(&conf->ignore_ips_ha, &key, (void*)1234, NGX_HASH_READONLY_KEY) !=
-        NGX_OK) {
-      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot add hash value");
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hashtable alloc failed");
       return (NGX_ERROR);
     }
-    return (NGX_OK);
+    conf->ignore_ips_ha.pool      = cf->pool;
+    conf->ignore_ips_ha.temp_pool = cf->temp_pool;
+    if (ngx_hash_keys_array_init(&conf->ignore_ips_ha, NGX_HASH_SMALL) != NGX_OK) {
+      ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "IPs hash keys init failed");
+      return (NGX_ERROR);
+    }
+  }
+  if (ngx_hash_add_key(&conf->ignore_ips_ha, &key, (void*)1234, NGX_HASH_READONLY_KEY) != NGX_OK) {
+    ngx_conf_log_error(NGX_LOG_EMERG, cf, 0, "cannot add hash value");
+    return (NGX_ERROR);
+  }
+  return (NGX_OK);
 }
 
 /*
@@ -1001,16 +1000,15 @@ ngx_http_naxsi_add_ii_loc_conf(ngx_conf_t* cf, ngx_http_naxsi_loc_conf_t* conf, 
 static char*
 ngx_http_naxsi_ii_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf;
-  ngx_str_t*                  value;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
+  ngx_str_t*                 value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
-  if (!ngx_strcmp(value[0].data, TOP_IGNORE_IP_T) ||
-      !ngx_strcmp(value[0].data, TOP_IGNORE_IP_N)) {
+  if (!ngx_strcmp(value[0].data, TOP_IGNORE_IP_T) || !ngx_strcmp(value[0].data, TOP_IGNORE_IP_N)) {
 
     char ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
 
@@ -1037,13 +1035,13 @@ ngx_http_naxsi_ii_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static char*
 ngx_http_naxsi_ic_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf;
-  ngx_str_t*                  value;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
+  ngx_str_t*                 value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR); /* LCOV_EXCL_LINE */
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
   if (!ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_T) ||
       !ngx_strcmp(value[0].data, TOP_IGNORE_CIDR_N)) {
@@ -1056,7 +1054,7 @@ ngx_http_naxsi_ic_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 
       // add it directly to IgnoreIP list
       char   ip_str[INET6_ADDRSTRLEN + 1] = { 0 };
-      size_t orig_len                 = value[1].len;
+      size_t orig_len                     = value[1].len;
 
       value[1].len = smask - (const char*)value[1].data;
       int ret      = naxsi_parse_ip(&value[1], NULL, ip_str);
@@ -1124,8 +1122,8 @@ ngx_http_naxsi_ic_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 static char*
 ngx_http_naxsi_flags_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
 {
-  ngx_http_naxsi_loc_conf_t * alcf = conf;
-  ngx_str_t*                  value;
+  ngx_http_naxsi_loc_conf_t* alcf = conf;
+  ngx_str_t*                 value;
 
   if (!alcf || !cf)
     return (NGX_CONF_ERROR);
@@ -1133,7 +1131,7 @@ ngx_http_naxsi_flags_loc_conf(ngx_conf_t* cf, ngx_command_t* cmd, void* conf)
   if (ngx_http_naxsi_push_loc_conf(cf, alcf) != NGX_OK)
     return NGX_CONF_ERROR;
 
-  value   = cf->args->elts;
+  value = cf->args->elts;
 
   /* it's a flagrule, just a hack to enable/disable mod */
   if (!ngx_strcmp(value[0].data, TOP_ENABLED_FLAG_T) ||
