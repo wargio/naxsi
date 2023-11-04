@@ -87,10 +87,10 @@ jobs:
             "debian-buster",
             "debian-bullseye",
             "debian-bookworm",
-            "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
             "ubuntu-lunar",
+            "ubuntu-mantic",
             "alpine-3.17.4",
             "alpine-3.18.2",
           ]
@@ -101,24 +101,38 @@ jobs:
           - name: debian-buster
             container: debian:buster
             package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
           - name: debian-bullseye
             container: debian:bullseye
             package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
           - name: debian-bookworm
             container: debian:bookworm-slim
             package: deb
-          - name: ubuntu-bionic
-            container: ubuntu:bionic
-            package: deb
+            pcredep: libpcre2-dev
+            nginxdep: nginx
           - name: ubuntu-focal
             container: ubuntu:focal
             package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
           - name: ubuntu-jammy
             container: ubuntu:jammy
             package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
           - name: ubuntu-lunar
             container: ubuntu:lunar
             package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
+          - name: ubuntu-mantic
+            container: ubuntu:mantic
+            package: deb
+            pcredep: libpcre2-dev
+            nginxdep: nginx
           - name: alpine-3.17.4
             container: alpine:3.17.4
             package: apk
@@ -173,7 +187,8 @@ jobs:
             git \
             libgd-dev \
             libgeoip-dev \
-            libpcre3-dev \
+            ${{ matrix.pcredep }} \
+            libperl-dev \
             libssl-dev \
             libxslt1-dev \
             nginx \
@@ -202,8 +217,10 @@ jobs:
       run: |
         mkdir -p deb_pkg/
         DEB_PKG=$(realpath deb_pkg)
+        NGINX_PACKAGE="${{ matrix.nginxdep }}"
         NAXSI_VERSION=$(grep "NAXSI_VERSION" naxsi_src/naxsi_const.h | cut -d ' ' -f3 | sed 's/"//g')
-        LIBPCRE3_VERSION=$(dpkg -s libpcre3 | grep '^Version:' | cut -d ' ' -f2 | cut -d '-' -f1)
+        LIBPCRE_PACKAGE="${{ matrix.pcredep }}"
+        LIBPCRE_VERSION=$(dpkg -s ${{ matrix.pcredep }} | grep '^Version:' | cut -d ' ' -f2 | cut -d '-' -f1)
         NGINX_VERSION=$(dpkg -s nginx | grep '^Version:' | cut -d ' ' -f2 | cut -d '-' -f1)
         NGINX_BUILD_OPTS=$(nginx -V 2>&1 | grep "configure arguments:" | cut -d ":" -f2- | sed -e "s#/build/nginx-[A-Za-z0-9]*/#./#g" | sed 's/--add-dynamic-module=[A-Za-z0-9\/\._-]*//g')
         echo "NGINX_VERSION:    $NGINX_VERSION"
@@ -232,8 +249,10 @@ jobs:
         install -Dm644 naxsi_rules/whitelists/*.rules "$DEB_PKG/data/usr/share/naxsi/whitelists"
         install -Dm644 naxsi_rules/blocking/*.rules "$DEB_PKG/data/usr/share/naxsi/blocking"
         # add deb details.
+        sed -i "s/@NGINX_PACKAGE@/$NGINX_PACKAGE/" "$DEB_PKG/control.install"
         sed -i "s/@NGINX_VERSION@/$NGINX_VERSION/" "$DEB_PKG/control.install"
-        sed -i "s/@LIBPCRE3_VERSION@/$LIBPCRE3_VERSION/" "$DEB_PKG/control.install"
+        sed -i "s/@LIBPCRE_PACKAGE@/$LIBPCRE_PACKAGE/" "$DEB_PKG/control.install"
+        sed -i "s/@LIBPCRE_VERSION@/$LIBPCRE_VERSION/" "$DEB_PKG/control.install"
         sed -i "s/@NAXSI_VERSION@/$NAXSI_VERSION/" "$DEB_PKG/control.install"
         # build deb file
         ./deb-creator/deb-creator "$DEB_PKG"
