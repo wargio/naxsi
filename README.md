@@ -2,7 +2,7 @@
 
 ## What is Naxsi?
 
-NAXSI means [Nginx]( http://nginx.org/ ) Anti [XSS]( https://www.owasp.org/index.php/Cross-site_Scripting_%28XSS%29 ) & [SQL Injection]( https://www.owasp.org/index.php/SQL_injection ). 
+NAXSI means [Nginx](http://nginx.org/) Anti [XSS](https://www.owasp.org/index.php/Cross-site_Scripting_%28XSS%29) & [SQL Injection](https://www.owasp.org/index.php/SQL_injection). 
 
 Technically, it is a third party nginx module, available as a package for
 many UNIX-like platforms. This module, by default, reads a small subset of
@@ -25,7 +25,7 @@ is to add required ACCEPT rules for the target website to work properly.
 Contrary to most Web Application Firewalls, Naxsi doesn't rely on a
 signature base like an antivirus, and thus cannot be circumvented by an
 "unknown" attack pattern.
-Naxsi is [Free software]( https://www.gnu.org/licenses/gpl.html ) (as in freedom)
+Naxsi is [Free software](https://www.gnu.org/licenses/gpl.html) (as in freedom)
 and free (as in free beer) to use.
 
 ## What does it run on?
@@ -35,11 +35,11 @@ It depends on `libpcre` for its regexp support, and is reported to work great on
 
 ## Why using this repository
 
-*The original project is (unofficially) abandoned*, but you can fully ask for support here as i'm willing to keep the project working as last remaining developer.
+The original project is **officially** abandoned (and has been archived the 8th Nov 2023), but you can fully ask for support here as i'm willing to keep the project working as last remaining developer.
 
 ## Documentation
 
-[docs](docs/index.md)
+You can find the main documentation [here](docs/index.md)
 
 ## Build naxsi
 
@@ -57,9 +57,9 @@ $ make
 
 ## Support
 
-You can ask for support regarding NAXSI here or on the original repository https://github.com/nbs-system/naxsi
+Questions regarding NAXSI can be asked by opening a new issue [here](https://github.com/wargio/naxsi/issues/new)
 
 ## Future plans
 
-- Bring back nxapi via py3
+- Bring back nxapi using python3
 - Creation of a simple tool to create rules and test them
