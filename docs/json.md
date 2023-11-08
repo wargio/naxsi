@@ -6,7 +6,7 @@ POST/PUT request with content-type `application/json` will be handled by naxsi s
  * whitelists (or rules) for specific variable use the classic `$BODY_VAR:xx`
 
 
-However for JSON, naxsi does not keep track of depth, and has [a hardcoded limit of 10 (depth)](internal-rules#invalid_json).
+However for JSON, naxsi does not keep track of depth, and has [a hardcoded limit of 10 (depth)](internal-rules.md#invalid_json).
 
 A request :
 ```

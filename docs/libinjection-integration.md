@@ -6,7 +6,7 @@
 
 ### Generic Detection
 
-libinjection generic detection *must* be explicitely enabled using specific directives : [LibInjectionXss](directives#libinjectionxss) or [LibInjectionSql](directives#libinjectionsql). It can as well be enabled at runtime using [runtime modifiers](runtime-modifiers) : `naxsi_flag_libinjection_xss` and `naxsi_flag_libinjection_sql`.
+libinjection generic detection *must* be explicitely enabled using specific directives : [LibInjectionXss](directives.md#libinjectionxss) or [LibInjectionSql](directives.md#libinjectionsql). It can as well be enabled at runtime using [runtime modifiers](runtime-modifiers.md) : `naxsi_flag_libinjection_xss` and `naxsi_flag_libinjection_sql`.
 
  * Generic libinjection_xss rule has internal id 18 and increases named score `$LIBINJECTION_XSS` of 8 per match.
 
@@ -34,7 +34,7 @@ location / {
 }
 ```
 
-When generic detection is enabled, false positives can be whitelisted using id 17 ([libinjection_xss](internal-rules#libinjection_xss)) or 18 ([libinjection_sql](internal-rules#libinjection_sql)).
+When generic detection is enabled, false positives can be whitelisted using id 17 ([libinjection_xss](internal-rules.md#libinjection_xss)) or 18 ([libinjection_sql](internal-rules.md#libinjection_sql)).
 
 
 Using runtime modifiers, it might look like :

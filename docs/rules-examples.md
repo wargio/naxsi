@@ -1,4 +1,4 @@
-Go to [Rules Explanation](rules-bnf)
+Go to [Rules Explanation](rules-bnf.md)
 
 
  * [generic rules](#generic-rules)
@@ -87,7 +87,7 @@ MainRule "rx:\.ph|\.asp|\.ht" "msg:asp/php file upload!" "mz:FILE_EXT" "s:$UPLOA
 ### Raw Body
 
 Raw Body zone is meant for the content-types that naxsi can't parse (XML, java serialized objects, unorthodox developments).
-See [RAW_BODY](zoom-rawbody) for details on RAW_BODY behaviour.
+See [RAW_BODY](rawbody.md) for details on RAW_BODY behaviour.
 
 ```
 MainRule "id:4241" "s:DROP" "str:RANDOMTHINGS" "mz:RAW_BODY";

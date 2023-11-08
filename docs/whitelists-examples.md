@@ -1,4 +1,4 @@
-Go to [Whitelists Explanation](whitelists-bnf)
+Go to [Whitelists Explanation](whitelists-bnf.md)
 
 ### Static Whitelist Examples
 
@@ -74,7 +74,7 @@ BasicRule wl:1000 "mz:$URL_X:^/foo|$ARGS_VAR_X:^[0-9]";
 
 ### RAW_BODY whitelists
 
-See [RAW_BODY](rawbody) specificites first.
+See [RAW_BODY](rawbody.md) specificites first.
 
 Whitelists targeting RAW_BODY are written in the same way as any other BODY rule.
 
@@ -90,7 +90,7 @@ BasicRule wl:4241 "mz:$URL:/|BODY";
 
 ### FILE_EXT whitelists
 
-See [FILE_EXT](zoom-fileext) specifities first.
+See [FILE_EXT](zoom-fileext.md) specifities first.
 
 Whitelisting rule 1337 on URL /index.html for file name will be written :
 
@@ -100,7 +100,7 @@ BasicRule wl:1337 "mz:$URL:/index.html|FILE_EXT";
 
 ### JSON whitelists
 
-See [JSON](zoom-json) specifities first.
+See [JSON](json.md) specifities first.
 
 JSON is handled as normal BODY, and parsed into variable when possible :
 

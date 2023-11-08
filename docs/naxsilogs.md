@@ -31,7 +31,7 @@ Several groups of zone, id, var_name, cscore and score can be present in a singl
 
 ### NAXSI_EXLOG
 
-NAXSI_EXLOG is a complement to [[naxsilogs]]. Along with exceptions, it contains actual content of the matched request. While NAXSI_FMT only contains IDs and location of exception, NAXSI_EXLOG provides actual content, allowing you to easily decide if it's a false positive or not.
+NAXSI_EXLOG is a complement to [[naxsilogs.md]]. Along with exceptions, it contains actual content of the matched request. While NAXSI_FMT only contains IDs and location of exception, NAXSI_EXLOG provides actual content, allowing you to easily decide if it's a false positive or not.
 
 Learning tools uses this at his advantage. Extensive log is enabled by adding the following line in your server {} section but **out** of your location.
  
@@ -50,7 +50,7 @@ This feature is provided by [[runtime-modifiers]].
 
 "User defined" rules are supposed to have IDs > `1000`.
 
-IDs inferior `1000` are reserved for [naxsi internal rules](internal-rules), which are usually related to protocol sanity and things that cannot be expressed through regular expressions or string matches.
+IDs inferior `1000` are reserved for [naxsi internal rules](internal-rules.md), which are usually related to protocol sanity and things that cannot be expressed through regular expressions or string matches.
 
 Think twice before whitelisting one of those IDs, as it might partially/totally disable naxsi.
 
@@ -58,4 +58,4 @@ Think twice before whitelisting one of those IDs, as it might partially/totally 
 
 TODO DOCUMENTATION
 
-[directives#naxsi_json_log](directives)
+[directives.md#naxsi_json_log](directives)

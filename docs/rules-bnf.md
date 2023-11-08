@@ -39,11 +39,11 @@ All strings *must* be lowercase, since naxsi's matches are case insensitive.
 
 **s** is the score section. You can create "named" counters: `s:$FOOBAR:4` will increase counter `$FOOBAR` value by 4. One rule can increase several scores: `s:$FOO:4,$BAR:8` will increase both `$FOO` by 4 and `$BAR` by 8. 
 A rule can as well directly specifiy an action such a BLOCK (blocks the request in non-learning mode) or DROP (blocks the request **even** in learning mode)
-Named scores are later handled by [CheckRules](checkrules-bnf).
+Named scores are later handled by [CheckRules](checkrules-bnf.md).
 
 ### MatchZone (mz:...)
 
-Please refer to [Match Zones](matchzones-bnf) for details.
+Please refer to [Match Zones](matchzones-bnf.md) for details.
 
 **mz** is the match zone, defining which part of the request will be inspected by the rule.
 

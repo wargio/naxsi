@@ -87,13 +87,13 @@ Raised when body is empty and/or content-length is zero.
  * id: 17
  * action: ??
 
-See [libinjection](libinjection-integration).
+See [libinjection](libinjection-integration.md).
 
 ## libinjection_xss
  * id: 18
  * action: ??
 
-See [libinjection](libinjection-integration).
+See [libinjection](libinjection-integration.md).
 
 ## no_rules
  * id: 19

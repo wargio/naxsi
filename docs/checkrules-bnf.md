@@ -1,6 +1,6 @@
 # Checkrules
 
-CheckRules instruct naxsi to take an action (`LOG`, `BLOCK`, `DROP`, `ALLOW`) based on a specific score associated to the request. This _score_ has usually been set by one or several [rule(s)](rules-bnf).
+CheckRules instruct naxsi to take an action (`LOG`, `BLOCK`, `DROP`, `ALLOW`) based on a specific score associated to the request. This _score_ has usually been set by one or several [rule(s)](rules-bnf.md).
 
 `CheckRule` must be present at location level.
 
@@ -19,7 +19,7 @@ If the `$SQL` is equal or superior to '8', apply BLOCK flag to the request. Requ
 ### Other Usages
 
 `CheckRule(s)` can as well be used to mix white and black-lists.
-Having a configuration mixing virtual-patching (see [rules](rules-bnf)) and `naxsi_core.rules`, it is possible to have :
+Having a configuration mixing virtual-patching (see [rules](rules-bnf.md)) and `naxsi_core.rules`, it is possible to have :
 
 ```
 CheckRule "$UWA >= 4" DROP;

@@ -165,7 +165,7 @@ server {
 }
 ```
 
-See [here](whitelists-bnf) and [here](whitelists-examples) for more informations about whitelists.
+See [here](whitelists-bnf.md) and [here](whitelists-examples.md) for more informations about whitelists.
 
 #### Blacklist
 
