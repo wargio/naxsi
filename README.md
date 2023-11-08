@@ -39,7 +39,7 @@ It depends on `libpcre` for its regexp support, and is reported to work great on
 
 ## Documentation
 
-[docs](docs/index)
+[docs](docs/index.md)
 
 ## Build naxsi
 
