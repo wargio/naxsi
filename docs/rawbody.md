@@ -2,7 +2,7 @@
 
 RAW_BODY (>= 0.55rc0) is a feature to allow naxsi to match patterns in content it doesn't know to parse.
 
-As stated in [internal rules](internal-rules), naxsi will bail out when it doesn't know content-type. If id:11 [bad content-type](internal-rules#uncommon_content_type) is whitelisted, then naxsi will go onto proceed all rules that are targeting `RAW_BODY`.
+As stated in [internal rules](internal-rules.md), naxsi will bail out when it doesn't know content-type. If id:11 [bad content-type](internal-rules.md#uncommon_content_type) is whitelisted, then naxsi will go onto proceed all rules that are targeting `RAW_BODY`.
 
 ie. configuration :
 

@@ -43,7 +43,7 @@ LearningMode;
 ```
 
 Keep in mind that internal rules (those with an `id` inferior to 1000) will drop the request even in learning mode, because it means that something fishy is going on, since naxsi can't correctly process the request.
-You can of course apply [whitelist](whitelists-bnf) if those are false-positives.
+You can of course apply [whitelist](whitelists-bnf.md) if those are false-positives.
 
 ## SecRulesEnabled
  * alias: rules_enabled
@@ -61,36 +61,36 @@ You can of course apply [whitelist](whitelists-bnf) if those are false-positives
  * alias: check_rule
  * context: location
 
-See [CheckRule](checkrules-bnf)
+See [CheckRule](checkrules-bnf.md)
 
 ## BasicRule
  * alias: basic_rule
  * context: location
 
-A directive used to declare a [rule](rules-bnf) or a [whitelist](whitelist-bnf).
+A directive used to declare a [rule](rules-bnf.md) or a [whitelist](whitelist-bnf.md).
 
 ## MainRule
  * alias: main_rule
  * context: http
 
-A directive used to declare a [rule](rule-bnf) or a [whitelist](whitelist-bnf).
+A directive used to declare a [rule](rule-bnf.md) or a [whitelist](whitelist-bnf.md).
 
 ## LibInjectionXss
  * alias: libinjection_xss
  * context: location
 
-A directive to enable [libinjection's xss detection](libinjection-integration) on *all* part of the http request.
+A directive to enable [libinjection's xss detection](libinjection-integration.md) on *all* part of the http request.
 
 ## LibInjectionSql
  * alias: libinjection_sql
  * context: location
 
-A directive to enable [libinjection's sqli detection](libinjection-integration) on *all* part of the http request.
+A directive to enable [libinjection's sqli detection](libinjection-integration.md) on *all* part of the http request.
 
 ## naxsi_extensive_log
  * context: server
  
-A flag that can be set at [runtime](runtime-modifiers) to enable [naxsi extensive logs](naxsilogs#naxsi_exlog).
+A flag that can be set at [runtime](runtime-modifiers.md) to enable [naxsi extensive logs](naxsilogs.md#naxsi_exlog).
 
 ```
 server {
@@ -123,7 +123,7 @@ TODO DOCUMENTATION
 ## naxsi_flag_enable
  * context: server
  
-A flag that can be set at [runtime](runtime-modifiers) to enable or disable naxsi.
+A flag that can be set at [runtime](runtime-modifiers.md) to enable or disable naxsi.
 
 ```
 server {
@@ -137,7 +137,7 @@ server {
 ## naxsi_flag_learning
  * context: server
 
-A flag that can be set at [runtime](runtime-modifiers) to enable or disable learning.
+A flag that can be set at [runtime](runtime-modifiers.md) to enable or disable learning.
 
 ```
 server {
@@ -151,7 +151,7 @@ server {
 ## naxsi_flag_libinjection_sql
  * context: server
 
-A flag that can be set at [runtime](runtime-modifiers) to enable or disable [libinjection's sql detection](libinjection-integration)
+A flag that can be set at [runtime](runtime-modifiers.md) to enable or disable [libinjection's sql detection](libinjection-integration.md)
 
 ```
 server {
@@ -164,7 +164,7 @@ server {
 
 ## naxsi_flag_libinjection_xss
 
-A flag that can be set at [runtime](runtime-modifiers) to enable or disable [libinjection's xss detection](libinjection-integration)
+A flag that can be set at [runtime](runtime-modifiers.md) to enable or disable [libinjection's xss detection](libinjection-integration.md)
 
 ```
 server {

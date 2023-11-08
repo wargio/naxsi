@@ -26,7 +26,7 @@ _note: you can't mix negative and positive ID(s) in whitelists_
 
 ### MatchZone (mz:...)
 
-Please refer to [Match Zones](matchzones-bnf) for details.
+Please refer to [Match Zones](matchzones-bnf.md) for details.
 
 *mz* is the match-zone, specifying in which part(s) of the request the specified ID(s) must be ignored.
 
@@ -43,7 +43,7 @@ As for rules, `$URL*` in match-zone is not enough to specify the target zone.
 ### Notes
 
 - A zone (ARGS,BODY,HEADERS) can be suffixed with `|NAME`, meaning the rule matched in the name of the variable, but not its content.
-- `RAW_BODY` whitelists are written just as any `BODY` whitelist, see [Whitelists Examples](whitelists-examples)
+- `RAW_BODY` whitelists are written just as any `BODY` whitelist, see [Whitelists Examples](whitelists-examples.md)
 - A whitelist can't mix `_X` elements with `_VAR` or `$URL` items. ie:
 
 ```
@@ -52,4 +52,4 @@ $URL_X:^/foo$|$ARGS_VAR_X:^bar$ : GOOD
 ```
 
 You can also whitelist by IP/CIDR and all the rules will not be blocked for these ips but logs will be generated.
-For more details look here: [IgnoreIP and IgnoreCIDR](IgnoreIP-and-IgnoreCIDR)
+For more details look here: [IgnoreIP and IgnoreCIDR](IgnoreIP-and-IgnoreCIDR.md)

@@ -63,7 +63,7 @@ If `naxsi_flag_learning` variable is present, this value will override naxsi's c
 
 ### naxsi_flag_post_action
 
-[post_action](http://wiki.nginx.org/HttpCoreModule#post_action) can be used by naxsi to literally forward a request to the [DeniedUrl](directives#deniedurl) location. It is on by default until naxsi 0.50 (a souvenir from ̀nx_intercept`) and is off by default since 0.51, because of the switch to [nxtool](https://github.com/nbs-system/naxsi/tree/master/nxapi).
+[post_action](http://wiki.nginx.org/HttpCoreModule#post_action) can be used by naxsi to literally forward a request to the [DeniedUrl](directives.md#deniedurl) location. It is on by default until naxsi 0.50 (a souvenir from ̀nx_intercept`) and is off by default since 0.51, because of the switch to [nxtool](https://github.com/nbs-system/naxsi/tree/master/nxapi).
 Using this might lead to unpredictable behavior
 Can be set to 0 or 1
 
@@ -88,18 +88,18 @@ Because of a potential impact on performance, use this with caution. Naxsi will 
  NAXSI_EXLOG: ip=%V&server=%V&uri=%V&id=%d&zone=%s&var_name=%V&content=%V
 ```
 
-See [naxsi logs](naxsilogs) for more details.
+See [naxsi logs](naxsilogs.md) for more details.
 
 
 ### naxsi_flag_libinjection_sql
 
-If set to "1", naxsi will pass every parsed content to [libinjection](libinjection-integration) and ask for SQL injection detection.
-If the libinjection matches, internal rule [libinjection_sql is fired ](internal-rules#libinjection_sql).
+If set to "1", naxsi will pass every parsed content to [libinjection](libinjection-integration.md) and ask for SQL injection detection.
+If the libinjection matches, internal rule [libinjection_sql is fired ](internal-rules.md#libinjection_sql).
 
 ### naxsi_flag_libinjection_xss
 
-If set to "1", naxsi will pass every parsed content to [libinjection](libinjection-integration) and ask for XSS detection.
-If the libinjection matches, internal rule [libinjection_xss is fired ](internal-rules#libinjection_xss).
+If set to "1", naxsi will pass every parsed content to [libinjection](libinjection-integration.md) and ask for XSS detection.
+If the libinjection matches, internal rule [libinjection_xss is fired ](internal-rules.md#libinjection_xss).
 
 
 ### naxsi_json_log

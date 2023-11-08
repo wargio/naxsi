@@ -5,13 +5,13 @@
 
   * **http {}** level : `include naxsi_core.rules`
   * **server {}** level : 
-    * [Dynamic modifiers](runtime-modifiers)
+    * [Dynamic modifiers](runtime-modifiers.md)
   * **location {}** level :
-    * [Enabled/Disabled directives](directives#secrulesenabled)
-    * [LearningMode-related directives](directives#learningmode)
-    * [Whitelists](whitelists-bnf)
-    * [CheckRules](checkrules-bnf)
-    * [RequestDenied](requestdenied-bnf)
+    * [Enabled/Disabled directives](directives.md#secrulesenabled)
+    * [LearningMode-related directives](directives.md#learningmode)
+    * [Whitelists](whitelists-bnf.md)
+    * [CheckRules](checkrules-bnf.md)
+    * [RequestDenied](requestdenied-bnf.md)
   * **location /RequestDenied**
     * return HTTP error code, post-processing ...
 
@@ -61,7 +61,7 @@ http {
 The next step is learning; however, before jumping there, ensure that you have:
  * A nginx as a webserver or reverse proxy
  * Naxsi installed and running in learning mode
- * If you perform a request such as `curl 'http://127.0.0.1:4242/?a=<>'`, you should see a [NAXSI_FMT](naxsilogs#naxsi_fmt) in your logs :
+ * If you perform a request such as `curl 'http://127.0.0.1:4242/?a=<>'`, you should see a [NAXSI_FMT](naxsilogs.md#naxsi_fmt) in your logs :
    `2016/07/12 13:27:04 [error] 14492#0: *1 NAXSI_FMT: ip=127.0.0.1&server=127.0.0.1&uri=/&learning=1&vers=0.55rc2&total_processed=1&total_blocked=1&block=1&cscore0=$XSS&score0=16&zone0=ARGS&id0=1302&var_name0=a&zone1=ARGS&id1=1303&var_name1=a, client: 127.0.0.1, server: localhost, request: "GET /?a=<> HTTP/1.1", host: "127.0.0.1:4242"`
 
 
