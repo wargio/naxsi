@@ -1,13 +1,13 @@
 ---
 name: Bug report
 about: Describe the issue
-title: ''
+title: 'Change me'
 labels: bug
 assignees: wargio
 
 ---
 
-** Details **
+**Details**
 
 - NGINX version: `X.Y.Z`
 - NAXSI version: `X.Y`
@@ -15,6 +15,7 @@ assignees: wargio
 - Operating System: `XXX Linux`
 
 **Nginx Logs**
+
 ```
 
 Copy and paste here the logs
@@ -22,4 +23,5 @@ Copy and paste here the logs
 ```
 
 **Additional details**
+
 Add any other detail about the problem here.
