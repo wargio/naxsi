@@ -1705,6 +1705,17 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
 
   orig     = str;
   full_len = strlen(orig);
+  if (*(orig+full_len-1) == '&') {
+    NX_DEBUG(_debug_spliturl_ruleset,
+             NGX_LOG_DEBUG_HTTP,
+             req->connection->log,
+             0,
+             "XX-url unexpected last '&' [%s]",
+             str);
+
+    ngx_http_apply_rulematch_v_n(&nx_int__uncommon_url, ctx, req, NULL, NULL, zone, 1, 0);
+  }
+
   while (str < (orig + full_len) && *str) {
     if (*str == '&') {
       NX_DEBUG(_debug_spliturl_ruleset,
@@ -1793,7 +1804,7 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
         _debug_spliturl_ruleset, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "XX-no main rules ?");
     }
 
-    str += len;
+    str += len+1;
   }
 
   return (0);
