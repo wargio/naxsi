@@ -1691,13 +1691,9 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
   int       len, full_len;
   int       nullbytes = 0;
 
-  if (naxsi_escape_nullbytes(nx_str) > 0) {
-    ngx_str_t dummy;
-    dummy.data = NULL;
-    dummy.len  = 0;
-    ngx_http_apply_rulematch_v_n(
-      &nx_int__uncommon_hex_encoding, ctx, req, &dummy, &dummy, zone, 1, 0);
-  }
+  if (naxsi_escape_nullbytes(nx_str) > 0)
+    ngx_http_apply_rulematch_v_n(&nx_int__uncommon_hex_encoding, ctx, req, NULL, NULL, zone, 1, 0);
+
   str = (char*)nx_str->data;
 
   NX_DEBUG(_debug_spliturl_ruleset,
@@ -1711,6 +1707,14 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
   full_len = strlen(orig);
   while (str < (orig + full_len) && *str) {
     if (*str == '&') {
+      NX_DEBUG(_debug_spliturl_ruleset,
+               NGX_LOG_DEBUG_HTTP,
+               req->connection->log,
+               0,
+               "XX-url unexpected '&' [%s]",
+               str);
+
+      ngx_http_apply_rulematch_v_n(&nx_int__uncommon_url, ctx, req, NULL, NULL, zone, 1, 0);
       str++;
       continue;
     }
@@ -1719,12 +1723,12 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
     eq = strchr(str, '=');
     ev = strchr(str, '&');
 
-    if ((!eq && !ev) /*?foobar */ || (eq && ev && eq > ev)) /*?foobar&bla=test*/ {
+    if (!eq /*?foobar | ?foobar& */ || (eq && ev && eq > ev)) /*?foobar&bla=test*/ {
       NX_DEBUG(_debug_spliturl_ruleset,
                NGX_LOG_DEBUG_HTTP,
                req->connection->log,
                0,
-               "XX-url has no '&' and '=' or has both [%s]",
+               "XX-url has no '=' or '&' before '=' [%s]",
                str);
 
       if (!ev)
@@ -1735,28 +1739,6 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
       val.len   = ev - str;
       name.data = (unsigned char*)NULL;
       name.len  = 0;
-    }
-    /* ?&&val | ?var&& | ?val& | ?&val | ?val&var */
-    else if (!eq && ev) {
-      NX_DEBUG(_debug_spliturl_ruleset,
-               NGX_LOG_DEBUG_HTTP,
-               req->connection->log,
-               0,
-               "XX-url has no '=' but has '&' [%s]",
-               str);
-
-      ngx_http_apply_rulematch_v_n(&nx_int__uncommon_url, ctx, req, NULL, NULL, zone, 1, 0);
-      if (ev > str) /* ?var& | ?var&val */ {
-        val.data  = (unsigned char*)str;
-        val.len   = ev - str;
-        name.data = (unsigned char*)NULL;
-        name.len  = 0;
-        len       = ev - str;
-      } else /* ?& | ?&&val */ {
-        val.data = name.data = NULL;
-        val.len = name.len = 0;
-        len                = 1;
-      }
     } else /* should be normal like ?var=bar& ..*/ {
       NX_DEBUG(_debug_spliturl_ruleset,
                NGX_LOG_DEBUG_HTTP,
@@ -1769,13 +1751,6 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
         ev = str + strlen(str);
       /* len is now [name]=[content] */
       len = ev - str;
-      eq  = strnchr(str, '=', len);
-      if (!eq) {
-        if (ngx_http_apply_rulematch_v_n(&nx_int__uncommon_url, ctx, req, NULL, NULL, zone, 1, 0)) {
-          naxsi_error_fatal(ctx, req, "malformed url, possible attack [%s]", str);
-        }
-        return (1);
-      }
       eq++;
       val.data  = (unsigned char*)eq;
       val.len   = ev - eq;
