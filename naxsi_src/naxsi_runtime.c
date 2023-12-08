@@ -1705,7 +1705,7 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
 
   orig     = str;
   full_len = strlen(orig);
-  if (*(orig+full_len-1) == '&') {
+  if (*(orig + full_len - 1) == '&') {
     NX_DEBUG(_debug_spliturl_ruleset,
              NGX_LOG_DEBUG_HTTP,
              req->connection->log,
@@ -1804,7 +1804,7 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
         _debug_spliturl_ruleset, NGX_LOG_DEBUG_HTTP, req->connection->log, 0, "XX-no main rules ?");
     }
 
-    str += len+1;
+    str += len + 1;
   }
 
   return (0);
