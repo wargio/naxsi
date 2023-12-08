@@ -153,7 +153,7 @@ jobs:
       run: |
         rm -rf naxsi_src/libinjection
         git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
-        git -C naxsi_src/libinjection checkout 4aa3894b21d03d9d8fc364505c0617d2aca73fc1
+        git -C naxsi_src/libinjection checkout b9fcaaf9e50e9492807b23ffcc6af46ee1f203b9
         chmod 777 .
     - name: ${{ matrix.name }} package
       if: matrix.package == 'apk'
@@ -208,7 +208,7 @@ jobs:
       run: |
         rm -rf naxsi_src/libinjection
         git clone https://github.com/libinjection/libinjection.git naxsi_src/libinjection
-        git -C naxsi_src/libinjection checkout 4aa3894b21d03d9d8fc364505c0617d2aca73fc1
+        git -C naxsi_src/libinjection checkout b9fcaaf9e50e9492807b23ffcc6af46ee1f203b9
         git clone --depth=1 https://github.com/wargio/deb-creator.git
         chmod 777 .
         apt-get source nginx

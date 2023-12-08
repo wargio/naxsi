@@ -64,7 +64,7 @@ _add_module() {
 	subpackages="$subpackages $pkgname-mod-$name:_module"
 }
 
-_add_module "http-naxsi" "1.6" "https://github.com/wargio/naxsi" "naxsi_src"
+_add_module "http-naxsi" "1.7" "https://github.com/wargio/naxsi" "naxsi_src"
 _naxsi_provides="$pkgname-naxsi"  # for backward compatibility
 
 prepare() {
