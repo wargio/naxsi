@@ -1705,7 +1705,7 @@ ngx_http_spliturl_ruleset(ngx_pool_t*             pool,
 
   orig     = str;
   full_len = strlen(orig);
-  if (*(orig + full_len - 1) == '&') {
+  if (full_len > 0 && *(orig + full_len - 1) == '&') {
     NX_DEBUG(_debug_spliturl_ruleset,
              NGX_LOG_DEBUG_HTTP,
              req->connection->log,
