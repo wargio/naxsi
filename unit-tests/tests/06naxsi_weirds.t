@@ -9,6 +9,29 @@ no_long_string();
 $ENV{TEST_NGINX_SERVROOT} = server_root();
 run_tests();
 __DATA__
+=== WL TEST 1.0: weird request in URL
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+	 SecRulesEnabled;
+	 DeniedUrl "/RequestDenied";
+	 CheckRule "$SQL >= 8" BLOCK;
+	 CheckRule "$RFI >= 8" BLOCK;
+	 CheckRule "$TRAVERSAL >= 4" BLOCK;
+	 CheckRule "$XSS >= 8" BLOCK;
+	 root $TEST_NGINX_SERVROOT/html/;
+         index index.html index.htm;
+}
+location /RequestDenied {
+	 return 412;
+}
+--- request
+GET /?&&&&a&&&&&
+--- error_code: 412
+
 === WL TEST 1.0a: weird request in URL (?&...)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
