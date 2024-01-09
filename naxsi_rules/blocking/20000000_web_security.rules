@@ -91,7 +91,7 @@ MainRule id:20000059 "s:$UWA:8" "str:/docs/cplugError.html/" "mz:URL" "msg:Sieme
 MainRule id:20000060 "s:$UWA:8" "str:/Portal/Portal.mwsl" "mz:URL" "msg:Siemens PLC scan";
 
 # Block Citrix XenApp
-MainRule id:20000061 "s:$UWA:8" "str:/scripts/wpnbr.dll" "mz:URL" "msg:Siemens PLC scan";
+MainRule id:20000061 "s:$UWA:8" "str:/scripts/wpnbr.dll" "mz:URL" "msg:Citrix XenApp";
 
 # Block jenkins authentication bypass CVE-2018-1000861
 MainRule id:20000062 "s:$UWA:8" "str:/securityRealm/user/admin/search/index" "mz:URL" "msg:CVE-2018-1000861";
