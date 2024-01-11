@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 wargio <deroad@libero.it>
+// SPDX-FileCopyrightText: 2022 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -14,6 +14,7 @@
 #include <ctype.h>
 
 #include <naxsi_const.h>
+#include <naxsi_log.h>
 #include <naxsi_net.h>
 
 #include <libinjection_sqli.h>

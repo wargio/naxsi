@@ -1,9 +1,11 @@
+// SPDX-FileCopyrightText: 2023-2024 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <ngx_config.h>
 
 #include <naxsi.h>
+#include <naxsi_log.h>
 #include <naxsi_macros.h>
 #include <naxsi_net.h>
 
@@ -1319,103 +1321,16 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
                     ((ngx_str_t*)ostr->elts)[i].data);
     }
   } else {
-    const char* hex  = "0123456789abcdef";
-    ngx_str_t*  elts = (ngx_str_t*)ostr->elts;
+    ngx_str_t* elts = (ngx_str_t*)ostr->elts;
+    char       json[NAXSI_LOG_JSON_STRLEN];
     for (i = 0; i < ostr->nelts; i++) {
-      char json[NAXSI_LOG_JSON_STRLEN] = { 0 };
-      // line only
-      const char* line = (const char*)elts[i].data;
-      char*       curr = json + 2;
-      char*       end  = (curr + sizeof(json)) - 4;
-
-      json[0] = '{';
-      json[1] = '"';
-
-      size_t j;
-      for (j = 0; line[j] && curr < end; j++) {
-        if (line[j] == '=') {
-          *curr = '"';
-          curr++;
-          break_if(curr >= end);
-          *curr = ':';
-          curr++;
-          break_if(curr >= end);
-          *curr = '"';
-        } else if (line[j] == '&') {
-          *curr = '"';
-          curr++;
-          break_if(curr >= end);
-          *curr = ',';
-          curr++;
-          break_if(curr >= end);
-          *curr = '"';
-        } else if (line[j] == '"' || line[j] == '\\' /* || line[i] == '/'*/) {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = line[j];
-        } else if (line[j] == '\b') {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 'b';
-        } else if (line[j] == '\f') {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 'f';
-        } else if (line[j] == '\n') {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 'n';
-        } else if (line[j] == '\r') {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 'r';
-        } else if (line[j] == '\t') {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 't';
-        } else if (is_printable(line[j])) {
-          *curr = line[j];
-        } else {
-          *curr = '\\';
-          curr++;
-          break_if(curr >= end);
-          *curr = 'u';
-          curr++;
-          break_if(curr >= end);
-          *curr = '0';
-          curr++;
-          break_if(curr >= end);
-          *curr = '0';
-          curr++;
-          break_if(curr >= end);
-          *curr = hex[line[j] >> 8];
-          curr++;
-          break_if(curr >= end);
-          *curr = hex[line[j] & 0x0F];
-        }
-        curr++;
-      }
-
-      if (curr >= end) {
+      if (!naxsi_json_log(&elts[i], json, NAXSI_LOG_JSON_STRLEN)) {
         ngx_log_error(NGX_LOG_ERR,
                       r->connection->log,
                       0,
                       "cannot generate json structure due NGX_MAX_ERROR_STR size.");
         continue;
       }
-
-      *curr = '"';
-      curr++;
-      *curr = '}';
-      curr++;
-      *curr = 0;
-
       ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "%s", json);
     }
   }

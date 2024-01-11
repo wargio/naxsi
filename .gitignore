@@ -2,6 +2,7 @@
 *.asc
 nginx-source
 nginx-tmp
+waf-check-tmp/
 *.log
 .scripts/.tmp/
 /naxsi_src/libinjection_ngxbuild/

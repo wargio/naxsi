@@ -75,7 +75,9 @@ jobs:
           persist-credentials: false
       - name: Build
         run: /bin/bash .scripts/ci-build.sh "1.25.1"
+      - name: Setup CI & download test data
+        run: /bin/bash .scripts/ci-waf-check.sh setup
       - name: Run WAF efficacy tests (core only)
-        run: /bin/bash .scripts/ci-wafefficacy.sh core
+        run: /bin/bash .scripts/ci-waf-check.sh core
       - name: Run WAF efficacy tests (complete)
-        run: /bin/bash .scripts/ci-wafefficacy.sh complete
+        run: /bin/bash .scripts/ci-waf-check.sh complete

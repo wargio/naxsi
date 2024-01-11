@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2024 wargio <deroad@libero.it>
+# SPDX-License-Identifier: LGPL-3.0-only
+
+waf_url: http://localhost:4242
+name: Test Naxsi WAF
+dataset_folder: ./dataset
+output_folder: ./output
+nb_routines: 4
+download_dataset: false

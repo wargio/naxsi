@@ -1,6 +1,6 @@
+# SPDX-FileCopyrightText: 2023-2024 Giovanni Dante Grazioli <deroad@libero.it>
 # SPDX-FileCopyrightText: 2019 Giovanni Dante Grazioli <gda@nbs-system.com>
 # SPDX-License-Identifier: GPL-3.0-or-later
-
 
 # NAXSI include files
 naxsi_includes="
@@ -8,6 +8,7 @@ naxsi_includes="
     $ngx_addon_dir/naxsi_const.h \
     $ngx_addon_dir/naxsi_config.h \
     $ngx_addon_dir/naxsi_net.h \
+    $ngx_addon_dir/naxsi_log.h \
 "
 
 # NAXSI C source files
@@ -15,6 +16,7 @@ naxsi_sources="
     $ngx_addon_dir/naxsi_config.c \
     $ngx_addon_dir/naxsi_json.c \
     $ngx_addon_dir/naxsi_net.c \
+    $ngx_addon_dir/naxsi_log.c \
     $ngx_addon_dir/naxsi_raw.c \
     $ngx_addon_dir/naxsi_runtime.c \
     $ngx_addon_dir/naxsi_skeleton.c \

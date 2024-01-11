@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 wargio <deroad@libero.it>
+// SPDX-FileCopyrightText: 2022 Giovanni Dante Grazioli <deroad@libero.it>
 // SPDX-License-Identifier: LGPL-3.0-only
 
 #ifndef NAXSI_CONST_H
