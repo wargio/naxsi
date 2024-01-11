@@ -5,7 +5,6 @@
 #include <ngx_config.h>
 
 #include <naxsi.h>
-#include <naxsi_log.h>
 #include <naxsi_macros.h>
 #include <naxsi_net.h>
 
@@ -1019,242 +1018,6 @@ ngx_http_naxsi_is_rule_whitelisted_n(ngx_http_request_t*        req,
   return (0);
 }
 
-/*
-** Create log lines, possibly splitted
-** and linked by random numbers.
-*/
-#define MAX_LINE_SIZE (NGX_MAX_ERROR_STR - 100)
-#define MAX_SEED_LEN  17 /*seed_start=10000*/
-
-ngx_str_t*
-ngx_http_append_log(ngx_http_request_t* r, ngx_array_t* ostr, ngx_str_t* fragment, u_int* offset)
-{
-  u_int        seed, sub;
-  static u_int prev_seed = 0;
-
-  /*
-  ** avoid random collisions, as we % 1000 them,
-  ** this is very likely to happen !
-  */
-
-  /*
-  ** extra space has been reserved to append the seed.
-  */
-#ifndef _WIN32
-  while ((seed = random() % 1000) == prev_seed)
-#else  // _WIN32
-  while ((seed = rand() % 1000) == prev_seed)
-#endif // !_WIN32
-    ;
-  sub           = snprintf((char*)(fragment->data + *offset), MAX_SEED_LEN, "&seed_start=%d", seed);
-  fragment->len = *offset + sub;
-  fragment      = ngx_array_push(ostr);
-  if (!fragment)
-    return (NULL);
-  fragment->data = ngx_pcalloc(r->pool, MAX_LINE_SIZE + 1);
-  if (!fragment->data)
-    return (NULL);
-  sub       = snprintf((char*)fragment->data, MAX_SEED_LEN, "seed_end=%d", seed);
-  prev_seed = seed;
-  *offset   = sub;
-  return (fragment);
-}
-
-ngx_int_t
-naxsi_create_log_array(ngx_http_request_ctx_t* ctx,
-                       ngx_http_request_t*     r,
-                       ngx_array_t*            ostr,
-                       ngx_str_t**             ret_uri)
-{
-  u_int                     sz_left, sub, offset = 0, i;
-  ngx_str_t *               fragment, *tmp_uri;
-  ngx_http_special_score_t* sc;
-  const char*               fmt_base   = "ip=%.*s&server=%.*s&uri=%.*s&config=%.*s&rid=";
-  const char*               fmt_score  = "&cscore%d=%.*s&score%d=%zu";
-  const char*               fmt_rm     = "&zone%d=%s&id%d=%d&var_name%d=%.*s";
-  const char*               fmt_config = "";
-
-  if (ctx->learning) {
-    fmt_config = ctx->drop ? "learning-drop" : "learning";
-  } else if (ctx->drop) {
-    fmt_config = "drop";
-  } else if (ctx->block) {
-    fmt_config = "block";
-  } else if (ctx->ignore) {
-    fmt_config = "ignore";
-  }
-
-  ngx_http_matched_rule_t* mr;
-  char                     tmp_zone[30];
-
-  tmp_uri = ngx_pcalloc(r->pool, sizeof(ngx_str_t));
-  if (!tmp_uri)
-    return (NGX_ERROR);
-  *ret_uri = tmp_uri;
-
-  if (r->uri.len >= (NGX_MAX_UINT32_VALUE / 4) - 1) {
-    r->uri.len /= 4;
-  }
-
-  tmp_uri->len  = r->uri.len + (2 * ngx_escape_uri(NULL, r->uri.data, r->uri.len, NGX_ESCAPE_ARGS));
-  tmp_uri->data = ngx_pcalloc(r->pool, tmp_uri->len + 1);
-  ngx_escape_uri(tmp_uri->data, r->uri.data, r->uri.len, NGX_ESCAPE_ARGS);
-
-  fragment = ngx_array_push(ostr);
-  if (!fragment) {
-    return (NGX_ERROR);
-  }
-  fragment->data = ngx_pcalloc(r->pool, MAX_LINE_SIZE + 1);
-  if (!fragment->data) {
-    return (NGX_ERROR);
-  }
-  sub = offset = 0;
-  /* we keep extra space for seed*/
-  sz_left = MAX_LINE_SIZE - MAX_SEED_LEN - 1;
-
-  /*
-  ** don't handle uri > 4k, string will be split
-  */
-
-  sub = snprintf((char*)fragment->data,
-                 sz_left,
-                 fmt_base,
-                 r->connection->addr_text.len,
-                 r->connection->addr_text.data,
-                 r->headers_in.server.len,
-                 r->headers_in.server.data,
-                 tmp_uri->len,
-                 tmp_uri->data,
-                 strlen(fmt_config),
-                 fmt_config);
-
-  if (sub >= sz_left) {
-    sub = sz_left - 1;
-  }
-  sz_left -= sub;
-  offset += sub;
-
-  sub = NAXSI_REQUEST_ID_SIZE << 1;
-  if (sz_left > (100 + sub)) {
-    ngx_hex_dump(fragment->data + offset, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
-    if (sub >= sz_left) {
-      sub = sz_left - 1;
-    }
-    sz_left -= sub;
-    offset += sub;
-  }
-
-  /*
-  ** if URI exceeds the MAX_LINE_SIZE, log directly, avoid null deref (#178)
-  */
-  if (sz_left < 100) {
-    fragment = ngx_http_append_log(r, ostr, fragment, &offset);
-    if (!fragment)
-      return (NGX_ERROR);
-    sz_left = MAX_LINE_SIZE - MAX_SEED_LEN - offset - 1;
-  }
-
-  /*
-  ** append scores
-  */
-  for (i = 0; ctx->special_scores && i < ctx->special_scores->nelts; i++) {
-    sc = ctx->special_scores->elts;
-    if (sc[i].sc_score != 0) {
-      sub = snprintf(0, 0, fmt_score, i, sc[i].sc_tag->len, sc[i].sc_tag->data, i, sc[i].sc_score);
-      if (sub >= sz_left) {
-        /*
-        ** ngx_http_append_log will add seed_start and seed_end, and adjust the
-        *offset.
-        */
-        fragment = ngx_http_append_log(r, ostr, fragment, &offset);
-        if (!fragment)
-          return (NGX_ERROR);
-        sz_left = MAX_LINE_SIZE - MAX_SEED_LEN - offset - 1;
-      }
-      sub = snprintf((char*)(fragment->data + offset),
-                     sz_left,
-                     fmt_score,
-                     i,
-                     sc[i].sc_tag->len,
-                     sc[i].sc_tag->data,
-                     i,
-                     sc[i].sc_score);
-      if (sub >= sz_left) {
-        sub = sz_left - 1;
-      }
-      offset += sub;
-      sz_left -= sub;
-    }
-  }
-  /*
-  ** and matched zone/id/name
-  */
-  if (ctx->matched) {
-    mr  = ctx->matched->elts;
-    sub = 0;
-    i   = 0;
-    do {
-      memset(tmp_zone, 0, sizeof(tmp_zone));
-      if (mr[i].body_var)
-        strcat(tmp_zone, "BODY");
-      else if (mr[i].args_var)
-        strcat(tmp_zone, "ARGS");
-      else if (mr[i].headers_var)
-        strcat(tmp_zone, "HEADERS");
-      else if (mr[i].url)
-        strcat(tmp_zone, "URL");
-      else if (mr[i].file_ext)
-        strcat(tmp_zone, "FILE_EXT");
-      if (mr[i].target_name)
-        strcat(tmp_zone, "|NAME");
-
-      ngx_str_t tmp_val;
-
-      if (mr[i].name->len >= (NGX_MAX_UINT32_VALUE / 4) - 1) {
-        mr[i].name->len /= 4;
-      }
-
-      tmp_val.len =
-        mr[i].name->len +
-        (2 * ngx_escape_uri(NULL, mr[i].name->data, mr[i].name->len, NGX_ESCAPE_URI_COMPONENT));
-
-      tmp_val.data = ngx_pcalloc(r->pool, tmp_val.len + 1);
-      ngx_escape_uri(tmp_val.data, mr[i].name->data, mr[i].name->len, NGX_ESCAPE_URI_COMPONENT);
-
-      sub =
-        snprintf(0, 0, fmt_rm, i, tmp_zone, i, mr[i].rule->rule_id, i, tmp_val.len, tmp_val.data);
-      /*
-      ** This one would not fit :
-      ** append a seed to the current fragment,
-      ** and start a new one
-      */
-      if (sub >= sz_left) {
-        fragment = ngx_http_append_log(r, ostr, fragment, &offset);
-        if (!fragment)
-          return (NGX_ERROR);
-        sz_left = MAX_LINE_SIZE - MAX_SEED_LEN - offset - 1;
-      }
-      sub = snprintf((char*)fragment->data + offset,
-                     sz_left,
-                     fmt_rm,
-                     i,
-                     tmp_zone,
-                     i,
-                     mr[i].rule->rule_id,
-                     i,
-                     tmp_val.len,
-                     tmp_val.data);
-      if (sub >= sz_left)
-        sub = sz_left - 1;
-      offset += sub;
-      sz_left -= sub;
-      i += 1;
-    } while (i < ctx->matched->nelts);
-  }
-  fragment->len = offset;
-  return (NGX_HTTP_OK);
-}
-
 char*
 replace_str(const char* s, const char* oldW, const char* newW)
 {
@@ -1298,50 +1061,12 @@ replace_str(const char* s, const char* oldW, const char* newW)
 ngx_int_t
 ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r)
 {
-  ngx_str_t *                tmp_uri, denied_args;
-  ngx_str_t                  empty = ngx_string("");
   ngx_http_naxsi_loc_conf_t* cf;
-  ngx_array_t*               ostr;
-  ngx_table_elt_t*           h;
-  unsigned int               i = 0;
+  ngx_str_t                  empty = ngx_string("");
 
   cf = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
-  /* get array of signatures strings */
-  ostr = ngx_array_create(r->pool, 1, sizeof(ngx_str_t));
-  if (naxsi_create_log_array(ctx, r, ostr, &tmp_uri) != NGX_HTTP_OK) {
-    return (NGX_ERROR);
-  }
 
-  if (!ctx->json_log) {
-    for (i = 0; i < ostr->nelts; i++) {
-      ngx_log_error(NGX_LOG_ERR,
-                    cf->log ? cf->log : r->connection->log,
-                    0,
-                    "NAXSI_FMT: %s",
-                    ((ngx_str_t*)ostr->elts)[i].data);
-    }
-  } else {
-    ngx_str_t* elts = (ngx_str_t*)ostr->elts;
-    char       json[NAXSI_LOG_JSON_STRLEN];
-    for (i = 0; i < ostr->nelts; i++) {
-      if (!naxsi_json_log(&elts[i], json, NAXSI_LOG_JSON_STRLEN)) {
-        ngx_log_error(NGX_LOG_ERR,
-                      r->connection->log,
-                      0,
-                      "cannot generate json structure due NGX_MAX_ERROR_STR size.");
-        continue;
-      }
-      ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "%s", json);
-    }
-  }
-
-  if (ostr->nelts >= 1) {
-    denied_args.data = ((ngx_str_t*)ostr->elts)[0].data;
-    denied_args.len  = ((ngx_str_t*)ostr->elts)[0].len;
-  } else {
-    denied_args.data = empty.data;
-    denied_args.len  = empty.len;
-  }
+  naxsi_log_offending(ctx, r);
 
   /*
   ** If we shouldn't block the request,
@@ -1357,59 +1082,6 @@ ngx_http_output_forbidden_page(ngx_http_request_ctx_t* ctx, ngx_http_request_t* 
   */
   if (ctx->learning && !ctx->post_action && !ctx->drop) {
     return (NGX_DECLINED);
-  }
-  /*
-  ** add headers with original url
-  ** and arguments, as well as
-  ** the first fragment of log
-  */
-
-#define NAXSI_HEADER_ORIG_URL  "x-orig_url"
-#define NAXSI_HEADER_ORIG_ARGS "x-orig_args"
-#define NAXSI_HEADER_NAXSI_SIG "x-naxsi_sig"
-
-  if (r->headers_in.headers.last) {
-
-    h = ngx_list_push(&(r->headers_in.headers));
-    if (!h)
-      return (NGX_ERROR);
-    h->key.len  = strlen(NAXSI_HEADER_ORIG_URL);
-    h->key.data = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_ORIG_URL) + 1);
-    if (!h->key.data)
-      return (NGX_ERROR);
-    memcpy(h->key.data, NAXSI_HEADER_ORIG_URL, strlen(NAXSI_HEADER_ORIG_URL));
-    h->lowcase_key = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_ORIG_URL) + 1);
-    memcpy(h->lowcase_key, NAXSI_HEADER_ORIG_URL, strlen(NAXSI_HEADER_ORIG_URL));
-    h->value.len  = tmp_uri->len;
-    h->value.data = ngx_pcalloc(r->pool, tmp_uri->len + 1);
-    memcpy(h->value.data, tmp_uri->data, tmp_uri->len);
-
-    h = ngx_list_push(&(r->headers_in.headers));
-    if (!h)
-      return (NGX_ERROR);
-    h->key.len  = strlen(NAXSI_HEADER_ORIG_ARGS);
-    h->key.data = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_ORIG_ARGS) + 1);
-    if (!h->key.data)
-      return (NGX_ERROR);
-    memcpy(h->key.data, NAXSI_HEADER_ORIG_ARGS, strlen(NAXSI_HEADER_ORIG_ARGS));
-    h->lowcase_key = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_ORIG_ARGS) + 1);
-    memcpy(h->lowcase_key, NAXSI_HEADER_ORIG_ARGS, strlen(NAXSI_HEADER_ORIG_ARGS));
-    h->value.len  = r->args.len;
-    h->value.data = ngx_pcalloc(r->pool, r->args.len + 1);
-    memcpy(h->value.data, r->args.data, r->args.len);
-
-    h = ngx_list_push(&(r->headers_in.headers));
-    if (!h)
-      return (NGX_ERROR);
-    h->key.len  = strlen(NAXSI_HEADER_NAXSI_SIG);
-    h->key.data = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_NAXSI_SIG) + 1);
-    if (!h->key.data)
-      return (NGX_ERROR);
-    memcpy(h->key.data, NAXSI_HEADER_NAXSI_SIG, strlen(NAXSI_HEADER_NAXSI_SIG));
-    h->lowcase_key = ngx_pcalloc(r->pool, strlen(NAXSI_HEADER_NAXSI_SIG) + 1);
-    memcpy(h->lowcase_key, NAXSI_HEADER_NAXSI_SIG, strlen(NAXSI_HEADER_NAXSI_SIG));
-    h->value.len  = denied_args.len;
-    h->value.data = denied_args.data;
   }
 
   if (ctx->learning && !ctx->drop) {
@@ -1471,9 +1143,9 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
 
   if (ctx->extensive_log) {
     if (target_name) {
-      naxsi_log_offending(ctx, req, value, name, r, zone, target_name);
+      naxsi_log_offending_extra(ctx, req, value, name, r, zone, target_name);
     } else {
-      naxsi_log_offending(ctx, req, name, value, r, zone, target_name);
+      naxsi_log_offending_extra(ctx, req, name, value, r, zone, target_name);
     }
   }
   if (nb_match == 0)

@@ -61,14 +61,14 @@ if [ ! -d "$NAXSI_TMP_PATH/output" ]; then
     mkdir "$NAXSI_TMP_PATH/output"
 fi
 
-if [ ! -d "$NAXSI_TMP_PATH/dataset" ]; then
-    if [ ! -f "$NAXSI_TMP_PATH/dataset.zip" ]; then
+if [ ! -d "$NAXSI_WAF_CHECK/dataset" ]; then
+    if [ ! -f "$NAXSI_WAF_CHECK/dataset.zip" ]; then
         echo "downloading $OPENAPPSEC_DATASET"
-        curl -o "$NAXSI_TMP_PATH/dataset.zip" "$OPENAPPSEC_DATASET"
+        curl -o "$NAXSI_WAF_CHECK/dataset.zip" "$OPENAPPSEC_DATASET"
     fi
-    mkdir "$NAXSI_TMP_PATH/dataset"
-    unzip "$NAXSI_TMP_PATH/dataset.zip" -d "$NAXSI_TMP_PATH/dataset"
-    rm "$NAXSI_TMP_PATH/dataset.zip"
+    mkdir "$NAXSI_WAF_CHECK/dataset"
+    unzip "$NAXSI_WAF_CHECK/dataset.zip" -d "$NAXSI_WAF_CHECK/dataset"
+    rm "$NAXSI_WAF_CHECK/dataset.zip"
 fi
 
 if [ -d "$NAXSI_TMP_PATH/naxsi_ut/logs" ]; then
@@ -130,5 +130,5 @@ trap stop_nginx EXIT
 
 cd "$NAXSI_WAF_CHECK/waf-check/"
 
-"$NAXSI_WAF_CHECK/waf-check/waf-check" -status-code 406 -dataset "$NAXSI_TMP_PATH/dataset" -output "$NAXSI_TMP_PATH/output" -config "$WAF_CHECK_YAML"
+"$NAXSI_WAF_CHECK/waf-check/waf-check" -status-code 406 -dataset "$NAXSI_WAF_CHECK/dataset" -output "$NAXSI_TMP_PATH/output" -config "$WAF_CHECK_YAML"
 

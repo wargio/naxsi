@@ -4,6 +4,7 @@
 #ifndef NAXSI_MACROS_H
 #define NAXSI_MACROS_H
 
+#define to_str(s)        #s
 #define is_whitespace(c) ((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) == '\r')
 #define is_printable(c)  ((c) >= ' ' && (c) <= '~')
 #define is_numeric(c)    ((c) >= '0' && (c) <= '9')

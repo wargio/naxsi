@@ -8,7 +8,6 @@ naxsi_includes="
     $ngx_addon_dir/naxsi_const.h \
     $ngx_addon_dir/naxsi_config.h \
     $ngx_addon_dir/naxsi_net.h \
-    $ngx_addon_dir/naxsi_log.h \
 "
 
 # NAXSI C source files
