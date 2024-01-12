@@ -215,7 +215,18 @@ url_key_idx_number(log_t* log, const char* key, ngx_uint_t idx, ngx_uint_t value
 }
 
 static int
-url_key_idx_string(log_t* log, const char* key, ngx_uint_t idx, ngx_str_t* value)
+url_key_idx_string(log_t* log, const char* key, ngx_uint_t idx, const char* value)
+{
+  const size_t size = strlen(value);
+  if (size < 1) {
+    return 1;
+  }
+  return LOG_CONST_STRING(log, key) && log_number(log, idx) && log_char(log, '=') &&
+         log_string(log, (const u_char*)value, size);
+}
+
+static int
+url_key_idx_string_ngx(log_t* log, const char* key, ngx_uint_t idx, ngx_str_t* value)
 {
   if (value->len < 1) {
     return 1;
@@ -252,6 +263,24 @@ url_unsafe_key_string_ngx(log_t* log, const char* key, ngx_str_t* value)
   size_t needed =
     value->len + (2 * ngx_escape_uri(NULL, value->data, value->len, NGX_ESCAPE_URI_COMPONENT));
   if (!(LOG_CONST_STRING(log, key) && log_char(log, '=') && LOG_HAS(log, needed))) {
+    return 0;
+  }
+  u_char* buf = (u_char*)&log->buffer[log->used];
+  ngx_escape_uri(buf, value->data, value->len, NGX_ESCAPE_URI_COMPONENT);
+  log->used += needed;
+  return 1;
+}
+
+static int
+url_unsafe_key_idx_string_ngx(log_t* log, const char* key, ngx_uint_t idx, ngx_str_t* value)
+{
+  if (value->len < 1) {
+    return 1;
+  }
+  size_t needed =
+    value->len + (2 * ngx_escape_uri(NULL, value->data, value->len, NGX_ESCAPE_URI_COMPONENT));
+  if (!(LOG_CONST_STRING(log, key) && log_number(log, idx) && log_char(log, '=') &&
+        LOG_HAS(log, needed))) {
     return 0;
   }
   u_char* buf = (u_char*)&log->buffer[log->used];
@@ -603,8 +632,8 @@ naxsi_log_offending_as_urlencode(ngx_http_request_ctx_t* ctx, ngx_http_request_t
     goto log_fail;
   }
 
-  // naxsi mode
-  if (!(URL_KEY_STRING_CST(&log, "mode", mode))) {
+  // naxsi mode (old name)
+  if (!(URL_KEY_STRING_CST(&log, "config", mode))) {
     goto log_fail;
   }
 
@@ -616,8 +645,8 @@ naxsi_log_offending_as_urlencode(ngx_http_request_ctx_t* ctx, ngx_http_request_t
       if (!sc[i].sc_score) {
         continue;
       }
-      if (!(URL_AMP(&log) && url_key_idx_string(&log, "cscore", i, sc[i].sc_tag) && URL_AMP(&log) &&
-            url_key_idx_number(&log, "score", i, sc[i].sc_score))) {
+      if (!(URL_AMP(&log) && url_key_idx_string_ngx(&log, "cscore", i, sc[i].sc_tag) &&
+            URL_AMP(&log) && url_key_idx_number(&log, "score", i, sc[i].sc_score))) {
         goto log_fail;
       }
     }
@@ -634,23 +663,24 @@ naxsi_log_offending_as_urlencode(ngx_http_request_ctx_t* ctx, ngx_http_request_t
 
       // match zone
       if (mr[i].body_var &&
-          !(URL_KEY_STRING_CST(&log, "zone", mr[i].target_name ? "BODY|NAME" : "BODY"))) {
+          !(url_key_idx_string(&log, "zone", i, (mr[i].target_name ? "BODY|NAME" : "BODY")))) {
         goto log_fail;
       } else if (mr[i].args_var &&
-                 !(URL_KEY_STRING_CST(&log, "zone", mr[i].target_name ? "ARGS|NAME" : "ARGS"))) {
+                 !(url_key_idx_string(
+                   &log, "zone", i, (mr[i].target_name ? "ARGS|NAME" : "ARGS")))) {
         goto log_fail;
       } else if (mr[i].headers_var &&
-                 !(URL_KEY_STRING_CST(
-                   &log, "zone", mr[i].target_name ? "HEADERS|NAME" : "HEADERS"))) {
+                 !(url_key_idx_string(
+                   &log, "zone", i, (mr[i].target_name ? "HEADERS|NAME" : "HEADERS")))) {
         goto log_fail;
-      } else if (mr[i].url && !(URL_KEY_STRING_CST(&log, "zone", "URL"))) {
+      } else if (mr[i].url && !(url_key_idx_string(&log, "zone", i, "URL"))) {
         goto log_fail;
-      } else if (mr[i].file_ext && !(URL_KEY_STRING_CST(&log, "zone", "FILE_EXT"))) {
+      } else if (mr[i].file_ext && !(url_key_idx_string(&log, "zone", i, "FILE_EXT"))) {
         goto log_fail;
       }
 
       // rule id
-      if (!(URL_AMP(&log) && url_key_number(&log, "id", mr[i].rule->rule_id))) {
+      if (!(URL_AMP(&log) && url_key_idx_number(&log, "id", i, mr[i].rule->rule_id))) {
         goto log_fail;
       }
 
@@ -660,7 +690,7 @@ naxsi_log_offending_as_urlencode(ngx_http_request_ctx_t* ctx, ngx_http_request_t
       }
 
       // var_name
-      if (!(URL_AMP(&log) && url_unsafe_key_string_ngx(&log, "var_name", mr[i].name))) {
+      if (!(URL_AMP(&log) && url_unsafe_key_idx_string_ngx(&log, "var_name", i, mr[i].name))) {
         goto log_fail;
       }
     }
