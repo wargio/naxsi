@@ -7,10 +7,6 @@ on:
       - "dist-*"
     tags:
       - v*
-    paths:
-      - 'naxsi_src/**'
-      - 'unit-tests/**'
-      - 'distros/**'
   pull_request:
     branches:
       - "dist-*"
