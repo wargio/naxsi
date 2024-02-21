@@ -152,3 +152,15 @@ MainRule id:20000083 "s:$UWA:8" "str:.bak" "mz:URL" "msg:file access to temporar
 # Path traversal in nuxt/framework when in dev mode
 # https://huntr.dev/bounties/4849af83-450c-435e-bc0b-71705f5be440/
 MainRule id:20000084 "s:$UWA:8" "str:_nuxt/@" "mz:URL" "msg:path traversal in nuxt framework";
+
+# AWS NodeJS related files
+MainRule id:20000085 "s:$UWA:8" "str:awsconfig" "mz:URL" "msg:Exposed AWS config files";
+MainRule id:20000086 "s:$UWA:8" "str:aws-config" "mz:URL" "msg:Exposed AWS config files";
+MainRule id:20000087 "s:$UWA:8" "str:awscred" "mz:URL" "msg:Exposed AWS config files";
+MainRule id:20000088 "s:$UWA:8" "str:aws-cred" "mz:URL" "msg:Exposed AWS config files";
+
+# Text editors temp and config files
+MainRule id:20000089 "s:$UWA:8" "str:.old" "mz:URL" "msg:Exposed temp copy";
+MainRule id:20000090 "s:$UWA:8" "str:.save" "mz:URL" "msg:Exposed temp copy";
+MainRule id:20000091 "s:$UWA:8" "str:.DS_Store" "mz:URL" "msg:Exposed temp copy";
+MainRule id:20000092 "s:$UWA:8" "str:vscode" "mz:URL" "msg:Exposed vscode directory";

@@ -58,3 +58,6 @@ MainRule id:40000035 "s:$UWA:8" "str:/telescope/" "mz:URL" "msg:Access to Lavare
 
 # Block access to adminer/phpMinAdmin sql admin interface
 MainRule id:40000036 "s:$UWA:8" "str:adminer" "mz:URL" "msg:SQL Admin Interface";
+
+# Block access to Symfony Web Framework dev mode.
+MainRule id:40000037 "s:$UWA:8" "str:app_dev" "mz:URL" "msg:Symfony Web Framework dev mode";
