@@ -7,9 +7,17 @@ on:
       - "dist-*"
     tags:
       - v*
+    paths:
+      - 'naxsi_src/**'
+      - 'unit-tests/**'
+      - 'distros/**'
   pull_request:
     branches:
       - "dist-*"
+    paths:
+      - 'naxsi_src/**'
+      - 'unit-tests/**'
+      - 'distros/**'
 
 # Automatically cancel any previous workflow on new push.
 concurrency:

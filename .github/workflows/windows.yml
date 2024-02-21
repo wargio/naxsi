@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'naxsi_src/**'
+      - 'unit-tests/**'
+      - 'distros/**'
   pull_request:
+    paths:
+      - 'naxsi_src/**'
+      - 'unit-tests/**'
+      - 'distros/**'
 
 # Automatically cancel any previous workflow on new push.
 concurrency:
