@@ -877,7 +877,7 @@ ngx_http_naxsi_is_rule_whitelisted_n(ngx_http_request_t*        req,
      * ARGS_VAR:X|NAME */
     tmp_hashname.len = name->len + 1;
     /* too bad we have to realloc just to add the '#' */
-    tmp_hashname.data    = ngx_pcalloc(req->pool, tmp_hashname.len + 1);
+    tmp_hashname.data = ngx_pcalloc(req->pool, tmp_hashname.len + 1);
     if (!tmp_hashname.data)
       return (0);
     tmp_hashname.data[0] = '#';
@@ -2630,9 +2630,10 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
   if (!r->headers_in.content_type) {
     NX_DEBUG(_debug_body_parse, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-No content type ..");
 
-    if (ngx_http_apply_rulematch_v_n(&nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0))
+    if (ngx_http_apply_rulematch_v_n(
+          &nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0))
       return; /* if not whitelisted only */
-    content_type_str = (u_char*) "application/octet-stream";
+    content_type_str = (u_char*)"application/octet-stream";
   } else
     content_type_str = r->headers_in.content_type->value.data;
 
@@ -2673,7 +2674,7 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
       naxsi_error_fatal(ctx, r, "failed alloc of %d", full_body_len + 1);
       return;
     }
-    src       = full_body;
+    src = full_body;
     for (bb = r->request_body->bufs; bb; bb = bb->next)
       full_body = ngx_cpymem(full_body, bb->buf->pos, bb->buf->last - bb->buf->pos);
     full_body = src;
@@ -2714,8 +2715,7 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
     NX_DEBUG(
       _debug_post_heavy, NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "XX-POST DATA [%V]", &tmp);
 
-    if (ngx_http_spliturl_ruleset(
-          r->pool, &tmp, cf->body_rules, main_cf->body_rules, r, ctx, BODY))
+    if (ngx_http_spliturl_ruleset(r->pool, &tmp, cf->body_rules, main_cf->body_rules, r, ctx, BODY))
       ngx_http_apply_rulematch_v_n(&nx_int__uncommon_url, ctx, r, NULL, NULL, BODY, 1, 0);
   }
   /* 19 = echo -n "multipart/form-data" | wc -c */
@@ -2739,10 +2739,11 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
     ** Only attempt to process "raw" body if id:nx_int__uncommon_content_type was
     ** whitelisted. Else, it should be blocking and stop processing here.
     */
-    if (!ngx_http_apply_rulematch_v_n(&nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0) &&
-        (!ctx->block || ctx->learning) && !ctx->drop) {
-      ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "After uncommon content-type");
-      ngx_http_naxsi_rawbody_parse(ctx, r, full_body, full_body_len);
+    if (!ngx_http_apply_rulematch_v_n(&nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0) {
+      if ((!ctx->block || ctx->learning) && !ctx->drop) {
+        ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "After uncommon content-type");
+        ngx_http_naxsi_rawbody_parse(ctx, r, full_body, full_body_len);
+      }
     }
   }
   ngx_pfree(r->pool, full_body);
