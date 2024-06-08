@@ -2739,7 +2739,8 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
     ** Only attempt to process "raw" body if id:nx_int__uncommon_content_type was
     ** whitelisted. Else, it should be blocking and stop processing here.
     */
-    if (!ngx_http_apply_rulematch_v_n(&nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0) {
+    if (!ngx_http_apply_rulematch_v_n(
+          &nx_int__uncommon_content_type, ctx, r, NULL, NULL, BODY, 1, 0)) {
       if ((!ctx->block || ctx->learning) && !ctx->drop) {
         ngx_log_debug(NGX_LOG_DEBUG_HTTP, r->connection->log, 0, "After uncommon content-type");
         ngx_http_naxsi_rawbody_parse(ctx, r, full_body, full_body_len);
