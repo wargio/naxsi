@@ -8,10 +8,10 @@ Ubuntu & Debian do not provide a package for this, but you can easily compile na
 
 1. **Download the required software**
 
-> 📝 Note
+> ℹ️ Info
 > Some Debian and Ubuntu distributions uses **`libpcre2-dev`** instad of `libpcre3-dev`.
 
-> 📝 Note
+> ℹ️ Info
 > Debian bookworm requires also **`libperl-dev`**
 
 ```bash
@@ -111,7 +111,7 @@ Using submodule libinjection
 
 # **Compiling Naxsi from Sources**
 
-> 📝 Note
+> ℹ️ Info
 > You will need to have a working C dev environment installed on your system, for tools like `gcc` or `clang` and `make`, in order to compile Naxsi.
 
 > ⚠️ Warning

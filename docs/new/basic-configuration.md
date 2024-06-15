@@ -52,7 +52,7 @@ server {
 
 This configuration enables NAXSI and sets up basic rules for blocking requests based on various threat levels.
 
-> ℹ️ Important
+> 📣 Important
 > The `SecRulesEnabled` directive is mandatory to enable NAXSI in a location.
 
 Some key directives used in this example include:
