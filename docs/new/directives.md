@@ -145,6 +145,18 @@ This directive is required to declare a **global** [rule](rules.md) or a [whitel
 > [!TIP]
 > You can define these within a config file and use the `include` directive to include them within the NGINX configuration.
 
+You can find within the [Naxsi source code a list of global rules](https://github.com/wargio/naxsi/blob/main/naxsi_rules/) which provides a basic ruleset to protect any web application; these rules requires to include the following `CheckRules`:
+
+```
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 5" BLOCK;
+    CheckRule "$UPLOAD >= 5" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    CheckRule "$UWA >= 8" BLOCK;
+    CheckRule "$EVADE >= 8" BLOCK;
+```
+
 ### Example:
 
 ```
@@ -166,6 +178,9 @@ This directive is required to declare a **location-specific** (i.e. not global) 
 > [!TIP]
 > You can define these within a config file and use the `include` directive to include them within the NGINX configuration.
 
+> [!TIP]
+> You can find within the [Naxsi source code a list of location-specific whitelist](https://github.com/wargio/naxsi/tree/main/naxsi_rules/whitelists) which can be used for known web applications like Wordpress, Etherpad, Drupal, and more...
+
 ### Example:
 
 ```
@@ -176,5 +191,3 @@ location / {
     BasicRule id:45678 "s:$UWA:8" "str:nmap" "mz:$HEADERS_VAR:User-Agent" "msg:nmap in user-agent";
 }
 ```
-
-
