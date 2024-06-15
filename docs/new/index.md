@@ -1,8 +1,10 @@
 # **Naxsi Web Application Firewall Documentation**
 
+Naxsi is a Free Open Source Web Application Firewall which runs under NGINX.
+
 ## What is a Web Application Firewall (WAF)?
 
-﻿A Web Application Firewall (WAF) is a security system that sits in front of a web application to inspect, filter, and block malicious traffic. It acts as an intermediary between the internet and your website or web application, examining HTTP requests and responses for potential threats.
+A Web Application Firewall (WAF) is a security system that sits in front of a web application to inspect, filter, and block malicious traffic. It acts as an intermediary between the internet and your website or web application, examining HTTP requests and responses for potential threats.
 
 One of the key features of WAFs is virtual patching, which allows them to protect against known vulnerabilities without requiring actual patches to be applied to the underlying code. Here's how it works on Naxsi:
 
@@ -23,6 +25,14 @@ By using virtual patching, the system owner can:
 * Reduce the attack surface by blocking suspicious requests before they reach your website
 
 These virtual patches are expressed in form of Naxsi rules and can be applied to RAW requests or specific fields within the request.
+
+## What does it run on?
+
+Naxsi should be compatible with any NGINX version, and is reported to work great on NetBSD, FreeBSD, OpenBSD, Debian, Ubuntu and CentOS based systems.
+
+## Why is it different?
+
+Contrary to most Web Application Firewalls, Naxsi doesn't rely on a signature base like an antivirus, and thus cannot be circumvented by an "unknown" attack pattern.
 
 # Getting Started
 
