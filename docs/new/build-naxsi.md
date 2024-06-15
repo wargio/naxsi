@@ -8,10 +8,10 @@ Ubuntu & Debian do not provide a package for this, but you can easily compile na
 
 1. **Download the required software**
 
-> [!INFO]
+> 📝 Note
 > Some Debian and Ubuntu distributions uses **`libpcre2-dev`** instad of `libpcre3-dev`.
 
-> [!INFO]
+> 📝 Note
 > Debian bookworm requires also **`libperl-dev`**
 
 ```bash
@@ -90,7 +90,7 @@ The other files you will need, are **the rules**, which can be found at the foll
 naxsi/naxsi_rules
 ```
 
-> [!WARNING]
+> ⚠️ Warning
 > **Be aware that you may encounter the following error related to `libinjection`, which can be safely ignored.**
 
 ```
@@ -111,10 +111,10 @@ Using submodule libinjection
 
 # **Compiling Naxsi from Sources**
 
-> [!INFO]
+> 📝 Note
 > You will need to have a working C dev environment installed on your system, for tools like `gcc` or `clang` and `make`, in order to compile Naxsi.
 
-> [!WARNING]
+> ⚠️ Warning
 > You will need to have `libpcre` or `libpcre2` or `libpcre3` installed to correctly build Naxsi.
 
 To compile Naxsi from source code, follow these steps:

@@ -52,7 +52,7 @@ server {
 
 This configuration enables NAXSI and sets up basic rules for blocking requests based on various threat levels.
 
-> [!IMPORTANT]
+> ℹ️ Important
 > The `SecRulesEnabled` directive is mandatory to enable NAXSI in a location.
 
 Some key directives used in this example include:
@@ -64,8 +64,8 @@ Some key directives used in this example include:
 
 Additionally, this configuration includes directives for enabling libinjection's XSS and SQLI detection features.
 
-> [!WARNING]
+> ⚠️ Warning
 > **Be aware that Nginx will fail to load the configuration, if `ngx_http_naxsi_module.so` is not loaded**.
 
-> [!TIP]
+> 💡 Tip
 > It is possible to test the NGINX configuration by using `nginx -t` from the command line.
