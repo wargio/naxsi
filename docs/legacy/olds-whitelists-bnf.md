@@ -1,13 +1,13 @@
 ### BasicRule
 BasicRule(s) are present at the location's configuration level. It is (most of the time) used to create whitelists. BasicRule syntax is :
 
-[[Images/Whitelist.png|whitelist-diagram]]
+![whitelist-diagram](Images/Whitelist.png)
 
 #### **wl:ID** (WhiteList)
 
 Which rule ID(s) are whitelisted. Possible syntax are:
 
-[[Images/wl.png|wl-diagram]]
+![wl-diagram](Images/wl.png)
 
 * `wl:0` : Whitelist all rules
 * `wl:42` : Whitelist rule `#42`
@@ -18,7 +18,7 @@ Which rule ID(s) are whitelisted. Possible syntax are:
 
 #### **mz:** (MatchZones)
 
-[[Images/mz.png|mz-diagram]]
+![mz-diagram](Images/mz.png)
 
 Specify the zones (see below) in which the exception is allowed. Existing Zones are the following :
 

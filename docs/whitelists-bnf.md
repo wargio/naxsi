@@ -7,7 +7,7 @@ ie. Allow the ' character in the field named `term` at url /search :
 Whitelists can be present at `location` level (BasicRule) or at `http` level (MainRule). 
 Whitelists have the following syntax :
 
-[[Images/whitelist.png|whitelist-diagram]]
+![whitelist-diagram](Images/whitelist.png)
 
 Everything must be quoted with double quotes, except the wl part.
 
@@ -15,7 +15,7 @@ Everything must be quoted with double quotes, except the wl part.
 
 Which rule ID(s) are whitelisted. Possible syntax are:
 
-[[Images/wl.png|wl-diagram]]
+![wl-diagram](Images/wl.png)
 
 * `wl:0` : Whitelist all rules
 * `wl:42` : Whitelist rule `#42`

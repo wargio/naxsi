@@ -55,11 +55,11 @@ A matchzone is a combination of one or several zone with an optional url.
 
 In most situations, variable name and url can be predicted, and a static mz can be created :
 
-[[Images/mz_str.png|StaticMatchZone]]
+![StaticMatchZone](Images/mz_str.png)
 
 When regular expressions are needed :
 
-[[Images/mz_rx.png|StaticMatchZone]]
+![StaticMatchZone](Images/mz_rx.png)
 
 *note:* You CANNOT mix regex (`$URL_X`) and static (`$ARGS_VAR`) in a rule.
 

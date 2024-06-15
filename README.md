@@ -39,7 +39,7 @@ The original project is **officially** abandoned (and has been archived the 8th 
 
 ## Documentation
 
-You can find the main documentation [here](docs/index.md)
+You can find the main documentation [https://wargio.github.io/naxsi/](https://wargio.github.io/naxsi/)
 
 ## Build naxsi
 

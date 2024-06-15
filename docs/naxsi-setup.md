@@ -69,7 +69,7 @@ The next step is learning; however, before jumping there, ensure that you have:
 
 The ElasticSearch/Kibana part is optional but provides a great comfort and way to visualize "what's going on".
 
-[[Images/naxsi-workflow.png|Global Workflow]]
+![Global Workflow](Images/naxsi-workflow.png)
 
 
 ### Components
@@ -84,7 +84,7 @@ Kibana (v4 as of this writing) can be downloaded here:
 Once those two components are setup, you should be able to inject naxsi logs into ElasticSearch with NxTool.
 Here is an example of what it might look like in production:
 
-[[Images/kibana.png|Kibana Dashboard]]
+![Kibana Dashboard](Images/kibana.png)
 
 
 
