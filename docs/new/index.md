@@ -26,8 +26,8 @@ These virtual patches are expressed in form of Naxsi rules and can be applied to
 
 # Getting Started
 
-* **Building from Source**: Learn how to compile and install NAXSI from source code.
-* **Setting Up Naxsi**: A step-by-step guide on installing and configuring NAXSI.
+* **Installing Naxsi**: [Learn how to compile and install NAXSI from source code.](build-naxsi.md)
+* **Basic Configuration**: [A basic configuration for NAXSI](basic-configuration.md).
 
 # Configuration Options
 

@@ -153,3 +153,7 @@ The other files you will need, are **the rules**, which can be found at the foll
 ```
 naxsi/naxsi_rules
 ```
+
+# Next Page
+
+Next: [Basic Configuration](basic-configuration.md).
