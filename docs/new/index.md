@@ -1,4 +1,4 @@
-# **NAXSI Web Application Firewall Documentation**
+# **Naxsi Web Application Firewall Documentation**
 
 ## What is a Web Application Firewall (WAF)?
 
@@ -26,14 +26,15 @@ These virtual patches are expressed in form of Naxsi rules and can be applied to
 
 # Getting Started
 
-* **Installing Naxsi**: [Learn how to compile and install NAXSI from source code.](build-naxsi.md)
-* **Basic Configuration**: [A basic configuration for NAXSI](basic-configuration.md).
+* **Installing Naxsi**: [Learn how to compile and install Naxsi from source code.](build-naxsi.md)
+* **Basic Configuration**: [A basic configuration for Naxsi](basic-configuration.md).
 
 # Configuration Options
 
-* **Rules**: Understand the different types of rules you can create in NAXSI, including signature-based and anomaly-based detection.
-* **Whitelists**: Learn how to use whitelisting features in NAXSI to allow specific traffic through your firewall.
+* **Directives**: Explains all the directives that are available when the Naxsi module is enabled. 
+* **Rules**: Understand the different types of rules you can create in Naxsi, including signature-based and anomaly-based detection.
+* **Whitelists**: Learn how to use whitelisting features in Naxsi to allow specific traffic through your firewall.
 
 # Integrating with Other Tools
 
-* **Integration with a Dashboard**: Discover how to integrate NAXSI with other tools and dashboards for enhanced monitoring and management capabilities.
+* **Integration with a Dashboard**: Discover how to integrate Naxsi with other tools and dashboards for enhanced monitoring and management capabilities.
