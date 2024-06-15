@@ -31,7 +31,7 @@ These virtual patches are expressed in form of Naxsi rules and can be applied to
 
 # Configuration Options
 
-* **Directives**: Explains all the directives that are available when the Naxsi module is enabled. 
+* **Directives**: [Explains all the directives that are available when the Naxsi module is enabled.](directives.md)
 * **Rules**: Understand the different types of rules you can create in Naxsi, including signature-based and anomaly-based detection.
 * **Whitelists**: Learn how to use whitelisting features in Naxsi to allow specific traffic through your firewall.
 * **Matchzones**: Describes how matchzones can be used to limit rules or whitelists.
