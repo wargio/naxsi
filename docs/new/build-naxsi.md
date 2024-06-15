@@ -1,4 +1,4 @@
-# **Installing NAXSI**
+# **Installing Naxsi**
 
 In this section you can find how to install and build naxsi on various distributions.
 
@@ -8,8 +8,11 @@ Ubuntu & Debian do not provide a package for this, but you can easily compile na
 
 1. **Download the required software**
 
-Note 1: Some Debian and Ubuntu distributions uses **`libpcre2-dev`** instad of `libpcre3-dev`.
-Note 2: Debian bookworm requires also **`libperl-dev`**
+> [!INFO]
+> Some Debian and Ubuntu distributions uses **`libpcre2-dev`** instad of `libpcre3-dev`.
+
+> [!INFO]
+> Debian bookworm requires also **`libperl-dev`**
 
 ```bash
 # Install required software
@@ -87,7 +90,8 @@ The other files you will need, are **the rules**, which can be found at the foll
 naxsi/naxsi_rules
 ```
 
-Note: **Be aware that you may encounter the following error related to `libinjection`, which can be safely ignored.**
+> [!WARNING]
+> **Be aware that you may encounter the following error related to `libinjection`, which can be safely ignored.**
 
 ```
 [truncated output ...]
@@ -105,12 +109,15 @@ Using submodule libinjection
  + naxsi was configured  
 ```
 
-# **Compiling NAXSI from Sources**
+# **Compiling Naxsi from Sources**
 
-Note 1: You will need to have a working C dev environment installed on your system, for tools like `gcc` or `clang` and `make`, in order to compile NAXSI.
-Note 2: You will need to have
+> [!INFO]
+> You will need to have a working C dev environment installed on your system, for tools like `gcc` or `clang` and `make`, in order to compile Naxsi.
 
-To compile NAXSI from source code, follow these steps:
+> [!WARNING]
+> You will need to have `libpcre` or `libpcre2` or `libpcre3` installed to correctly build Naxsi.
+
+To compile Naxsi from source code, follow these steps:
 
 1. **Get Naxsi sources**
 
