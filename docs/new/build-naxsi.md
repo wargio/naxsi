@@ -81,7 +81,7 @@ You will find the built module at the following path:
 nginx-<version>/objs/ngx_http_naxsi_module.so
 ```
 
-The other files you will need, are **the rules**, which can be found under:
+The other files you will need, are **the rules**, which can be found at the following path:
 
 ```
 naxsi/naxsi_rules
@@ -105,14 +105,51 @@ Using submodule libinjection
  + naxsi was configured  
 ```
 
-**Compiling NAXSI from Sources**
-=============================
+# **Compiling NAXSI from Sources**
 
-Note: You will need to have a C compiler installed on your system, such as `gcc` or `clang`, in order to compile NAXSI.
+Note 1: You will need to have a working C dev environment installed on your system, for tools like `gcc` or `clang` and `make`, in order to compile NAXSI.
+Note 2: You will need to have
 
 To compile NAXSI from source code, follow these steps:
 
+1. **Get Naxsi sources**
+
 ```bash
+NAXSI_VERSION=X.Y
+wget "https://github.com/wargio/naxsi/releases/download/$NAXSI_VERSION/naxsi-$NAXSI_VERSION-src-with-deps.tar.gz"
+mkdir -p naxsi
+tar -C naxsi -xzf naxsi-$NAXSI_VERSION-src-with-deps.tar.gz
+```
 
+2. **Get NGINX sources**
 
+```bash
+NGINX_VERSION=X.Y.Z
+wget https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz
+mkdir -p nginx
+tar -C nginx -xzf nginx-$NGINX_VERSION.tar.gz
+```
+
+3. **Build NGINX and Naxsi**
+
+```
+cd nginx
+./configure --add-dynamic-module=../naxsi/naxsi_src/
+make modules
+```
+
+4. **Install Nginx and Naxsi**
+
+You can automatically install the files using `make install` or alternatively you can manually install the built module using:
+
+You will find the built module at the following path:
+
+```
+nginx/objs/ngx_http_naxsi_module.so
+```
+
+The other files you will need, are **the rules**, which can be found at the following path:
+
+```
+naxsi/naxsi_rules
 ```
