@@ -9,7 +9,7 @@ Rules can be present at `location` level (`BasicRule`) or at `http` level (`Main
 
 Rules have the following schema :
 
-[[Images/rule.png|Rule]]
+![Rule](Images/rule.png)
 
 Everything must be quoted with double quotes, except the id part.
 
@@ -21,7 +21,7 @@ IDs inferior to `1000` are reserved for naxsi internal rules (protocol mismatch 
 
 ### Match Pattern
 
-[[Images/pattern.png|Sig-Digram]]
+![Sig-Digram](Images/pattern.png)
 
 Match pattern can be a regular expression, a string match, or a call to a lib (libinjection) :
 
@@ -35,7 +35,7 @@ All strings *must* be lowercase, since naxsi's matches are case insensitive.
 
 ### Score (s:...)
 
-[[Images/score.png|Score-Diagram]]
+![Score-Diagram](Images/score.png)
 
 **s** is the score section. You can create "named" counters: `s:$FOOBAR:4` will increase counter `$FOOBAR` value by 4. One rule can increase several scores: `s:$FOO:4,$BAR:8` will increase both `$FOO` by 4 and `$BAR` by 8. 
 A rule can as well directly specifiy an action such a BLOCK (blocks the request in non-learning mode) or DROP (blocks the request **even** in learning mode)

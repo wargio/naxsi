@@ -4,7 +4,7 @@ CheckRules instruct naxsi to take an action (`LOG`, `BLOCK`, `DROP`, `ALLOW`) ba
 
 `CheckRule` must be present at location level.
 
-[[Images/checkrule.png|CheckRule schema]]
+![CheckRule schema](Images/checkrule.png)
 
 ### Basic Usage
 

@@ -12,7 +12,7 @@ As you will see bellow, AppScan is not able to find any vulnerabilities that it 
 
 When running AppScan against [demo.testfire.net]( http://demo.testfire.net ) with naxsi (set-up as forward proxy for this purpose), the following vulnerabilities will appear:
 
-[[Images/appscanfull.png|appscanfull]]
+![appscanfull](Images/appscanfull.png)
 
 I won't make an exhaustive diff list between naxsi and raw results since, as you can expect, original scan results have a LOT of vulnerabilities, as this website is designed to show all the vulnerabilities AppScan can detect/exploit.
 
@@ -22,8 +22,8 @@ Let's go through all the "remaining" bugs :
 
 The scan result shows at least 2 Blind SQL Injection remaining. Actually, the attack pattern used by AppScan is the following :
 
-[[Images/appscandetails1.png|details 1]]
-[[Images/appscandetails2.png|details 2]]
+![details 1](Images/appscandetails1.png)
+![details 2](Images/appscandetails2.png)
 
 
 The first test pattern `listAccounts=0%2B0%2B0%2B1001160141` is decoded to `listAccounts=0+0+0+1001160141`, and the seconde one, `before=1234+and+7659%3D7659` to `before=1234 and 7659=7659`. Appscan is able to detect the vulnerability, but it will not be able to exploit it.
@@ -32,7 +32,7 @@ The first test pattern `listAccounts=0%2B0%2B0%2B1001160141` is decoded to `list
 
 During the scan, AppScan was able to detect several "Database Error Pattern" (read : MSSQL/MySQL/... error messages in webpage)
 
-[[Images/appscandetails3.png|details 3]]
+![details 3](Images/appscandetails3.png)
 
 The test pattern used by AppScan is `100116014WFXSSProbe`, it's a generic one to *trace back* injected data into a webpage. Here, the scanner is able to trigger the bug by entering a non-numeric value in a numeric field, making the page yield a SQL error message. Obviously, you cannot do anything here except blocking the scanner's pattern, which would be dumb and inefficient. Obviously, the injected characters won't allow any kind of exploitation of the vulnerability, only a probe.
 
