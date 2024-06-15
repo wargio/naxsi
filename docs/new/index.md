@@ -42,9 +42,10 @@ Contrary to most Web Application Firewalls, Naxsi doesn't rely on a signature ba
 # Configuration Options
 
 * **Directives**: [Explains all the directives that are available when the Naxsi module is enabled.](directives.md)
-* **Rules**: Understand the different types of rules you can create in Naxsi, including signature-based and anomaly-based detection.
-* **Whitelists**: Learn how to use whitelisting features in Naxsi to allow specific traffic through your firewall.
-* **Matchzones**: Describes how matchzones can be used to limit rules or whitelists.
+* **Rules**: [Understand the different types of rules you can create in Naxsi.](rules.md)
+* **Whitelists**: [Learn how to use whitelisting features in Naxsi to allow specific traffic through Naxsi.](whitelist.md)
+* **Matchzones**: [Describes how matchzones can be used to limit rules or whitelists.](matchzones.md)
+* **Logs**: [Describes the format of the logs and how to read them.](logs.md)
 
 # Integrating with Other Tools
 
