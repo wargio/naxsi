@@ -19,7 +19,7 @@ Naxsi has some internal rules that are hardcoded within the WAF; these rules are
 >
 > No rules shall be defined with **ids** lower than 1000.
 
-You can read more about them [here (Internal Rules)](internal_rules.md).
+You can read more about them here: [Internal Rules](internal_rules.md).
 
 ## **`MainRule` and `BasicRule` directives**
 
