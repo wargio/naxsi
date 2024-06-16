@@ -85,3 +85,6 @@ MainRule id:10000038 "s:$UWA:8" "str:wpscan" "mz:$HEADERS_VAR:User-Agent" "msg:W
 
 # WinHttpReq in User-Agent
 MainRule id:10000039 "s:$UWA:8" "str:WinHttpReq" "mz:$HEADERS_VAR:User-Agent" "msg:WinHttpReq in user-agent";
+
+# EgyScan security scanner uses AliElTop in some of the attacks
+MainRule id:10000040 "s:$UWA:8" "str:AliElTop" "mz:ANY" "msg:EgyScan security scanner";
