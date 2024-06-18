@@ -208,3 +208,45 @@ location / {
     BasicRule id:45678 "s:$UWA:8" "str:nmap" "mz:$HEADERS_VAR:User-Agent" "msg:nmap in user-agent";
 }
 ```
+
+## **IgnoreIP** 
+
+> ℹ️ Info
+>
+> NGINX block: `location`
+
+This directive can be used to whitelist requests from certain IPs.
+
+> 💡 Tip
+>
+> You can define these within a config file and use the `include` directive to include them within the NGINX configuration.
+
+### Example:
+
+```
+location / {
+    IgnoreIP "1.2.3.4";
+    IgnoreIP "2001:4860:4860::8844";
+}
+```
+
+## **IgnoreCIDR** 
+
+> ℹ️ Info
+>
+> NGINX block: `location`
+
+This directive can be used to whitelist requests from certain IP ranges.
+
+> 💡 Tip
+>
+> You can define these within a config file and use the `include` directive to include them within the NGINX configuration.
+
+### Example:
+
+```
+location / {
+    IgnoreCIDR "192.168.0.0/24";
+    IgnoreCIDR "2001:4860:4860::/112";
+}
+```
