@@ -55,9 +55,31 @@ $ ./configure  --prefix=/etc/nginx --add-dynamic-module=../naxsi/naxsi_src
 $ make
 ```
 
-## Support
+# Support & Bugs
 
-Questions regarding NAXSI can be asked by opening a new issue [here](https://github.com/wargio/naxsi/issues/new)
+Questions & bug reports regarding NAXSI can be addressed via issues.
+
+[Click here to open an issue](https://github.com/wargio/naxsi/issues/new)
+
+# Vulnerability disclosure
+
+When disclosing vulnerabilities, please send first an email to `deroad at kumo.xn--q9jyb4c` (gpg keyid: `29656E856786B9A1FBF983CFA219F52A8217B1FE`)
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEXR3FZhYJKwYBBAHaRw8BAQdAfuSDE68TEppjJfUAApXSTsHrKtGefVJXvz7f
+YIO0gci0MUdpb3Zhbm5pIERhbnRlIEdyYXppb2xpIDxkZXJvYWRAa3Vtby54bi0t
+cTlqeWI0Yz6IkAQTFggAOAIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBCll
+boVnhrmh+/mDz6IZ9SqCF7H+BQJg9+CGAAoJEKIZ9SqCF7H+X04BAPXz7R856z72
+f8nsZZjj4q3YaJbXA3pSVLIJ9uDQniCsAP9PaPBcbr231M3cjjBMo7ovlrElfFor
+zCWA3NhRb4Y2DLg4BF0dxWYSCisGAQQBl1UBBQEBB0AVby+EIQcIoqSDZelvkqt8
+dV1kvF4f/J0jj0k3OEKNcAMBCAeIeAQYFggAIAIbDBYhBCllboVnhrmh+/mDz6IZ
+9SqCF7H+BQJg9+C4AAoJEKIZ9SqCF7H+ZfQBAOFb7iZm7t8j5ymiXyJFcuM/nF9+
+bx4+KJJUTR9r6zBFAQD3Ea5Ya4lny/v9WKNSpBfZFEs3pkDnfgxw3o8vc4iSAQ==
+=d/IR
+-----END PGP PUBLIC KEY BLOCK-----
+```
 
 ## Future plans
 
