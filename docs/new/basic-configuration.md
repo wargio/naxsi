@@ -13,7 +13,7 @@ server {
 	server_name example.com;
 
 	set $naxsi_json_log 1; # Enable JSON logs for Naxsi
-	include /etc/nginx/naxsi_core.rules; # Include core rules
+	include /etc/nginx/naxsi/naxsi_core.rules; # Include core rules (see below)
 
 	location / {
 		proxy_pass http://internal-ip-address:80;
@@ -27,22 +27,29 @@ server {
 		LibInjectionSql; #enable libinjection support for SQLI
 		LibInjectionXss; #enable libinjection support for XSS
 
-		# include additional rules
-		include /etc/nginx/additional_naxsi.rules;
-
-		# internal denied request.
+		# Internal denied request.
 		DeniedUrl "/RequestDenied";
 
-		CheckRule "$SQL >= 8" BLOCK;
-		CheckRule "$RFI >= 8" BLOCK;
-		CheckRule "$TRAVERSAL >= 5" BLOCK;
-		CheckRule "$UPLOAD >= 5" BLOCK;
-		CheckRule "$XSS >= 8" BLOCK;
-		CheckRule "$UWA >= 8" BLOCK;
-		CheckRule "$EVADE >= 8" BLOCK;
-		CheckRule "$LIBINJECTION_XSS >= 8" BLOCK;
-		CheckRule "$LIBINJECTION_SQL >= 8" BLOCK;
+		# Include additional rules
+		include /etc/nginx/naxsi/blocking/*.rules;
+
+		# The following CheckRules are mandatory when using the rules found in the naxsi repository.
+		# For more info, please check:
+		# - https://github.com/wargio/naxsi/tree/main/naxsi_rules/blocking
+		# - https://github.com/wargio/naxsi/blob/main/naxsi_rules/naxsi_core.rules
+
+		CheckRule "$SQL >= 8" BLOCK; # SQL injection action (unrelated to libinjection)
+		CheckRule "$XSS >= 8" BLOCK; # XSS action (unrelated to libinjection)
+		CheckRule "$RFI >= 8" BLOCK; # Remote File Inclusion action
+		CheckRule "$UWA >= 8" BLOCK; # Unwanted Access action
+		CheckRule "$EVADE >= 8" BLOCK; # Evade action (some tools may try to avoid detection).
+		CheckRule "$UPLOAD >= 5" BLOCK; # Malicious upload action
+		CheckRule "$TRAVERSAL >= 5" BLOCK; # Traversal access action
+		CheckRule "$LIBINJECTION_XSS >= 8" BLOCK; # libinjection XSS action
+		CheckRule "$LIBINJECTION_SQL >= 8" BLOCK; # libinjection SQLi action
 	}
+
+	# The location where all the blocked request will be internally redirected.
 	location /RequestDenied {
 		internal;
 		return 403;
@@ -72,3 +79,8 @@ Additionally, this configuration includes directives for enabling libinjection's
 > 💡 Tip
 >
 > It is possible to test the NGINX configuration by using `nginx -t` from the command line.
+
+# Go Back
+
+[Table of Contents](index.md).
+
