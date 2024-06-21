@@ -12,7 +12,7 @@ This directive is mandatory to `enable` naxsi in a NGINX `location`.
 
 ### Example:
 
-```
+```nginx
 location / {
     SecRulesEnabled;
 }
@@ -38,7 +38,7 @@ The directive requires you to specify a **score** with a variable name and its m
 
 ### Example:
 
-```
+```nginx
 location / {
     CheckRule "$FOO_UU >= 8" LOG;
     CheckRule "$BARRRR < 99" DROP;
@@ -60,7 +60,7 @@ When defined, this directive enables [libinjection's](https://github.com/libinje
 
 ### Example:
 
-```
+```nginx
 location / {
     # enable libinjection xss
     LibInjectionXss;
@@ -83,7 +83,7 @@ When defined, this directive enables [libinjection's](https://github.com/libinje
 
 ### Example:
 
-```
+```nginx
 location / {
     # enable libinjection sqli
     LibInjectionSql;
@@ -108,7 +108,7 @@ All the `BLOCK` actions will be interpreted as `LOG`; this is a useful mode when
 
 ### Example:
 
-```
+```nginx
 location / {
     # enable Naxsi learning mode
     LearningMode;
@@ -134,7 +134,7 @@ The following headers that are added are when blocking, dropping or logging requ
 
 ### Example:
 
-```
+```nginx
 location / {
     DeniedUrl "/RequestDenied";
 }
@@ -161,7 +161,7 @@ This directive is required to declare a **global** [rule](rules.md) or a [whitel
 
 You can find within the [Naxsi source code a list of global rules](https://github.com/wargio/naxsi/blob/main/naxsi_rules/) which provides a basic ruleset to protect any web application; these rules requires to include the following `CheckRules`:
 
-```
+```nginx
     CheckRule "$SQL >= 8" BLOCK;
     CheckRule "$RFI >= 8" BLOCK;
     CheckRule "$TRAVERSAL >= 5" BLOCK;
@@ -173,7 +173,7 @@ You can find within the [Naxsi source code a list of global rules](https://githu
 
 ### Example:
 
-```
+```nginx
 http {
     # global whitelist
     MainRule wl:12345 "mz:$URL:/robots.txt|URL";
@@ -200,7 +200,7 @@ This directive is required to declare a **location-specific** (i.e. not global) 
 
 ### Example:
 
-```
+```nginx
 location / {
     # location-specific whitelist
     BasicRule wl:12345 "mz:$URL:/robots.txt|URL";
@@ -223,7 +223,7 @@ This directive can be used to whitelist requests from certain IPs.
 
 ### Example:
 
-```
+```nginx
 location / {
     IgnoreIP "1.2.3.4";
     IgnoreIP "2001:4860:4860::8844";
@@ -244,7 +244,7 @@ This directive can be used to whitelist requests from certain IP ranges.
 
 ### Example:
 
-```
+```nginx
 location / {
     IgnoreCIDR "192.168.0.0/24";
     IgnoreCIDR "2001:4860:4860::/112";

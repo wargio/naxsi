@@ -2,9 +2,64 @@
 
 To get started with Naxsi, you can explore the following basic configuration.
 
+## **Configuring Naxsi**
+
+Naxsi must be configured based on what it is going to protect.
+
+The first step, once compiled dynamically compiled, you will have a shared library which will need to be loaded by nginx by adding an entry to the `/etc/nginx/nginx.conf` file.
+
+```nginx
+load_module /usr/lib/nginx/modules/ngx_http_naxsi_module.so;
+```
+
+Once the module is added to the NGINX configuration, the next step is to **include global rules**; in the Naxsi repository you can find the [**`naxsi_core.rules`**](https://github.com/wargio/naxsi/blob/main/naxsi_rules/naxsi_core.rules) which gives to the user the ability to add the most basic ruleset to Naxsi itself.
+
+> 💡 Tip
+>
+> It is possible to include these rules directly in `/etc/nginx/nginx.conf`.
+
+```nginx
+include /etc/nginx/naxsi/naxsi_core.rules
+```
+
+The next step is configuring each website which will need to be protected by Naxsi; this happens by adding the directives `SecRulesEnabled`, `DeniedUrl` and `CheckRule` to a `location` block.
+
+* `SecRulesEnabled`: is used to enable Naxsi in the `location` block.
+* `DeniedUrl`: specifies where blocked requests will be redirected (**this is an internal redirect for NGINX** and requires a different `location` block as destination).
+* `CheckRule`: takes an action (`LOG`, `BLOCK`, `DROP`, `ALLOW`) based on a specific score associated with the request.
+
+For more details, check the [Directive chapter](directives.md)
+
+```nginx
+location / {
+	SecRulesEnabled;
+	DeniedUrl "/RequestDenied";
+	CheckRule "$FOO >= 8" BLOCK;
+}
+
+# The location where all the blocked request will be internally redirected.
+location /RequestDenied {
+	internal;
+	return 403;
+}
+```
+
+The last steps are create whitelists and configure the logging.
+
+```nginx
+# example of whitelist (global and location-defined)
+MainRule wl:1000,1009,1315 "mz:$BODY_VAR:_wp_http_referer";
+BasicRule wl:1000,1009,1315 "mz:$BODY_VAR:_wp_http_referer";
+
+# Enable JSON logs for Naxsi
+set $naxsi_json_log 1;
+```
+
+## **Example Configuration**
+
 This NGINX configuration for `/etc/nginx/nginx.conf` where we define a reverse proxy towards a webservice hosted on `internal-ip-address` on port `80`.
 
-```
+```nginx
 # load module
 load_module /etc/nginx/modules/ngx_http_naxsi_module.so;
 
@@ -24,8 +79,8 @@ server {
 
 		SecRulesEnabled; #enable naxsi for this `location`
 		# LearningMode;  #When enable, BLOCK CheckRule are considered as LOG.
-		LibInjectionSql; #enable libinjection support for SQLI
-		LibInjectionXss; #enable libinjection support for XSS
+		LibInjectionSql; #enable libinjection support for SQL injection detection
+		LibInjectionXss; #enable libinjection support for XSS detection
 
 		# Internal denied request.
 		DeniedUrl "/RequestDenied";
@@ -65,12 +120,11 @@ This configuration enables NAXSI and sets up basic rules for blocking requests b
 
 Some key directives used in this example include:
 
-* `DeniedUrl`: specifies where blocked requests will be redirected (**this is an internal redirect for NGINX**).
 * `LearningMode`: if enabled, `BLOCK` CheckRule will be considered as `LOG`, thus not blocking the requests.
-* `CheckRule`: takes an action (`LOG`, `BLOCK`, `DROP`, `ALLOW`) based on a specific score associated with the request.
+* `LibInjectionXss` and `LibInjectionSql`: When defined, enables libinjection support for SQLi & XSS and requires to define `$LIBINJECTION_XSS` & `$LIBINJECTION_SQL` **`**CheckRules**.
 * `include`: This directive allows to include other configuration files within the current scope, this can be useful if the system owner wants to have the same configuration for multiple websites without copy-pasting the same lines.
 
-Additionally, this configuration includes directives for enabling libinjection's XSS and SQLI detection features.
+Additionally, this configuration includes directives for enabling libinjection's XSS and SQLi detection features.
 
 > ⚠️ Warning
 >
