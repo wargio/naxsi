@@ -83,4 +83,3 @@ Additionally, this configuration includes directives for enabling libinjection's
 # Go Back
 
 [Table of Contents](index.md).
-
