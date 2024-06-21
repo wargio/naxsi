@@ -47,6 +47,7 @@ Contrary to most Web Application Firewalls, Naxsi doesn't rely on a signature ba
 * **Whitelists**: [Learn how to use whitelisting features in Naxsi to allow specific traffic through Naxsi.](whitelist.md) (**WIP**)
 * **Matchzones**: [Describes how matchzones can be used to limit rules or whitelists.](matchzones.md) (**WIP**)
 * **Logs**: [Describes the format of the logs and how to read them.](logs.md) (**WIP**)
+* **Packaging Naxsi**: [Build your own distro packages from sources.](packaging-naxsi.md)
 
 # Support & Bugs
 
@@ -60,7 +61,6 @@ When disclosing vulnerabilities, please send first an email to `deroad at kumo.x
 
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-
 mDMEXR3FZhYJKwYBBAHaRw8BAQdAfuSDE68TEppjJfUAApXSTsHrKtGefVJXvz7f
 YIO0gci0MUdpb3Zhbm5pIERhbnRlIEdyYXppb2xpIDxkZXJvYWRAa3Vtby54bi0t
 cTlqeWI0Yz6IkAQTFggAOAIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBCll

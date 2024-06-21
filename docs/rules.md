@@ -71,3 +71,7 @@ Each rule can also have a description which is expressed as `"msg:<description>"
 > 📣 Important
 >
 > **Descriptions are not used by Naxsi**, but can be used to explain what the rule does.
+
+# Go Back
+
+[Table of Contents](index.md).
