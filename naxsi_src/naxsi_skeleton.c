@@ -134,7 +134,9 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       uintptr_t                  data);
 
 static ngx_int_t
-ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data);
+ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
+                                   ngx_http_variable_value_t* v,
+                                   uintptr_t                  data);
 
 /* command handled by the module */
 static ngx_command_t ngx_http_naxsi_commands[] = {
@@ -351,21 +353,21 @@ static ngx_http_variable_t ngx_http_naxsi_variables[] = {
     NULL,                           /* Set handler */
     ngx_http_naxsi_server_variable, /* Get handler */
     0,                              /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,       /* Flags */
+    0,                              /* Flags */
     0 },                            /* Index */
 
   { ngx_string("naxsi_uri"),     /* Name */
     NULL,                        /* Set handler */
     ngx_http_naxsi_uri_variable, /* Get handler */
     0,                           /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,    /* Flags */
+    0,                           /* Flags */
     0 },                         /* Index */
 
   { ngx_string("naxsi_learning"),     /* Name */
     NULL,                             /* Set handler */
     ngx_http_naxsi_learning_variable, /* Get handler */
     0,                                /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,         /* Flags */
+    0,                                /* Flags */
     0 },                              /* Index */
 
   { ngx_string("naxsi_block"),     /* Name */
@@ -417,12 +419,12 @@ static ngx_http_variable_t ngx_http_naxsi_variables[] = {
     NGX_HTTP_VAR_NOCACHEABLE,              /* Flags */
     0 },                                   /* Index */
 
-  { ngx_string("naxsi_request_id"), /* Name */
-    NULL,                           /* Set handler */
-    ngx_http_naxsi_request_id,      /* Get handler */
-    0,                              /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,       /* Flags */
-    0 },                            /* Index */
+  { ngx_string("naxsi_request_id"),     /* Name */
+    NULL,                               /* Set handler */
+    ngx_http_naxsi_request_id_variable, /* Get handler */
+    0,                                  /* Data */
+    0,                                  /* Flags */
+    0 },                                /* Index */
 
   { ngx_null_string, NULL, NULL, 0, 0, 0 } /* Sentinel */
 };
@@ -1376,7 +1378,6 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     cln->handler = ngx_http_module_cleanup_handler;
     cln->data    = ctx;
 
-    naxsi_generate_request_id(ctx->request_id);
     ngx_http_set_ctx(r, ctx, ngx_http_naxsi_module);
     NX_DEBUG(_debug_modifier,
              NGX_LOG_DEBUG_HTTP,
@@ -2090,28 +2091,48 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
 }
 
 static ngx_int_t
-ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data)
+ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
+                                   ngx_http_variable_value_t* v,
+                                   uintptr_t                  data)
 {
-  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
-  if (!ctx) {
-    v->not_found = 1;
-    return NGX_OK;
+  char*   req_id = naxsi_request_id(r);
+  u_char* id     = NULL;
+
+  if (req_id == NULL) {
+    return NGX_ERROR;
   }
 
-  u_char*      id  = NULL;
-  const size_t len = NAXSI_REQUEST_ID_SIZE << 1;
-
-  id = ngx_pnalloc(r->pool, len);
+  id = ngx_pnalloc(r->pool, 32);
   if (id == NULL) {
     return NGX_ERROR;
   }
 
+  memcpy(id, req_id, 32);
+
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
-  v->len          = len;
+  v->len          = 32;
   v->data         = id;
-
-  ngx_hex_dump(id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
   return NGX_OK;
+}
+
+char*
+naxsi_request_id(ngx_http_request_t* req)
+{
+  ngx_http_variable_value_t* lookup;
+
+  static ngx_str_t  request_id_varname  = ngx_string("request_id");
+  static ngx_uint_t request_id_h        = 0;
+  static char       request_id_dump[33] = { 0 };
+
+  if (request_id_h == 0)
+    request_id_h = ngx_hash_key_lc(request_id_varname.data, request_id_varname.len);
+
+  lookup = ngx_http_get_variable(req, &request_id_varname, request_id_h);
+  if (lookup && !lookup->not_found && lookup->len > 0) {
+    memcpy(request_id_dump, lookup->data, 32);
+    return request_id_dump;
+  }
+  return NULL;
 }
