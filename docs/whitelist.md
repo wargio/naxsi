@@ -11,6 +11,9 @@ MainRule wl:12345,3333 "mz:URL";
 BasicRule wl:67890 "mz:ARGS|BODY";
 ```
 
+You can also whitelist by **IP/CIDR** and all the rules will not be blocked for these IPs but logs will be generated.
+For more details look at [`IgnoreIP`](directives.md#ignoreip) and [`IgnoreCIDR`](directives.md#ignorecidr) directives.
+
 ## **`MainRule` and `BasicRule` directives**
 
 As explained in the directives chapter we can have 2 kinds of whitelists:
@@ -22,11 +25,22 @@ These two directives are mandatory to define whitelist.
 
 ## **Whitelist Ids**
 
-The whitelist identifiers, which identifies the rules to whitelist, must always be a positive integer greater than 0. These identifiers follows the format `wl:<number>`, for example `wl:12345,78894`.
+The whitelist identifiers, which identifies the rules to whitelist; the **ids** are **comma separated** and identifies follows the format `wl:<number>`, for example `wl:12345,78894`.
 
 > ℹ️ Info
 >
-> It is possible to use define multiple **ids** by separating them using **commas**.
+> It is possible to use define a whitelist with a negative **id**; when defined the whitelist will match all the rules (`> 999`), excepting the rule whitelisted.
+
+Examples:
+
+* `wl:0`: Whitelist all rules.
+* `wl:1234`: Whitelist rule `1234`.
+* `wl:1234,4567,7890`: Whitelist rules `1234`, `4567` and `7890`.
+* `wl:-8888`: Whitelist all user rules (`> 999`), but rule `8888`.
+
+> 📣 Important
+>
+> It is not possible to mix negative and positive **ids** in one whitelist.
 
 ## **Matchzone**
 
