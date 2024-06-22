@@ -44,7 +44,7 @@ Contrary to most Web Application Firewalls, Naxsi doesn't rely on a signature ba
 * **Directives**: [Explains all the directives that are available when the Naxsi module is enabled.](directives.md)
 * **Rules**: [Understand the different types of rules you can create in Naxsi.](rules.md)
 * **Internal Rules**: [The full list of internal rules that are hardcoded in Naxsi](internal_rules.md)
-* **Whitelists**: [Learn how to use whitelisting features in Naxsi to allow specific traffic through Naxsi.](whitelist.md) (**WIP**)
+* **Whitelists**: [Learn how to use whitelisting features in Naxsi to allow specific traffic through Naxsi.](whitelist.md)
 * **Matchzones**: [Describes how matchzones can be used to limit rules or whitelists.](matchzones.md) (**WIP**)
 * **Logs**: [Describes the format of the logs and how to read them.](logs.md) (**WIP**)
 * **Packaging Naxsi**: [Build your own distro packages from sources.](packaging-naxsi.md)
