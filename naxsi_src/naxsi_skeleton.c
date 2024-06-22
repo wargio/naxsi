@@ -1961,30 +1961,18 @@ ngx_http_naxsi_attack_family_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data)
 {
-  ngx_http_request_ctx_t*   ctx;
-  ngx_pool_cleanup_t*       cln;
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
+  if (!ctx) {
+    v->not_found = 1;
+    return NGX_OK;
+  }
+
   ngx_http_special_score_t* sc;
   ngx_http_matched_rule_t*  mr;
   ngx_uint_t                i;
   size_t                    sz = 0;
   u_char*                   str;
   u_char*                   p;
-
-  ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
-
-  if (ctx == NULL && (r->internal || r->filter_finalize)) {
-    for (cln = r->pool->cleanup; cln; cln = cln->next) {
-      if (cln->handler == ngx_http_module_cleanup_handler) {
-        ctx = cln->data;
-        break;
-      }
-    }
-  }
-
-  if (!ctx) {
-    v->not_found = 1;
-    return NGX_OK;
-  }
 
   ngx_uint_t others = 0;
   if (ctx->matched) {
@@ -2049,30 +2037,18 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data)
 {
-  ngx_http_request_ctx_t* ctx      = NULL;
-  ngx_pool_cleanup_t*     cln      = NULL;
-  size_t                  sz       = 0;
-  u_char*                 str      = NULL;
-  const char*             variable = NULL;
-  // least significant bit represents if action is pass or block
-  // second least significant bit represents if naxsi is in learning mode
-  u_int learning_block_bits = 0;
-
-  ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
-
-  if (ctx == NULL && (r->internal || r->filter_finalize)) {
-    for (cln = r->pool->cleanup; cln; cln = cln->next) {
-      if (cln->handler == ngx_http_module_cleanup_handler) {
-        ctx = cln->data;
-        break;
-      }
-    }
-  }
-
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
   if (!ctx) {
     v->not_found = 1;
     return NGX_OK;
   }
+
+  size_t      sz       = 0;
+  u_char*     str      = NULL;
+  const char* variable = NULL;
+  // least significant bit represents if action is pass or block
+  // second least significant bit represents if naxsi is in learning mode
+  u_int learning_block_bits = 0;
 
   learning_block_bits = ((ctx->learning ? 1 : 0) << 1) | (ctx->block ? 1 : 0);
 
@@ -2116,13 +2092,14 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
 static ngx_int_t
 ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data)
 {
-  u_char*                 id  = NULL;
-  const size_t            len = NAXSI_REQUEST_ID_SIZE << 1;
-  ngx_http_request_ctx_t* ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
-
-  if (ctx == NULL) {
-    return NGX_ERROR;
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
+  if (!ctx) {
+    v->not_found = 1;
+    return NGX_OK;
   }
+
+  u_char*      id  = NULL;
+  const size_t len = NAXSI_REQUEST_ID_SIZE << 1;
 
   id = ngx_pnalloc(r->pool, len);
   if (id == NULL) {
