@@ -67,7 +67,6 @@ When disclosing vulnerabilities, please send first an email to `deroad at kumo.x
 
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-
 mDMEXR3FZhYJKwYBBAHaRw8BAQdAfuSDE68TEppjJfUAApXSTsHrKtGefVJXvz7f
 YIO0gci0MUdpb3Zhbm5pIERhbnRlIEdyYXppb2xpIDxkZXJvYWRAa3Vtby54bi0t
 cTlqeWI0Yz6IkAQTFggAOAIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBCll
