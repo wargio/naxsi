@@ -25,7 +25,7 @@ These two directives are mandatory to define whitelist.
 
 ## **Whitelist Ids**
 
-The whitelist identifiers, which identifies the rules to whitelist; the **ids** are **comma separated** and identifies follows the format `wl:<number>`, for example `wl:12345,78894`.
+The whitelist identifiers are used to define which rules to whitelist; the **ids** are **comma separated** and identifies follows the format `wl:<number>`, for example `wl:12345,78894`.
 
 > ℹ️ Info
 >
