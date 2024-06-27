@@ -947,9 +947,9 @@ naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
   ngx_str_t*                 str = NULL;
   ngx_http_naxsi_loc_conf_t* cf  = NULL;
 
-  char    json[NAXSI_LOG_JSON_STRLEN];
-  char *  out = json + 1, *end = (json + sizeof(json)) - 2;
-  u_char* req_id = (u_char*)naxsi_request_id(req);
+  char          json[NAXSI_LOG_JSON_STRLEN];
+  char *        out = json + 1, *end = (json + sizeof(json)) - 2;
+  const u_char* req_id = naxsi_request_id(req);
 
   // json object begin
   json[0] = '{';
@@ -971,7 +971,7 @@ naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
   }
 
   // request id
-  out    = naxsi_log_as_json_string(out, end, "rid", req_id, 32);
+  out    = naxsi_log_as_json_string(out, end, "rid", req_id, strlen((const char*)req_id));
   *out++ = ',';
   if (out >= end) {
     goto log_json;
@@ -1065,7 +1065,7 @@ naxsi_log_offending(ngx_http_request_ctx_t* ctx,
   ngx_http_naxsi_loc_conf_t* cf;
   ngx_str_t                  tmp_uri = { 0 }, tmp_val = { 0 }, tmp_name = { 0 };
   ngx_str_t                  empty  = ngx_string("");
-  char*                      req_id = naxsi_request_id(req);
+  const u_char*              req_id = naxsi_request_id(req);
 
   cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
 

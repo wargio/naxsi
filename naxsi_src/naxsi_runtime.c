@@ -1133,10 +1133,11 @@ naxsi_create_log_array(ngx_http_request_ctx_t* ctx,
   sz_left -= sub;
   offset += sub;
 
-  char* req_id = naxsi_request_id(r);
-  sub          = 32;
+  const u_char* req_id = naxsi_request_id(r);
+
+  sub = strlen((const char*)req_id);
   if (sz_left > (100 + sub)) {
-    memcpy(fragment->data + offset, req_id, sub);
+    strcpy((char*)(fragment->data + offset), (const char*)req_id);
     if (sub >= sz_left) {
       sub = sz_left - 1;
     }

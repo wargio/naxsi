@@ -411,6 +411,9 @@ typedef struct
   /* did libinjection sql/xss matched ? */
   ngx_flag_t libinjection_sql : 1;
   ngx_flag_t libinjection_xss : 1;
+  /* string representation of request_id
+     computed (inherit from NGINX) on demand only */
+  u_char request_id[NAXSI_REQUEST_ID_STRLEN + 1];
 } ngx_http_request_ctx_t;
 
 /*
@@ -480,6 +483,10 @@ typedef struct ngx_http_nx_json_s
 #define RT_POST_ACTION      "naxsi_flag_post_action"
 #define RT_LIBINJECTION_SQL "naxsi_flag_libinjection_sql"
 #define RT_LIBINJECTION_XSS "naxsi_flag_libinjection_xss"
+/*
+** name of other hardcoded variables
+*/
+#define RT_REQUEST_ID "request_id"
 
 /*
 ** To avoid getting DoS'ed, define max depth
@@ -619,7 +626,7 @@ ngx_http_apply_rulematch_v_n(ngx_http_rule_t*        r,
 int
 naxsi_is_illegal_host_name(const ngx_str_t* server_name);
 
-char*
+u_char*
 naxsi_request_id(ngx_http_request_t* req);
 
 /*libinjection_xss wrapper not exported by libinject_xss.h.*/
