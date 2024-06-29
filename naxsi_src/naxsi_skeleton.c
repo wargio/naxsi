@@ -1742,11 +1742,7 @@ ngx_http_naxsi_learning_variable(ngx_http_request_t*        r,
     return NGX_OK;
   }
 
-  v->data = ngx_palloc(r->pool, 1);
-  if (v->data == NULL) {
-    return NGX_ERROR;
-  }
-  v->data[0]      = ctx->learning ? '1' : '0';
+  v->data         = (u_char*)(ctx->learning ? "1" : "0");
   v->len          = 1;
   v->valid        = 1;
   v->no_cacheable = 0;
@@ -1764,11 +1760,7 @@ ngx_http_naxsi_block_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
     return NGX_OK;
   }
 
-  v->data = ngx_palloc(r->pool, 1);
-  if (v->data == NULL) {
-    return NGX_ERROR;
-  }
-  v->data[0]      = ctx->block ? '1' : '0';
+  v->data         = (u_char*)(ctx->block ? "1" : "0");
   v->len          = 1;
   v->valid        = 1;
   v->no_cacheable = 0;
@@ -2102,25 +2094,17 @@ ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
                                    uintptr_t                  data)
 {
   u_char* req_id = naxsi_request_id(r);
-  u_char* id     = NULL;
 
   if (req_id == NULL) {
     v->not_found = 1;
     return NGX_OK;
   }
 
-  id = ngx_pnalloc(r->pool, NAXSI_REQUEST_ID_STRLEN);
-  if (id == NULL) {
-    return NGX_ERROR;
-  }
-
-  memcpy(id, req_id, NAXSI_REQUEST_ID_STRLEN);
-
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
   v->len          = NAXSI_REQUEST_ID_STRLEN;
-  v->data         = id;
+  v->data         = req_id;
   return NGX_OK;
 }
 
@@ -2143,7 +2127,7 @@ naxsi_request_id(ngx_http_request_t* req)
     return ctx->request_id;
   }
 
-  /* NAXSI request_id variable does not defined */
+  /* NGINX request_id variable does not defined */
   u_char bytes[NAXSI_REQUEST_ID_SIZE];
 #if (NGX_OPENSSL)
   if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) != 1)
