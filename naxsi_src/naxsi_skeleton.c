@@ -2113,7 +2113,7 @@ naxsi_request_id(ngx_http_request_t* req)
 {
   ngx_http_request_ctx_t* ctx = recover_request_ctx(req);
   if (!ctx)
-    return NULL;
+    return (u_char*)"";
 
   if (ctx->request_id[0] != 0)
     return ctx->request_id;
@@ -2130,8 +2130,10 @@ naxsi_request_id(ngx_http_request_t* req)
   /* NGINX request_id variable does not defined */
   u_char bytes[NAXSI_REQUEST_ID_SIZE];
 #if (NGX_OPENSSL)
-  if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) != 1)
-    return NULL;
+  if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) != 1) {
+    ngx_hex_dump(ctx->request_id, bytes, NAXSI_REQUEST_ID_SIZE);
+    return ctx->request_id;
+  }
 #else
   uint32_t*    bytes32 = (uint32_t*)bytes;
   const size_t len     = (NAXSI_REQUEST_ID_SIZE / sizeof(uint32_t));
