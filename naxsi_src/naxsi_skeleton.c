@@ -2095,7 +2095,7 @@ ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
 {
   u_char* req_id = naxsi_request_id(r);
 
-  if (req_id == NULL) {
+  if (req_id[0] == 0) {
     v->not_found = 1;
     return NGX_OK;
   }
