@@ -134,7 +134,9 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       uintptr_t                  data);
 
 static ngx_int_t
-ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data);
+ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
+                                   ngx_http_variable_value_t* v,
+                                   uintptr_t                  data);
 
 /* command handled by the module */
 static ngx_command_t ngx_http_naxsi_commands[] = {
@@ -351,21 +353,21 @@ static ngx_http_variable_t ngx_http_naxsi_variables[] = {
     NULL,                           /* Set handler */
     ngx_http_naxsi_server_variable, /* Get handler */
     0,                              /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,       /* Flags */
+    0,                              /* Flags */
     0 },                            /* Index */
 
   { ngx_string("naxsi_uri"),     /* Name */
     NULL,                        /* Set handler */
     ngx_http_naxsi_uri_variable, /* Get handler */
     0,                           /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,    /* Flags */
+    0,                           /* Flags */
     0 },                         /* Index */
 
   { ngx_string("naxsi_learning"),     /* Name */
     NULL,                             /* Set handler */
     ngx_http_naxsi_learning_variable, /* Get handler */
     0,                                /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,         /* Flags */
+    0,                                /* Flags */
     0 },                              /* Index */
 
   { ngx_string("naxsi_block"),     /* Name */
@@ -417,12 +419,12 @@ static ngx_http_variable_t ngx_http_naxsi_variables[] = {
     NGX_HTTP_VAR_NOCACHEABLE,              /* Flags */
     0 },                                   /* Index */
 
-  { ngx_string("naxsi_request_id"), /* Name */
-    NULL,                           /* Set handler */
-    ngx_http_naxsi_request_id,      /* Get handler */
-    0,                              /* Data */
-    NGX_HTTP_VAR_NOCACHEABLE,       /* Flags */
-    0 },                            /* Index */
+  { ngx_string("naxsi_request_id"),     /* Name */
+    NULL,                               /* Set handler */
+    ngx_http_naxsi_request_id_variable, /* Get handler */
+    0,                                  /* Data */
+    0,                                  /* Flags */
+    0 },                                /* Index */
 
   { ngx_null_string, NULL, NULL, 0, 0, 0 } /* Sentinel */
 };
@@ -596,6 +598,9 @@ ngx_http_naxsi_merge_loc_conf(ngx_conf_t* cf, void* parent, void* child)
 extern ngx_http_rule_t nx_int__libinject_sql;
 extern ngx_http_rule_t nx_int__libinject_xss;
 
+/* static hash for RT_REQUEST_ID string */
+static ngx_uint_t request_id_h;
+
 static ngx_int_t
 ngx_http_naxsi_init(ngx_conf_t* cf)
 {
@@ -646,6 +651,8 @@ ngx_http_naxsi_init(ngx_conf_t* cf)
       /* LCOV_EXCL_STOP */
     }
   }
+
+  request_id_h = ngx_hash_key_lc((u_char*)RT_REQUEST_ID, strlen(RT_REQUEST_ID));
 
   /* initialize prng (used for fragmented logs) */
 #ifndef _WIN32
@@ -1288,13 +1295,13 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
   clock_t                    start, end;
   ngx_http_variable_value_t* lookup;
 
-  static ngx_str_t learning_flag         = ngx_string(RT_LEARNING);
-  static ngx_str_t enable_flag           = ngx_string(RT_ENABLE);
-  static ngx_str_t post_action_flag      = ngx_string(RT_POST_ACTION);
-  static ngx_str_t extensive_log_flag    = ngx_string(RT_EXTENSIVE_LOG);
-  static ngx_str_t json_log_flag         = ngx_string(RT_JSON_LOG);
-  static ngx_str_t libinjection_sql_flag = ngx_string(RT_LIBINJECTION_SQL);
-  static ngx_str_t libinjection_xss_flag = ngx_string(RT_LIBINJECTION_XSS);
+  static const ngx_str_t learning_flag         = ngx_string(RT_LEARNING);
+  static const ngx_str_t enable_flag           = ngx_string(RT_ENABLE);
+  static const ngx_str_t post_action_flag      = ngx_string(RT_POST_ACTION);
+  static const ngx_str_t extensive_log_flag    = ngx_string(RT_EXTENSIVE_LOG);
+  static const ngx_str_t json_log_flag         = ngx_string(RT_JSON_LOG);
+  static const ngx_str_t libinjection_sql_flag = ngx_string(RT_LIBINJECTION_SQL);
+  static const ngx_str_t libinjection_xss_flag = ngx_string(RT_LIBINJECTION_XSS);
 
   ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
   cf  = ngx_http_get_module_loc_conf(r, ngx_http_naxsi_module);
@@ -1318,7 +1325,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
      trying to do something.  */
   if (cf->force_disabled) {
     /* Look if the user did not try to enable naxsi dynamically */
-    lookup = ngx_http_get_variable(r, &enable_flag, cf->flag_enable_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&enable_flag, cf->flag_enable_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ngx_log_debug(NGX_LOG_DEBUG_HTTP,
                     r->connection->log,
@@ -1376,7 +1383,6 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     cln->handler = ngx_http_module_cleanup_handler;
     cln->data    = ctx;
 
-    naxsi_generate_request_id(ctx->request_id);
     ngx_http_set_ctx(r, ctx, ngx_http_naxsi_module);
     NX_DEBUG(_debug_modifier,
              NGX_LOG_DEBUG_HTTP,
@@ -1389,7 +1395,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
     so check len as well */
     ctx->learning = cf->learning;
 
-    lookup = ngx_http_get_variable(r, &learning_flag, cf->flag_learning_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&learning_flag, cf->flag_learning_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
 
       ctx->learning = lookup->data[0] - '0';
@@ -1417,7 +1423,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig enabled : %d",
              ctx->enabled ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &enable_flag, cf->flag_enable_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&enable_flag, cf->flag_enable_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->enabled = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1446,8 +1452,8 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig libinjection_sql : %d",
              ctx->libinjection_sql ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &libinjection_sql_flag, cf->flag_libinjection_sql_h);
-
+    lookup =
+      ngx_http_get_variable(r, (ngx_str_t*)&libinjection_sql_flag, cf->flag_libinjection_sql_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->libinjection_sql = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1476,7 +1482,8 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig libinjection_xss : %d",
              ctx->libinjection_xss ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &libinjection_xss_flag, cf->flag_libinjection_xss_h);
+    lookup =
+      ngx_http_get_variable(r, (ngx_str_t*)&libinjection_xss_flag, cf->flag_libinjection_xss_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->libinjection_xss = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1502,7 +1509,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig post_action : %d",
              ctx->post_action ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &post_action_flag, cf->flag_post_action_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&post_action_flag, cf->flag_post_action_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->post_action = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1526,7 +1533,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig extensive_log : %d",
              ctx->extensive_log ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &extensive_log_flag, cf->flag_extensive_log_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&extensive_log_flag, cf->flag_extensive_log_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->extensive_log = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1550,7 +1557,7 @@ ngx_http_naxsi_access_handler(ngx_http_request_t* r)
              "XX-dummy : orig json_log : %d",
              ctx->json_log ? 1 : 0);
 
-    lookup = ngx_http_get_variable(r, &json_log_flag, cf->flag_json_log_h);
+    lookup = ngx_http_get_variable(r, (ngx_str_t*)&json_log_flag, cf->flag_json_log_h);
     if (lookup && !lookup->not_found && lookup->len > 0) {
       ctx->json_log = lookup->data[0] - '0';
       NX_DEBUG(_debug_modifier,
@@ -1735,11 +1742,7 @@ ngx_http_naxsi_learning_variable(ngx_http_request_t*        r,
     return NGX_OK;
   }
 
-  v->data = ngx_palloc(r->pool, 1);
-  if (v->data == NULL) {
-    return NGX_ERROR;
-  }
-  v->data[0]      = ctx->learning ? '1' : '0';
+  v->data         = (u_char*)(ctx->learning ? "1" : "0");
   v->len          = 1;
   v->valid        = 1;
   v->no_cacheable = 0;
@@ -1757,11 +1760,7 @@ ngx_http_naxsi_block_variable(ngx_http_request_t* r, ngx_http_variable_value_t* 
     return NGX_OK;
   }
 
-  v->data = ngx_palloc(r->pool, 1);
-  if (v->data == NULL) {
-    return NGX_ERROR;
-  }
-  v->data[0]      = ctx->block ? '1' : '0';
+  v->data         = (u_char*)(ctx->block ? "1" : "0");
   v->len          = 1;
   v->valid        = 1;
   v->no_cacheable = 0;
@@ -1961,30 +1960,18 @@ ngx_http_naxsi_attack_family_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data)
 {
-  ngx_http_request_ctx_t*   ctx;
-  ngx_pool_cleanup_t*       cln;
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
+  if (!ctx) {
+    v->not_found = 1;
+    return NGX_OK;
+  }
+
   ngx_http_special_score_t* sc;
   ngx_http_matched_rule_t*  mr;
   ngx_uint_t                i;
   size_t                    sz = 0;
   u_char*                   str;
   u_char*                   p;
-
-  ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
-
-  if (ctx == NULL && (r->internal || r->filter_finalize)) {
-    for (cln = r->pool->cleanup; cln; cln = cln->next) {
-      if (cln->handler == ngx_http_module_cleanup_handler) {
-        ctx = cln->data;
-        break;
-      }
-    }
-  }
-
-  if (!ctx) {
-    v->not_found = 1;
-    return NGX_OK;
-  }
 
   ngx_uint_t others = 0;
   if (ctx->matched) {
@@ -2049,30 +2036,18 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
                                       ngx_http_variable_value_t* v,
                                       uintptr_t                  data)
 {
-  ngx_http_request_ctx_t* ctx      = NULL;
-  ngx_pool_cleanup_t*     cln      = NULL;
-  size_t                  sz       = 0;
-  u_char*                 str      = NULL;
-  const char*             variable = NULL;
-  // least significant bit represents if action is pass or block
-  // second least significant bit represents if naxsi is in learning mode
-  u_int learning_block_bits = 0;
-
-  ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
-
-  if (ctx == NULL && (r->internal || r->filter_finalize)) {
-    for (cln = r->pool->cleanup; cln; cln = cln->next) {
-      if (cln->handler == ngx_http_module_cleanup_handler) {
-        ctx = cln->data;
-        break;
-      }
-    }
-  }
-
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(r);
   if (!ctx) {
     v->not_found = 1;
     return NGX_OK;
   }
+
+  size_t      sz       = 0;
+  u_char*     str      = NULL;
+  const char* variable = NULL;
+  // least significant bit represents if action is pass or block
+  // second least significant bit represents if naxsi is in learning mode
+  u_int learning_block_bits = 0;
 
   learning_block_bits = ((ctx->learning ? 1 : 0) << 1) | (ctx->block ? 1 : 0);
 
@@ -2114,27 +2089,59 @@ ngx_http_naxsi_attack_action_variable(ngx_http_request_t*        r,
 }
 
 static ngx_int_t
-ngx_http_naxsi_request_id(ngx_http_request_t* r, ngx_http_variable_value_t* v, uintptr_t data)
+ngx_http_naxsi_request_id_variable(ngx_http_request_t*        r,
+                                   ngx_http_variable_value_t* v,
+                                   uintptr_t                  data)
 {
-  u_char*                 id  = NULL;
-  const size_t            len = NAXSI_REQUEST_ID_SIZE << 1;
-  ngx_http_request_ctx_t* ctx = ngx_http_get_module_ctx(r, ngx_http_naxsi_module);
+  u_char* req_id = naxsi_request_id(r);
 
-  if (ctx == NULL) {
-    return NGX_ERROR;
-  }
-
-  id = ngx_pnalloc(r->pool, len);
-  if (id == NULL) {
-    return NGX_ERROR;
+  if (req_id[0] == 0) {
+    v->not_found = 1;
+    return NGX_OK;
   }
 
   v->valid        = 1;
   v->no_cacheable = 0;
   v->not_found    = 0;
-  v->len          = len;
-  v->data         = id;
-
-  ngx_hex_dump(id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+  v->len          = NAXSI_REQUEST_ID_STRLEN;
+  v->data         = req_id;
   return NGX_OK;
+}
+
+u_char*
+naxsi_request_id(ngx_http_request_t* req)
+{
+  ngx_http_request_ctx_t* ctx = recover_request_ctx(req);
+  if (!ctx)
+    return (u_char*)"";
+
+  if (ctx->request_id[0] != 0)
+    return ctx->request_id;
+
+  static const ngx_str_t     request_id_varname = ngx_string(RT_REQUEST_ID);
+  ngx_http_variable_value_t* lookup;
+
+  lookup = ngx_http_get_variable(req, (ngx_str_t*)&request_id_varname, request_id_h);
+  if (lookup && !lookup->not_found && lookup->len > 0) {
+    memcpy(ctx->request_id, lookup->data, NAXSI_REQUEST_ID_STRLEN);
+    return ctx->request_id;
+  }
+
+  /* NGINX request_id variable does not defined */
+  u_char bytes[NAXSI_REQUEST_ID_SIZE];
+#if (NGX_OPENSSL)
+  if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) == 1) {
+    ngx_hex_dump(ctx->request_id, bytes, NAXSI_REQUEST_ID_SIZE);
+    return ctx->request_id;
+  }
+#else
+  uint32_t*    bytes32 = (uint32_t*)bytes;
+  const size_t len     = (NAXSI_REQUEST_ID_SIZE / sizeof(uint32_t));
+
+  for (size_t i = 0; i < len; i++) {
+    bytes32[i] = (uint32_t)ngx_random();
+  }
+#endif
+  ngx_hex_dump(ctx->request_id, bytes, NAXSI_REQUEST_ID_SIZE);
+  return ctx->request_id;
 }

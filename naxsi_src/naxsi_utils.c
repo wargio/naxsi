@@ -947,11 +947,9 @@ naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
   ngx_str_t*                 str = NULL;
   ngx_http_naxsi_loc_conf_t* cf  = NULL;
 
-  char   json[NAXSI_LOG_JSON_STRLEN];
-  char * out = json + 1, *end = (json + sizeof(json)) - 2;
-  u_char req_id[NAXSI_REQUEST_ID_STRLEN];
-
-  ngx_hex_dump(req_id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+  char          json[NAXSI_LOG_JSON_STRLEN];
+  char *        out = json + 1, *end = (json + sizeof(json)) - 2;
+  const u_char* req_id = naxsi_request_id(req);
 
   // json object begin
   json[0] = '{';
@@ -973,7 +971,7 @@ naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
   }
 
   // request id
-  out    = naxsi_log_as_json_string(out, end, "rid", req_id, NAXSI_REQUEST_ID_STRLEN - 1);
+  out    = naxsi_log_as_json_string(out, end, "rid", req_id, strlen((const char*)req_id));
   *out++ = ',';
   if (out >= end) {
     goto log_json;
@@ -1066,10 +1064,8 @@ naxsi_log_offending(ngx_http_request_ctx_t* ctx,
 
   ngx_http_naxsi_loc_conf_t* cf;
   ngx_str_t                  tmp_uri = { 0 }, tmp_val = { 0 }, tmp_name = { 0 };
-  ngx_str_t                  empty                               = ngx_string("");
-  u_char                     req_id[NAXSI_REQUEST_ID_STRLEN + 1] = { 0 };
-
-  ngx_hex_dump(req_id, ctx->request_id, NAXSI_REQUEST_ID_SIZE);
+  ngx_str_t                  empty  = ngx_string("");
+  const u_char*              req_id = naxsi_request_id(req);
 
   cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
 
@@ -1086,7 +1082,7 @@ naxsi_log_offending(ngx_http_request_ctx_t* ctx,
                 "ip=%V&server=%V&rid=%s&uri=%V&id=%d&zone=%s%s&var_name=%V&content=%V",
                 &(req->connection->addr_text),
                 &(req->headers_in.server),
-                (char*)req_id,
+                req_id,
                 &(tmp_uri),
                 rule->rule_id,
                 naxsi_match_zones[zone],
@@ -1201,22 +1197,4 @@ naxsi_is_illegal_host_name(const ngx_str_t* host_name)
   }
 
   return (0);
-}
-
-/*
-** Creates a random request id and writes it into bytes
-*/
-void
-naxsi_generate_request_id(u_char* bytes)
-{
-#if (NGX_OPENSSL)
-  if (RAND_bytes(bytes, NAXSI_REQUEST_ID_SIZE) == 1) {
-    return;
-  }
-#endif
-  uint32_t*    bytes32 = (uint32_t*)bytes;
-  const size_t len     = (NAXSI_REQUEST_ID_SIZE / sizeof(uint32_t));
-  for (size_t i = 0; i < len; i++) {
-    bytes32[i] = (uint32_t)ngx_random();
-  }
 }
