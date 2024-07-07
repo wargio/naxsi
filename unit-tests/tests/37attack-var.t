@@ -498,3 +498,30 @@ use URI::Escape;
 --- error_code: 200
 --- response_body: 1000:URL:-,1007:URL:-,1200:ARGS:a,16:BODY:-
 
+
+=== TEST 16.1: Vars - naxsi_request_id
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+map $naxsi_request_id $naxsi_req_format {
+    "~^[0-9a-f]{32}$" "Ok";
+    default           "BAD!";
+}
+--- config
+location / {
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    return 200 "$naxsi_req_format";
+}
+location /RequestDenied {
+    return 412 "$naxsi_req_format";
+}
+--- request
+GET /?a=--select
+--- error_code: 412
+--- response_body: Ok
