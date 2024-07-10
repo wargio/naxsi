@@ -144,11 +144,10 @@ ngx_http_nx_json_val(ngx_json_t* js)
   }
   if ((js->c >= '0' && js->c <= '9') || js->c == '-') {
     val.data = json_char(js);
-    while (((*json_char(js) >= '0' && *json_char(js) <= '9') ||
-            *json_char(js) == '.' || *json_char(js) == '+' ||
-            *json_char(js) == '-' || *json_char(js) == 'e' ||
-            *json_char(js) == 'E') &&
-           js->off < js->len) {
+    while (js->off < js->len &&
+           ((*json_char(js) >= '0' && *json_char(js) <= '9') || *json_char(js) == '.' ||
+            *json_char(js) == '+' || *json_char(js) == '-' || *json_char(js) == 'e' ||
+            *json_char(js) == 'E')) {
       val.len++;
       js->off++;
     }
