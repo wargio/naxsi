@@ -55,11 +55,11 @@ ngx_http_nx_json_quoted(ngx_json_t* js, ngx_str_t* ve)
     if (*json_char(js) == '\\') {
       js->off += 2;
       if (js->off >= js->len)
-        break;
+        return (NGX_ERROR);
       continue;
     }
     if (*json_char(js) == '"') {
-      vn_end = js->src + js->off;
+      vn_end = json_char(js);
       js->off++;
       break;
     }
@@ -82,29 +82,31 @@ ngx_http_nx_json_quoted(ngx_json_t* js, ngx_str_t* ve)
 ngx_int_t
 ngx_http_nx_json_array(ngx_json_t* js)
 {
-  ngx_int_t rc;
-
-  js->c = *(js->src + js->off);
+  ngx_http_nx_json_forward(js);
   if (js->c != '[' || js->depth > JSON_MAX_DEPTH)
     return (NGX_ERROR);
   js->off++;
+  ngx_http_nx_json_forward(js);
+  if (js->c == ']') {
+    /* empty array */
+    js->off++;
+    return (NGX_OK);
+  }
   do {
-    rc = ngx_http_nx_json_val(js);
-    /* if we cannot extract the value,
-       we may have reached array end. */
-    if (rc != NGX_OK) {
-      break;
+    if (ngx_http_nx_json_val(js) != NGX_OK) {
+      return (NGX_ERROR);
     }
     ngx_http_nx_json_forward(js);
-    if (js->c == ',') {
-      js->off++;
-      ngx_http_nx_json_forward(js);
-    } else
+    if (js->c != ',')
       break;
-  } while (rc == NGX_OK);
+    js->off++;
+  } while (js->off < js->len);
+
+  ngx_http_nx_json_forward(js);
   if (js->c != ']') {
     return (NGX_ERROR);
   }
+  js->off++;
   return (NGX_OK);
 }
 
@@ -112,7 +114,6 @@ ngx_int_t
 ngx_http_nx_json_val(ngx_json_t* js)
 {
   ngx_str_t val;
-  ngx_int_t ret;
   ngx_str_t empty = ngx_string("");
 
   val.data = NULL;
@@ -120,33 +121,33 @@ ngx_http_nx_json_val(ngx_json_t* js)
 
   ngx_http_nx_json_forward(js);
   if (js->c == '"') {
-    ret = ngx_http_nx_json_quoted(js, &val);
-    if (ret == NGX_OK) {
-      /* parse extracted values. */
-      if (js->loc_cf->body_rules) {
-        ngx_http_basestr_ruleset_n(
-          js->r->pool, &js->ckey, &val, js->loc_cf->body_rules, js->r, js->ctx, BODY);
-      }
-      if (js->main_cf->body_rules) {
-        ngx_http_basestr_ruleset_n(
-          js->r->pool, &js->ckey, &val, js->main_cf->body_rules, js->r, js->ctx, BODY);
-      }
-      NX_DEBUG(_debug_json,
-               NGX_LOG_DEBUG_HTTP,
-               js->r->connection->log,
-               0,
-               "quoted-JSON '%V' : '%V'",
-               &(js->ckey),
-               &(val));
+    if (ngx_http_nx_json_quoted(js, &val) != NGX_OK) {
+      return (NGX_ERROR);
     }
-    return (ret);
+    /* parse extracted values. */
+    if (js->loc_cf->body_rules) {
+      ngx_http_basestr_ruleset_n(
+        js->r->pool, &js->ckey, &val, js->loc_cf->body_rules, js->r, js->ctx, BODY);
+    }
+    if (js->main_cf->body_rules) {
+      ngx_http_basestr_ruleset_n(
+        js->r->pool, &js->ckey, &val, js->main_cf->body_rules, js->r, js->ctx, BODY);
+    }
+    NX_DEBUG(_debug_json,
+             NGX_LOG_DEBUG_HTTP,
+             js->r->connection->log,
+             0,
+             "quoted-JSON '%V' : '%V'",
+             &(js->ckey),
+             &(val));
+    return (NGX_OK);
   }
   if ((js->c >= '0' && js->c <= '9') || js->c == '-') {
-    val.data = js->src + js->off;
-    while (((*(js->src + js->off) >= '0' && *(js->src + js->off) <= '9') ||
-            *(js->src + js->off) == '.' || *(js->src + js->off) == '+' ||
-            *(js->src + js->off) == '-' || *(js->src + js->off) == 'e' ||
-            *(js->src + js->off) == 'E') &&
+    val.data = json_char(js);
+    while (((*json_char(js) >= '0' && *json_char(js) <= '9') ||
+            *json_char(js) == '.' || *json_char(js) == '+' ||
+            *json_char(js) == '-' || *json_char(js) == 'e' ||
+            *json_char(js) == 'E') &&
            js->off < js->len) {
       val.len++;
       js->off++;
@@ -169,12 +170,12 @@ ngx_http_nx_json_val(ngx_json_t* js)
              &(val));
     return (NGX_OK);
   }
-  if (!strncasecmp((const char*)(js->src + js->off), (const char*)"true", 4) ||
-      !strncasecmp((const char*)(js->src + js->off), (const char*)"false", 5) ||
-      !strncasecmp((const char*)(js->src + js->off), (const char*)"null", 4)) {
-    js->c = *(js->src + js->off);
+  if (!strncasecmp((const char*)json_char(js), (const char*)"true", 4) ||
+      !strncasecmp((const char*)json_char(js), (const char*)"false", 5) ||
+      !strncasecmp((const char*)json_char(js), (const char*)"null", 4)) {
+    js->c = *json_char(js);
     /* we don't check static values, do we ?! */
-    val.data = js->src + js->off;
+    val.data = json_char(js);
     if (js->c == 'F' || js->c == 'f') {
       js->off += 5;
       val.len = 5;
@@ -202,12 +203,12 @@ ngx_http_nx_json_val(ngx_json_t* js)
   }
 
   if (js->c == '[') {
-    ret = ngx_http_nx_json_array(js);
-    if (js->c != ']') {
+    js->depth++;
+    if (ngx_http_nx_json_array(js) != NGX_OK) {
       return (NGX_ERROR);
     }
-    js->off++;
-    return (ret);
+    js->depth--;
+    return (NGX_OK);
   }
   if (js->c == '{') {
     /*
@@ -224,13 +225,19 @@ ngx_http_nx_json_val(ngx_json_t* js)
       ngx_http_basestr_ruleset_n(
         js->r->pool, &js->ckey, &empty, js->main_cf->body_rules, js->r, js->ctx, BODY);
     }
-    ret = ngx_http_nx_json_obj(js);
-    ngx_http_nx_json_forward(js);
-    if (js->c != '}') {
+    NX_DEBUG(_debug_json,
+             NGX_LOG_DEBUG_HTTP,
+             js->r->connection->log,
+             0,
+             "sub-struct-JSON '%V' : {...}",
+             &(js->ckey));
+
+    js->depth++;
+    if (ngx_http_nx_json_obj(js) != NGX_OK) {
       return (NGX_ERROR);
     }
-    js->off++;
-    return (ret);
+    js->depth--;
+    return (NGX_OK);
   }
   return (NGX_ERROR);
 }
@@ -238,64 +245,43 @@ ngx_http_nx_json_val(ngx_json_t* js)
 ngx_int_t
 ngx_http_nx_json_obj(ngx_json_t* js)
 {
-  js->c = *(js->src + js->off);
-
+  ngx_http_nx_json_forward(js);
   if (js->c != '{' || js->depth > JSON_MAX_DEPTH)
     return (NGX_ERROR);
   js->off++;
-
+  ngx_http_nx_json_forward(js);
+  if (js->c == '}') {
+    /* empty object */
+    js->off++;
+    return (NGX_OK);
+  }
   do {
+    if (ngx_http_nx_json_quoted(js, &(js->ckey)) != NGX_OK) {
+      return (NGX_ERROR);
+    }
+    if (ngx_http_nx_json_seek(js, ':') != NGX_OK) {
+      return (NGX_ERROR);
+    }
+    js->off++;
     ngx_http_nx_json_forward(js);
-    /* check subs (arrays, objects) */
-    switch (js->c) {
-      case '[': /* array */
-        js->depth++;
-        ngx_http_nx_json_array(js);
-        if (ngx_http_nx_json_seek(js, ']'))
-          return (NGX_ERROR);
-        js->off++;
-        js->depth--;
-        break;
-      case '{': /* sub-object */
-        js->depth++;
-        ngx_http_nx_json_obj(js);
-        if (js->c != '}') {
-          return (NGX_ERROR);
-        }
-        js->off++;
-        js->depth--;
-        break;
-      case '"': /* key : value, extract and parse. */
-        if (ngx_http_nx_json_quoted(js, &(js->ckey)) != NGX_OK) {
-          return (NGX_ERROR);
-        }
-        if (ngx_http_nx_json_seek(js, ':')) {
-          return (NGX_ERROR);
-        }
-        js->off++;
-        ngx_http_nx_json_forward(js);
-        if (ngx_http_nx_json_val(js) != NGX_OK) {
-          return (NGX_ERROR);
-        }
+    if (ngx_http_nx_json_val(js) != NGX_OK) {
+      return (NGX_ERROR);
     }
     ngx_http_nx_json_forward(js);
     /* another element ? */
-    if (js->c == ',') {
-      js->off++;
-      ngx_http_nx_json_forward(js);
-      continue;
-
-    } else if (js->c == '}') {
-      js->depth--;
-      /* or maybe we just finished parsing this object */
-      return (NGX_OK);
-    } else {
-      /* nothing we expected, die. */
-      return (NGX_ERROR);
+    if (js->c != ',') {
+      break;
     }
+    js->off++;
+    ngx_http_nx_json_forward(js);
   } while (js->off < js->len);
 
-  return (NGX_ERROR);
+  ngx_http_nx_json_forward(js);
+  if (js->c != '}') {
+    return (NGX_ERROR);
+  }
+  js->off++;
+  return (NGX_OK);
 }
 
 /*
