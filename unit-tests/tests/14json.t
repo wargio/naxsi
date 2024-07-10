@@ -356,7 +356,7 @@ use URI::Escape;
 
 }"
 --- error_code: 412
-=== JSON7 : Valid JSON with empty array item (Extra ',' in array)
+=== JSON7 : inValid JSON with empty array item (Extra ',' in array)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
 --- http_config
@@ -404,7 +404,7 @@ use URI::Escape;
     }
 
 }"
---- error_code: 200
+--- error_code: 412
 === JSON8 : valid JSON - too deep !
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -1013,3 +1013,34 @@ use URI::Escape;
 }
 "
 --- error_code: 200
+
+=== JSON19 : Invalid JSON application/reports+json
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+--- config
+location / {
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$SQL >= 8" BLOCK;
+    CheckRule "$RFI >= 8" BLOCK;
+    CheckRule "$TRAVERSAL >= 4" BLOCK;
+    CheckRule "$XSS >= 8" BLOCK;
+    root $TEST_NGINX_SERVROOT/html/;
+    index index.html index.htm;
+    error_page 405 = $uri;
+}
+location /RequestDenied {
+         return 412;
+}
+--- more_headers
+Content-Type: application/reports+json
+--- request eval
+use URI::Escape;
+"POST /
+[{
+    \"name\": \"value\"
+]
+"
+--- error_code: 412

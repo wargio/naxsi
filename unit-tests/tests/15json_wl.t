@@ -427,7 +427,7 @@ use URI::Escape;
   [\"there\", \"is\", \"no\", \"way\"]
 }
 "
---- error_code: 200
+--- error_code: 412
 === json wl 2.0 : malformed json (missing opening {)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;

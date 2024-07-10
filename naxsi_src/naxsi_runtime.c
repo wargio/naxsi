@@ -2732,6 +2732,10 @@ ngx_http_naxsi_body_parse(ngx_http_request_ctx_t*     ctx,
   else if (!ngx_strncasecmp(content_type_str, (u_char*)"application/vnd.api+json", 24)) {
     ngx_http_naxsi_json_parse(ctx, r, full_body, full_body_len);
   }
+  /* 24 = echo -n "application/reports+json" | wc -c */
+  else if (!ngx_strncasecmp(content_type_str, (u_char*)"application/reports+json", 24)) {
+    ngx_http_naxsi_json_parse(ctx, r, full_body, full_body_len);
+  }
   /* 22 = echo -n "application/csp-report" | wc -c */
   else if (!ngx_strncasecmp(content_type_str, (u_char*)"application/csp-report", 22)) {
     ngx_http_naxsi_json_parse(ctx, r, full_body, full_body_len);
