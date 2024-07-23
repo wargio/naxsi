@@ -164,3 +164,6 @@ MainRule id:20000089 "s:$UWA:8" "str:.old" "mz:URL" "msg:Exposed temp copy";
 MainRule id:20000090 "s:$UWA:8" "str:.save" "mz:URL" "msg:Exposed temp copy";
 MainRule id:20000091 "s:$UWA:8" "str:.DS_Store" "mz:URL" "msg:Exposed temp copy";
 MainRule id:20000092 "s:$UWA:8" "str:vscode" "mz:URL" "msg:Exposed vscode directory";
+
+# Exposed .env
+MainRule id:20000093 "s:$UWA:8" "str:/.env" "mz:URL" "msg:access to .env file or dir";
