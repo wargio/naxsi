@@ -91,3 +91,6 @@ MainRule id:10000040 "s:$UWA:8" "str:AliElTop" "mz:ANY" "msg:EgyScan security sc
 
 # Guzzle PHP HTTP client
 MainRule id:10000041 "s:$UWA:8" "str:GuzzleHttp" "mz:$HEADERS_VAR:User-Agent" "msg:GuzzleHttp in user-agent";
+
+# Java client
+MainRule id:10000042 "s:$UWA:8" "str:AsyncHttpClient" "mz:$HEADERS_VAR:User-Agent" "msg:AsyncHttpClient in user-agent";
