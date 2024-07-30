@@ -39,7 +39,7 @@ MainRule id:40000026 "s:$UWA:8" "str:eval-stdin.php" "mz:URL" "msg:CVE-2017-9841
 MainRule id:40000027 "s:$UWA:8" "rx:PHP[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" "mz:URL|BODY|ARGS" "msg:PHP easter egg credits";
 
 # Block PHP Xdebug
-MainRule id:40000028 "s:$UWA:8" "str:XDEBUG_SESSION" "mz:BODY|ARGS|HEADERS|NAME" "msg:Block PHP Xdebug";
+MainRule id:40000028 "s:$UWA:8" "str:XDEBUG_SESSION" "mz:ALL" "msg:Block PHP Xdebug";
 
 # Block PHPinfo access
 MainRule id:40000029 "s:$UWA:8" "str:phpinfo" "mz:URL|BODY|ARGS" "msg:PHPinfo access";
@@ -61,3 +61,6 @@ MainRule id:40000036 "s:$UWA:8" "str:adminer" "mz:URL" "msg:SQL Admin Interface"
 
 # Block access to Symfony Web Framework dev mode.
 MainRule id:40000037 "s:$UWA:8" "str:app_dev" "mz:URL" "msg:Symfony Web Framework dev mode";
+
+# XDEBUG_SESSION in request
+MainRule id:40000038 "s:$UWA:8" "str:XDEBUG_SESSION" "mz:ALL" "msg:XDEBUG_SESSION in request";
