@@ -167,3 +167,6 @@ MainRule id:20000092 "s:$UWA:8" "str:vscode" "mz:URL" "msg:Exposed vscode direct
 
 # Exposed .env
 MainRule id:20000093 "s:$UWA:8" "str:/.env" "mz:URL" "msg:access to .env file or dir";
+
+# androxgh0st exploit
+MainRule id:20000094 "s:$UWA:8" "str:androxgh0st" "mz:ALL" "msg:androxgh0st exploit";
