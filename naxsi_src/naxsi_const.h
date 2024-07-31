@@ -9,7 +9,7 @@
 #define NAXSI_REQUEST_ID_SIZE   16
 #define NAXSI_REQUEST_ID_STRLEN (NAXSI_REQUEST_ID_SIZE << 1)
 
-#define NAXSI_LOG_JSON_STRLEN (NGX_MAX_ERROR_STR - 100)
+#define NAXSI_LOG_MAX (NGX_MAX_ERROR_STR - 100)
 
 /**
  * All possible keywords to be defined in nginx.cfg to setup naxsi

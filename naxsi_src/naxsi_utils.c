@@ -1,9 +1,11 @@
+// SPDX-FileCopyrightText: 2019-2024, Giovanni Dante Grazioli <wargio@libero.it>
 // SPDX-FileCopyrightText: 2016-2019, Thibault 'bui' Koechlin <tko@nbs-system.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <ngx_config.h>
 
 #include <naxsi.h>
+#include <naxsi_log.h>
 #include <naxsi_macros.h>
 #include <naxsi_net.h>
 
@@ -838,93 +840,6 @@ ngx_http_naxsi_create_hashtables_n(ngx_http_naxsi_loc_conf_t* dlc, ngx_conf_t* c
   return (NGX_OK);
 }
 
-static const char* json_hex = "0123456789abcdef";
-
-static char*
-naxsi_escape_json_string(char* out, const char* end, const u_char* val, size_t length)
-{
-  size_t max_len = end - out;
-  if (length > max_len) {
-    length = max_len;
-  }
-
-  *out++ = '"';
-  size_t i;
-  for (i = 0; i < length && out < end; i++) {
-    if (val[i] == '\n') {
-      // new line
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = 'n';
-    } else if (val[i] == '\r') {
-      // return carriage
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = 'r';
-    } else if (val[i] == '\\') {
-      // slash
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = '\\';
-    } else if (val[i] == '\t') {
-      // tabulation
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = 't';
-    } else if (val[i] == '"') {
-      // double quote
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = '"';
-    } else if (val[i] == '\f') {
-      // form feed
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = 'f';
-    } else if (val[i] == '\b') {
-      // backspace
-      break_if(out + 2 >= end);
-      *out++ = '\\';
-      *out++ = 'b';
-    } else if (!is_printable(val[i])) {
-      break_if(out + 4 >= end);
-      *out++ = '\\';
-      *out++ = 'u';
-      *out++ = '0';
-      *out++ = '0';
-      *out++ = json_hex[(val[i] >> 4) & 0x0f];
-      *out++ = json_hex[val[i] & 0x0f];
-    } else {
-      *out++ = val[i];
-    }
-  }
-  if (out < end) {
-    *out++ = '"';
-  }
-  return out;
-}
-
-char*
-naxsi_log_as_json_string(char*         out,
-                         const char*   end,
-                         const char*   key,
-                         const u_char* val,
-                         size_t        val_len)
-{
-  int offset = snprintf(out, (end - out), "\"%s\":", key);
-  if (offset < 1) {
-    return out;
-  }
-  return naxsi_escape_json_string(out + offset, end, val, val_len);
-}
-
-char*
-naxsi_log_as_json_number(char* out, const char* end, const char* key, int number)
-{
-  int offset = snprintf(out, (end - out), "\"%s\":%d", key, number);
-  return offset < 1 ? out : (out + offset);
-}
-
 /*
   function used for intensive log if dynamic flag is set.
   Output format :
@@ -934,121 +849,13 @@ naxsi_log_as_json_number(char* out, const char* end, const char* key, int number
 static const char* naxsi_match_zones[] = { "HEADERS",  "URL", "ARGS",    "BODY",
                                            "FILE_EXT", "ANY", "UNKNOWN", NULL };
 
-static void
-naxsi_log_offending_as_json(ngx_http_request_ctx_t* ctx,
-                            ngx_http_request_t*     req,
-                            ngx_str_t*              name,
-                            ngx_str_t*              val,
-                            ngx_http_rule_t*        rule,
-                            naxsi_match_zone_t      zone,
-                            ngx_int_t               target_name)
-{
-
-  ngx_str_t*                 str = NULL;
-  ngx_http_naxsi_loc_conf_t* cf  = NULL;
-
-  char          json[NAXSI_LOG_JSON_STRLEN];
-  char *        out = json + 1, *end = (json + sizeof(json)) - 2;
-  const u_char* req_id = naxsi_request_id(req);
-
-  // json object begin
-  json[0] = '{';
-
-  // ip address
-  str    = &req->connection->addr_text;
-  out    = naxsi_log_as_json_string(out, end, "ip", str->data, str->len);
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // server
-  str    = &req->headers_in.server;
-  out    = naxsi_log_as_json_string(out, end, "server", str->data, str->len);
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // request id
-  out    = naxsi_log_as_json_string(out, end, "rid", req_id, strlen((const char*)req_id));
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // uri
-  str    = &req->uri;
-  out    = naxsi_log_as_json_string(out, end, "uri", str->data, str->len);
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // rule id
-  out    = naxsi_log_as_json_number(out, end, "id", rule->rule_id);
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // zone
-  int offset = snprintf(
-    out, (end - out), "\"zone\":\"%s%s\",", naxsi_match_zones[zone], target_name ? "|NAME" : "");
-  if (offset < 1 || (out + offset) >= end) {
-    goto log_json;
-  }
-  out += offset;
-
-  // var_name
-  out    = naxsi_log_as_json_string(out, end, "var_name", name->data, name->len);
-  *out++ = ',';
-  if (out >= end) {
-    goto log_json;
-  }
-
-  // content
-  out = naxsi_log_as_json_string(out, end, "content", val->data, val->len);
-  if (out < end) {
-    // json object end
-    *out++ = '}';
-  }
-
-log_json:
-  // always ensure last byte is zero
-  if (out < end) {
-    *out = 0;
-  } else {
-    *end = 0;
-  }
-
-  cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
-  ngx_log_error(NGX_LOG_ERR, cf->log ? cf->log : req->connection->log, 0, "%s", json);
-}
-
-static int
-naxsi_log_escape_string(ngx_http_request_t* req,
-                        ngx_str_t*          escaped,
-                        ngx_str_t*          string,
-                        ngx_str_t*          empty)
-{
-  if (string->len < 1) {
-    *escaped = *empty;
-    return 1;
-  }
-
-  escaped->len =
-    string->len + (2 * ngx_escape_uri(NULL, string->data, string->len, NGX_ESCAPE_URI_COMPONENT));
-  escaped->data = ngx_pcalloc(req->pool, escaped->len + 1);
-  if (escaped->data == NULL) {
-    return 0;
-  }
-  ngx_escape_uri(escaped->data, string->data, string->len, NGX_ESCAPE_URI_COMPONENT);
-  return 1;
-}
+static const char* naxsi_match_zones_name[] = { "HEADERS|NAME",  "URL|NAME",
+                                                "ARGS|NAME",     "BODY|NAME",
+                                                "FILE_EXT|NAME", "ANY|NAME",
+                                                "UNKNOWN|NAME",  NULL };
 
 void
-naxsi_log_offending(ngx_http_request_ctx_t* ctx,
+naxsi_log_extensive(ngx_http_request_ctx_t* ctx,
                     ngx_http_request_t*     req,
                     ngx_str_t*              name,
                     ngx_str_t*              val,
@@ -1056,50 +863,186 @@ naxsi_log_offending(ngx_http_request_ctx_t* ctx,
                     naxsi_match_zone_t      zone,
                     ngx_int_t               target_name)
 {
+  ngx_str_t*  str = NULL;
+  naxsi_log_t log = { 0 };
+  naxsi_log_begin(&log, req, ctx->json_log, 1);
 
-  if (ctx->json_log) {
-    naxsi_log_offending_as_json(ctx, req, name, val, rule, zone, target_name);
-    return;
+  // ip address
+  str = &req->connection->addr_text;
+  naxsi_log_ngx_string(&log, "ip", str);
+
+  // server
+  str = &req->headers_in.server;
+  naxsi_log_ngx_string(&log, "server", str);
+
+  // request id
+  const char* req_id = (const char*)naxsi_request_id(req);
+  naxsi_log_cstring(&log, "rid", req_id);
+
+  // uri
+  str = &req->uri;
+  naxsi_log_ngx_string(&log, "uri", str);
+
+  // rule id
+  naxsi_log_number(&log, "id", rule->rule_id);
+
+  // zone
+  naxsi_log_cstring(
+    &log, "zone", target_name ? naxsi_match_zones_name[zone] : naxsi_match_zones[zone]);
+
+  // var_name
+  naxsi_log_ngx_string(&log, "var_name", name);
+
+  // content
+  naxsi_log_ngx_string(&log, "content", val);
+
+  naxsi_log_end(&log);
+}
+
+static const char*
+naxsi_log_config(ngx_http_request_ctx_t* ctx)
+{
+  if (ctx->learning) {
+    return ctx->drop ? "learning-drop" : "learning";
+  } else if (ctx->drop) {
+    return "drop";
+  } else if (ctx->block) {
+    return "block";
+  } else if (ctx->ignore) {
+    return "ignore";
+  }
+  return "";
+}
+
+static void
+naxsi_log_header(naxsi_log_t*            log,
+                 ngx_http_request_ctx_t* ctx,
+                 ngx_http_request_t*     r,
+                 ngx_str_t*              uri)
+{
+  ngx_str_t*  str;
+  const char* config = naxsi_log_config(ctx);
+  naxsi_log_begin(log, r, ctx->json_log, 0);
+
+  // client ip
+  str = &r->connection->addr_text;
+  naxsi_log_ngx_string(log, "ip", str);
+
+  // server
+  str = &r->headers_in.server;
+  naxsi_log_ngx_string(log, "server", str);
+
+  // uri
+  naxsi_log_ngx_string(log, "uri", uri);
+
+  // config
+  naxsi_log_cstring(log, "config", config);
+
+  // request id
+  const char* req_id = (const char*)naxsi_request_id(r);
+  naxsi_log_cstring(log, "rid", req_id);
+}
+
+static void
+naxsi_log_score(naxsi_log_t*              log,
+                ngx_http_request_ctx_t*   ctx,
+                ngx_http_special_score_t* sc,
+                u_int                     sc_idx)
+{
+  char score_key[64];
+  int  score_len = snprintf(score_key, sizeof(score_key), "cscore%u", sc_idx);
+  naxsi_log_cstring_ex(log, score_key, score_len, (const char*)sc->sc_tag->data, sc->sc_tag->len);
+
+  snprintf(score_key, sizeof(score_key), "score%u", sc_idx);
+  naxsi_log_number(log, score_key, sc->sc_score);
+}
+
+static void
+naxsi_log_match(naxsi_log_t*             log,
+                ngx_http_request_ctx_t*  ctx,
+                ngx_http_matched_rule_t* mr,
+                u_int                    mr_idx)
+{
+  char keyword[64];
+  char matchzone[30] = { 0 };
+
+  if (mr->body_var)
+    strcat(matchzone, "BODY");
+  else if (mr->args_var)
+    strcat(matchzone, "ARGS");
+  else if (mr->headers_var)
+    strcat(matchzone, "HEADERS");
+  else if (mr->url)
+    strcat(matchzone, "URL");
+  else if (mr->file_ext)
+    strcat(matchzone, "FILE_EXT");
+  if (mr->target_name)
+    strcat(matchzone, "|NAME");
+
+  int key_len = snprintf(keyword, sizeof(keyword), "zone%u", mr_idx);
+  naxsi_log_cstring_ex(log, keyword, key_len, matchzone, strlen(matchzone));
+
+  snprintf(keyword, sizeof(keyword), "id%u", mr_idx);
+  naxsi_log_number(log, keyword, mr->rule->rule_id);
+
+  key_len = snprintf(keyword, sizeof(keyword), "var_name%u", mr_idx);
+  naxsi_log_string_ex(log, keyword, key_len, mr->name->data, mr->name->len);
+}
+
+static ngx_str_t*
+naxsi_log_uri(ngx_http_request_t* r)
+{
+  ngx_str_t* uri = ngx_pcalloc(r->pool, sizeof(ngx_str_t));
+  if (!uri)
+    return NULL;
+
+  if (r->uri.len >= (NGX_MAX_UINT32_VALUE / 4) - 1) {
+    r->uri.len /= 4;
   }
 
-  ngx_http_naxsi_loc_conf_t* cf;
-  ngx_str_t                  tmp_uri = { 0 }, tmp_val = { 0 }, tmp_name = { 0 };
-  ngx_str_t                  empty  = ngx_string("");
-  const u_char*              req_id = naxsi_request_id(req);
+  uri->len  = r->uri.len + (2 * ngx_escape_uri(NULL, r->uri.data, r->uri.len, NGX_ESCAPE_ARGS));
+  uri->data = ngx_pcalloc(r->pool, uri->len + 1);
+  if (!uri->data)
+    return NULL;
 
-  cf = ngx_http_get_module_loc_conf(req, ngx_http_naxsi_module);
+  ngx_escape_uri(uri->data, r->uri.data, r->uri.len, NGX_ESCAPE_ARGS);
+  return uri;
+}
 
-  if (naxsi_log_escape_string(req, &tmp_uri, &req->uri, &empty) == 0 ||
-      naxsi_log_escape_string(req, &tmp_val, val, &empty) == 0 ||
-      naxsi_log_escape_string(req, &tmp_name, name, &empty) == 0) {
-    goto end;
+ngx_int_t
+naxsi_log_request(ngx_http_request_ctx_t* ctx, ngx_http_request_t* r, ngx_str_t** denied_uri)
+{
+  naxsi_log_t log = { 0 };
+
+  ngx_str_t* naxsi_uri = naxsi_log_uri(r);
+  if (!naxsi_uri)
+    return (NGX_ERROR);
+  *denied_uri = naxsi_uri;
+
+  naxsi_log_header(&log, ctx, r, naxsi_uri);
+
+  // add scores
+  if (ctx->special_scores) {
+    u_int                     i;
+    ngx_http_special_score_t* sc = ctx->special_scores->elts;
+    for (i = 0; i < ctx->special_scores->nelts; i++) {
+      if (sc[i].sc_score > 0) {
+        naxsi_log_score(&log, ctx, &sc[i], i);
+      }
+    }
   }
 
-  ngx_log_error(NGX_LOG_ERR,
-                cf->log ? cf->log : req->connection->log,
-                0,
-                "NAXSI_EXLOG: "
-                "ip=%V&server=%V&rid=%s&uri=%V&id=%d&zone=%s%s&var_name=%V&content=%V",
-                &(req->connection->addr_text),
-                &(req->headers_in.server),
-                req_id,
-                &(tmp_uri),
-                rule->rule_id,
-                naxsi_match_zones[zone],
-                target_name ? "|NAME" : "",
-                &(tmp_name),
-                &(tmp_val));
+  // add matched rules
+  if (ctx->matched) {
+    u_int                    i;
+    ngx_http_matched_rule_t* mr = ctx->matched->elts;
+    for (i = 0; i < ctx->matched->nelts; i++) {
+      naxsi_log_match(&log, ctx, &mr[i], i);
+    }
+  }
 
-end:
-  if (tmp_val.len > 0) {
-    ngx_pfree(req->pool, tmp_val.data);
-  }
-  if (tmp_name.len > 0) {
-    ngx_pfree(req->pool, tmp_name.data);
-  }
-  if (tmp_uri.len > 0) {
-    ngx_pfree(req->pool, tmp_uri.data);
-  }
+  naxsi_log_end(&log);
+  return (NGX_HTTP_OK);
 }
 
 /*
