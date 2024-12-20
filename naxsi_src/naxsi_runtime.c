@@ -516,6 +516,20 @@ ngx_http_naxsi_pcre_wrapper(ngx_regex_compile_t* rx, unsigned char* str, unsigne
   return (match);
 }
 
+static int
+ngx_http_rule_match_zone_rx(ngx_http_rule_t* p, naxsi_match_zone_t zone)
+{
+  if (p->br->zone != ANY) {
+    return (1);
+  } else if (zone == FILE_EXT && p->br->file_ext) {
+    // mz:$URL_X|FILE_EXT is defined as br->zone = BODY,
+    // to allow the correct match the zone must be matched
+    // against br->file_ext
+    return (1);
+  }
+  return zone == p->br->zone;
+}
+
 int
 ngx_http_naxsi_is_rule_whitelisted_rx(ngx_http_request_t*        req,
                                       ngx_http_naxsi_loc_conf_t* cf,
@@ -569,7 +583,7 @@ ngx_http_naxsi_is_rule_whitelisted_rx(ngx_http_request_t*        req,
              cf->rxmz_wlr->nelts,
              p->br->custom_locations->nelts);
 
-    if (p->br->zone != (ngx_int_t)zone && p->br->zone != ANY) {
+    if (!ngx_http_rule_match_zone_rx(p, zone)) {
       NX_DEBUG(_debug_wl_debug_rx,
                NGX_LOG_DEBUG_HTTP,
                req->connection->log,
