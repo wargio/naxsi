@@ -1,5 +1,9 @@
 ![naxsi](logo.png)
 
+## Documentation
+
+Updated documentation is available [here](https://wargio.github.io/naxsi/).
+
 ## What is Naxsi?
 
 NAXSI means [Nginx](http://nginx.org/) Anti [XSS](https://www.owasp.org/index.php/Cross-site_Scripting_%28XSS%29) & [SQL Injection](https://www.owasp.org/index.php/SQL_injection). 
@@ -36,10 +40,6 @@ It depends on `libpcre` for its regexp support, and is reported to work great on
 ## Why using this repository
 
 The original project is **officially** abandoned (and has been archived the 8th Nov 2023), but you can fully ask for support here as i'm willing to keep the project working as last remaining developer.
-
-## Documentation
-
-You can find the main documentation [https://wargio.github.io/naxsi/](https://wargio.github.io/naxsi/)
 
 ## Build naxsi
 
