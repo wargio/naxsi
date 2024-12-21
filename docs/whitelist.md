@@ -44,7 +44,7 @@ Examples:
 
 ## **Matchzone**
 
-Matchzones defines where a whitelist should apply for each given **id**.
+Matchzones defines where a whitelist should apply for each given **id**; these operate under an **AND** logic (like `url` must be `/foo` AND must occur in `ARGS`)
 
 > 📣 Important
 >
