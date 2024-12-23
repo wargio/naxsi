@@ -93,8 +93,6 @@ jobs:
             "debian-bookworm",
             "ubuntu-focal",
             "ubuntu-jammy",
-            "ubuntu-lunar",
-            "ubuntu-mantic",
             "alpine-3.17.4",
             "alpine-3.18.2",
           ]
@@ -127,16 +125,6 @@ jobs:
             package: deb
             pcredep: libpcre3-dev
             nginxdep: nginx-common
-          - name: ubuntu-lunar
-            container: ubuntu:lunar
-            package: deb
-            pcredep: libpcre3-dev
-            nginxdep: nginx-common
-          - name: ubuntu-mantic
-            container: ubuntu:mantic
-            package: deb
-            pcredep: libpcre2-dev
-            nginxdep: nginx
           - name: alpine-3.17.4
             container: alpine:3.17.4
             package: apk
