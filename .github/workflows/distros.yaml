@@ -274,7 +274,7 @@ jobs:
     - name: ${{ matrix.name }} package
       if: matrix.package == 'arch'
       run: |
-        pacman -Syy --needed --noconfirm sudo base-devel git
+        pacman -Syy --needed --noconfirm sudo base-devel git perl-rename
         chmod 777 distros/arch
         useradd build-user -m
         passwd -d build-user
@@ -282,7 +282,7 @@ jobs:
         cd distros/arch
         sudo -u build-user makepkg -s --noconfirm
         # Fix package name due github name restrictions
-        ls *.pkg.tar.zst | sed 's/:/-/g' | xargs -I % mv -v *.pkg.tar.zst %
+        perl-rename -v 's/:/-/g' *.pkg.tar.zst
     - name: Test arch package
       if: matrix.package == 'arch'
       run: pacman -U --noconfirm distros/arch/*.pkg.tar.zst
