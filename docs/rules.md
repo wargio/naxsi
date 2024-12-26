@@ -53,10 +53,14 @@ Each rule must define a search parameter which can be expressed as a string or r
 > ℹ️ Info
 >
 > **Strings are always case insensitive**, so `"str:foo"` will match `foo` but also `FoO` and `FOO`.
-
-> ℹ️ Info
 >
 > Regular expressions (regexes) follows the [PCRE format](https://www.pcre.org/) and may require escaping due how nginx parses the config files. Also **regexes are always case insensitive and multiline**, so `"rx:[a-z]+"` will match `foo` but also `FoO` and `FOO`.
+
+> 📣 Important
+>
+> Naxsi decodes any `url-encoded` or `hexadecimal` sequence, this means the string or regex to search for must be of the decoded content (**this applies also to URLs**).
+>
+> Example: Let's take the content `1%20UnioN%20SeLEct%201`, this will be decoded to `1 UnioN SeLEct 1` and it will match `"str:union select"` and `"rx:union|select"`. 
 
 ## **Matchzone**
 
