@@ -1,0 +1,64 @@
+version = 1
+SPDX-PackageName = "Naxsi WAF"
+SPDX-PackageSupplier = "deroad <wargio@libero.it>"
+SPDX-PackageDownloadLocation = "https://github.com/wargio/naxsi"
+
+[[annotations]]
+path = ".github/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ".clang-format"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = [".gitignore", ".gitmodules"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = "distros/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = "naxsi_rules/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = ["README.md", ".gitattributes", "logo.png"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2019 nbs-system <security@nbs-system.com>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = "naxsi_rules/naxsi_core.rules"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2019 nbs-system <security@nbs-system.com>"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = "unit-tests/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2019 nbs-system <security@nbs-system.com> \\", "2022 deroad <wargio@libero.it>"]
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = "docs/**.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
+path = "docs/old**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2019 nbs-system <security@nbs-system.com>"
+SPDX-License-Identifier = "GPL-3.0-or-later"

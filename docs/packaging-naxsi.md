@@ -2,15 +2,11 @@
 
 This section describes how to build naxsi from source and package it for various distros.
 
-## Packaging for Ubuntu and Debian
+## Packaging for Ubuntu and Debian Linux.
 
 > ℹ️ Info
 >
-> Ubuntu Mantic uses **`libpcre2-dev`** instad of `libpcre3-dev`.
-
-> ℹ️ Info
->
-> Debian bookworm uses **`libpcre2-dev`** and requires also **`libperl-dev`**
+> Some Ubuntu & Debian releases, like *Mantic* and *Bookworm*, uses **`libpcre2-dev`** instead of `libpcre3-dev`.
 
 ```bash
 # first fetch all required dependencies
@@ -82,13 +78,12 @@ sed -i "s/@NAXSI_VERSION@/$NAXSI_VERSION/" "$DEB_PKG/control.install"
 
 ```bash
 # fetch the needed dependencies
-pacman -Syy --needed --noconfirm sudo base-devel git
+pacman -Syy --needed --noconfirm sudo wget base-devel git
 
-# clone the repo with all submodules
-git clone --recurse-submodules https://github.com/wargio/naxsi.git
+# fetch PKGBUILD (you can also use tags) instead of the main branch
+wget https://raw.githubusercontent.com/wargio/naxsi/refs/heads/main/distros/arch/PKGBUILD
 
 # build the package
-cd naxsi/distros/arch
 makepkg -s
 ```
 
