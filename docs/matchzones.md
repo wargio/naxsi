@@ -8,6 +8,12 @@ Here's how they function differently based on the context:
 
 - **Whitelists:** Here, matchzones operate under an **AND** logic (like `url` must be `/foo` AND must occur in `ARGS`). It requires that *both conditions* within a whitelist be satisfied before the pattern is allowed.
 
+> 📣 Important
+>
+> Naxsi decodes any `url-encoded` or `hexadecimal` sequence, this means the string or regex to search for must be of the decoded content (**this applies also to URLs**).
+>
+> Example: `1%20UnioN%20SeLEct%201` becomes `1 UnioN SeLEct 1` before applying rules. 
+
 ## Any Matchzone
 
 This special matchzone designated by `ANY` allows to define **rules and whitelists which matches in any area of a request**.
