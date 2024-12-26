@@ -82,7 +82,7 @@ This logs format needs to be enabled via `set $naxsi_json_log 1;` or via the run
 2024/12/26 12:28:37 [error] 3829158#0: *4 {"ip":"127.0.0.1","server":"localhost","uri":"/x,y","config":"block","rid":"1d27ac3c0b10bbb8783d109213f3f4cd","cscore0":"$SQL","score0":8,"zone0":"URL","id0":1015,"var_name0":"","zone1":"ARGS","id1":1015,"var_name1":"uuu"}, client: 127.0.0.1, server: localhost, request: "GET /x,y?uuu=b,c HTTP/1.1", host: "localhost"
 ```
 
-When pretty-printed by tools like `jq`:
+Here is an example of how the previous JSON logs appears when formatted by utilities such as `jq`:
 
 ```json
 // Action Log
