@@ -52,7 +52,7 @@ It is possible to track, via [Munin](https://munin-monitoring.org/) for example,
 
 ![Munin Integration](assets/munin_integration.png "Munin Integration")
 
-Use this plugin in Munin to monitor the number of times your NAXSI firewall is triggered by rule violations. This approach lets you experiment with different rules and whitelists while in [learning mode](directives.md#learningmode), then activate the WAF once confident enough about its configuration.
+Munin provides a plugin for monitoring NAXSI, specifically the rules that are triggered. This approach lets you experiment with different rules and whitelists while in [learning mode](directives.md#learningmode), then activate the WAF once confident enough about its configuration.
 
 ### Links
 
