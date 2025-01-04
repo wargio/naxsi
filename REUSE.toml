@@ -58,6 +58,12 @@ SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
 SPDX-License-Identifier = "LGPL-3.0-only"
 
 [[annotations]]
+path = "docs/assets/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 deroad <wargio@libero.it>"
+SPDX-License-Identifier = "LGPL-3.0-only"
+
+[[annotations]]
 path = "docs/old**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019 nbs-system <security@nbs-system.com>"
