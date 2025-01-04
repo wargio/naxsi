@@ -48,6 +48,7 @@ Contrary to most Web Application Firewalls, Naxsi doesn't rely on a signature ba
 * **Matchzones**: [How zones can be used to filter rules or whitelists.](matchzones.md)
 * **Logs**: [Log format and their content.](logs.md)
 * **Packaging Naxsi**: [Build your own distro packages from sources.](packaging-naxsi.md)
+* **Integration with Naxsi**: [Integrate Naxsi logs with various external tools.](integration_with_naxsi.md)
 
 # Support & Bugs
 
