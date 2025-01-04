@@ -1,7 +1,7 @@
 # Maintainer: Giovanni Dante (deroad) Grazioli <deroad@libero.it>
 
 pkgname=nginx-mod-naxsi-git
-pkgver=1.7
+pkgver=1.8
 pkgrel=1
 epoch=1
 _modname=naxsi
