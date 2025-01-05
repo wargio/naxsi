@@ -59,7 +59,6 @@ jobs:
           - 1.16.1
           - 1.14.2
     runs-on: ubuntu-latest
-    container: ubuntu:noble
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -67,7 +66,7 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Install required dependencies
-        run: /bin/bash .scripts/ci-install-deps.sh
+        run: sudo /bin/bash .scripts/ci-install-deps.sh
       - name: Build
         run: /bin/bash .scripts/ci-build.sh "${{ matrix.nginx }}"
       - name: Unit Tests
@@ -75,7 +74,6 @@ jobs:
 
   build-efficacy:
     runs-on: ubuntu-latest
-    container: ubuntu:noble
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -83,7 +81,7 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Install required dependencies
-        run: /bin/bash .scripts/ci-install-deps.sh
+        run: sudo /bin/bash .scripts/ci-install-deps.sh
       - name: Build
         run: /bin/bash .scripts/ci-build.sh "1.25.1"
       - name: Run WAF efficacy tests (core only)
