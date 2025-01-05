@@ -46,7 +46,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         nginx:
           - 1.27.0
           - 1.26.1
@@ -59,7 +58,8 @@ jobs:
           - 1.18.0
           - 1.16.1
           - 1.14.2
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container: ubuntu:noble
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -75,6 +75,7 @@ jobs:
 
   build-efficacy:
     runs-on: ubuntu-latest
+    container: ubuntu:noble
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
