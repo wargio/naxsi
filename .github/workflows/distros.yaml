@@ -93,6 +93,8 @@ jobs:
             "debian-bookworm",
             "ubuntu-focal",
             "ubuntu-jammy",
+            "ubuntu-lunar",
+            "ubuntu-mantic",
             "alpine-3.17.4",
             "alpine-3.18.2",
           ]
@@ -113,7 +115,7 @@ jobs:
           - name: debian-bookworm
             container: debian:bookworm-slim
             package: deb
-            pcredep: libpcre2-dev
+            pcredep: libpcre3-dev
             nginxdep: nginx
           - name: ubuntu-focal
             container: ubuntu:focal
@@ -125,6 +127,16 @@ jobs:
             package: deb
             pcredep: libpcre3-dev
             nginxdep: nginx-common
+          - name: ubuntu-lunar
+            container: ubuntu:lunar
+            package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
+          - name: ubuntu-mantic
+            container: ubuntu:mantic
+            package: deb
+            pcredep: libpcre2-dev
+            nginxdep: nginx
           - name: alpine-3.17.4
             container: alpine:3.17.4
             package: apk
@@ -136,10 +148,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # APK package
     - name: Install required dependencies
-      if: matrix.package == 'apk'
-      run: apk add alpine-sdk doas
+      run: /bin/sh .scripts/ci-install-deps.sh
+
+    # APK package
     - name: Checkout needed repos
       if: matrix.package == 'apk'
       run: |
@@ -163,38 +175,6 @@ jobs:
         path: build/*.apk
 
     # DEB package
-    - name: Update OS & Install deps
-      if: matrix.package == 'deb'
-      run: |
-        if [ -f "/etc/apt/sources.list" ]; then
-          cat /etc/apt/sources.list > /tmp/sources.list.orig
-          cat /tmp/sources.list.orig | grep -v "#" | sed 's/^deb /deb-src /g' >> /etc/apt/sources.list
-        fi
-        apt-get -qqy update
-        DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
-            build-essential \
-            ca-certificates \
-            dpkg-dev \
-            gzip \
-            git \
-            libgd-dev \
-            libgeoip-dev \
-            ${{ matrix.pcredep }} \
-            libperl-dev \
-            libssl-dev \
-            libxslt1-dev \
-            nginx \
-            tar \
-            wget \
-            zlib1g-dev
-        if [ -f "/etc/apt/sources.list.d/debian.sources" ]; then
-          # bookworm only.
-          echo "deb https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
-          echo "deb-src https://ftp.debian.org/debian/ bookworm contrib main non-free non-free-firmware" >> /etc/apt/sources.list.d/nginx.list
-          apt-get -qqy update
-          DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install \
-            libperl-dev
-        fi
     - name: Checkout needed repos
       if: matrix.package == 'deb'
       run: |
@@ -262,7 +242,6 @@ jobs:
     - name: ${{ matrix.name }} package
       if: matrix.package == 'arch'
       run: |
-        pacman -Syy --needed --noconfirm sudo base-devel git perl-rename
         chmod 777 distros/arch
         useradd build-user -m
         passwd -d build-user
