@@ -41,9 +41,8 @@ jobs:
       with:
         args: --suppress-deprecation lint
 
-
   formatting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -54,7 +53,7 @@ jobs:
     - name: Install clang-format-16
       run: sudo apt --assume-yes install clang-format-16
     - name: Format check
-      run: find naxsi_src/ -type f -name "*.c" -o -name "*.h" | grep -v "libinjection" | xargs -I % clang-format --verbose --Werror --dry-run %
+      run: find naxsi_src/ -type f -name "*.c" -o -name "*.h" | grep -v "libinjection" | xargs -I % clang-format-16 --verbose --Werror --dry-run %
 
   rules:
     runs-on: ubuntu-latest
