@@ -91,6 +91,7 @@ jobs:
             "debian-buster",
             "debian-bullseye",
             "debian-bookworm",
+            "ubuntu-noble",
             "ubuntu-focal",
             "ubuntu-jammy",
             "ubuntu-lunar",
@@ -117,6 +118,11 @@ jobs:
             package: deb
             pcredep: libpcre3-dev
             nginxdep: nginx
+          - name: ubuntu-noble
+            container: ubuntu:noble
+            package: deb
+            pcredep: libpcre3-dev
+            nginxdep: nginx-common
           - name: ubuntu-focal
             container: ubuntu:focal
             package: deb
