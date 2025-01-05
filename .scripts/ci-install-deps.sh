@@ -74,6 +74,11 @@ case $ID in
     ubuntu)
         echo "found debian $VERSION_CODENAME"
         case $VERSION_CODENAME in
+            noble)
+                # required to call apt source
+                chmod 777 .
+                install_deps_apt_get "libpcre3-dev"
+                ;;
             focal)
                 install_deps_apt_get "libpcre3-dev"
                 ;;
