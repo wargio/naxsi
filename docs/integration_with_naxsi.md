@@ -21,9 +21,11 @@ ignoreregex = NAXSI_FMT: ip=<HOST>&server=.*&uri=.*&config=learning&
               NAXSI_FMT: ip=<HOST>&server=.*&uri=.*&config=ignore&
 ```
 
-Add a new section within `/etc/fail2ban/jail.conf` containing the following configuration.
+Create `/etc/fail2ban/jail.d/naxsi-nginx.local` and paste the following configuration.
 
-Be sure that `logpath` points to the error logs where naxsi writes (this can be also pointed to the systemd logs).
+> ⚠️ Warning
+>
+> Be sure that `logpath` points to the error logs where naxsi writes (this can be also pointed to the systemd logs).
 
 ```ini
 [nginx-naxsi]
