@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 wargio <deroad@libero.it>
+# SPDX-License-Identifier: LGPL-3.0-only
+
 FROM alpine:latest AS build
 
 ENV NGINX_VERSION nginx-1.28.0
