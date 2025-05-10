@@ -42,14 +42,10 @@ jobs:
         args: --suppress-deprecation lint
 
   formatting:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Install wget, software-properties-common, lsb-release (dependencies of LLVM install script)
-      run: sudo apt --assume-yes install wget software-properties-common lsb-release
-    - name: Install automatic LLVM 16
-      run: wget https://apt.llvm.org/llvm.sh -O /tmp/llvm-install.sh; chmod +x /tmp/llvm-install.sh; sudo /tmp/llvm-install.sh 16
     - name: Install clang-format-16
       run: sudo apt --assume-yes install clang-format-16
     - name: Format check
