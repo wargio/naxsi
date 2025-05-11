@@ -34,10 +34,17 @@ RUN mkdir -p /tmp/src && \
                 --prefix=/nginx && \
     make -j && \
     make install
+
+# Files are installed under /nginx
+# An important note goes to
+# /nginx/conf/nginx.conf
+# /nginx/conf/sites-enabled/*.conf
+
 COPY naxsi_rules/ /nginx/naxsi/
 COPY distros/nginx/naxsi_learning_mode.conf /nginx/naxsi/
 COPY distros/nginx/naxsi_denied_url.conf /nginx/naxsi/
 COPY distros/nginx/naxsi_block_mode.conf /nginx/naxsi/
+COPY docker/ /nginx/conf/
 
 # release
 FROM alpine:latest
