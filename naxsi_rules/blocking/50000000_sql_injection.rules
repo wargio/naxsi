@@ -12,3 +12,4 @@ MainRule id:50000002 "s:$SQL:8" "rx:SLEEP(\s+)?\(" "mz:BODY|HEADERS|ARGS|URL" "m
 MainRule id:50000003 "s:$SQL:8" "rx:\bBENCHMARK\b\([0-9,]+.+\)" "mz:BODY|HEADERS|ARGS|URL" "msg:SQL Injection";
 MainRule id:50000004 "s:$SQL:8" "rx:\b(UNION|INFORMATION_SCHEMA)\b.*(#|--|\*)" "mz:BODY|HEADERS|ARGS|URL" "msg:SQL Injection";
 MainRule id:50000005 "s:$SQL:8" "rx:(MD\d|SHA\d+)(\s+)?\(" "mz:BODY|HEADERS|ARGS|URL" "msg:SQL Injection";
+MainRule id:50000006 "s:$SQL:8" "rx:DBMS_PIPE|RECEIVE_MESSAGE|WAITFOR|DELAY" "mz:BODY|HEADERS|ARGS|URL" "msg:SQL Injection";
