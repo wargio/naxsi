@@ -1,8 +1,10 @@
 ![naxsi](logo.png)
 
-## Documentation
+![Last Release](https://img.shields.io/github/v/release/wargio/naxsi)
 
-Updated documentation is available [here](https://wargio.github.io/naxsi/).
+## Sponsors
+
+Support this project by becoming a [:heart: Sponsor](https://github.com/sponsors/wargio).
 
 ## What is Naxsi?
 
@@ -39,7 +41,11 @@ It depends on `libpcre` for its regexp support, and is reported to work great on
 
 ## Why using this repository
 
-The original project is **officially** abandoned (and has been archived the 8th Nov 2023), but you can fully ask for support here as i'm willing to keep the project working as last remaining developer.
+The [original project](https://github.com/nbs-system/naxsi) has been **officially archived** as of November 8th, 2023. However, you can still request support, as I remain the last active developer and am committed to maintaining it in this fork.
+
+## Documentation
+
+Updated documentation is available [here](https://wargio.github.io/naxsi/).
 
 ## Build naxsi
 
@@ -79,8 +85,3 @@ bx4+KJJUTR9r6zBFAQD3Ea5Ya4lny/v9WKNSpBfZFEs3pkDnfgxw3o8vc4iSAQ==
 =d/IR
 -----END PGP PUBLIC KEY BLOCK-----
 ```
-
-## Future plans
-
-- Bring back nxapi using python3
-- Creation of a simple tool to create rules and test them
