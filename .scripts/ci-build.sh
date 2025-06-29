@@ -36,7 +36,7 @@ export NGINX_TMP_PATH=$(realpath nginx-source/)
 
 if $NEW_BUILD ; then
     cd "$NGINX_TMP_PATH"
-    ./configure --with-cc-opt='-g -O2 -Wextra -Wall -Wno-error=unterminated-string-initialization -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
+    ./configure --with-cc-opt='-g -O2 -Wextra -Wall -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' \
                 --with-ld-opt='-Wl,-z,relro -Wl,-z,now -fPIC' \
                 --with-select_module \
                 --conf-path="$NAXSI_TMP_PATH/naxsi_ut/nginx.conf" \
