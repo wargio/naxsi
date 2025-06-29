@@ -65,6 +65,7 @@ location /RequestDenied {
 --- request
 GET /buixor?bra=1999
 --- error_code: 412
+
 === RXWL TEST 1.2: simple wide regex ($args_var)
 --- user_files
 >>> buixor
@@ -177,6 +178,7 @@ location /RequestDenied {
 --- request
 GET /buixor?aablaa=1999
 --- error_code: 412
+
 === RXWL TEST 1.5: simple begin-restrictive regex ($args_var_x:^..)
 --- user_files
 >>> buixor
@@ -261,6 +263,7 @@ location /RequestDenied {
 --- request
 GET /buixor?ablaa=1999
 --- error_code: 412
+
 === RXWL TEST 1.8: simple full-restrictive regex ($args_var_x:^..$)
 --- user_files
 >>> buixor
@@ -289,6 +292,7 @@ location /RequestDenied {
 --- request
 GET /buixor?abla=1999
 --- error_code: 412
+
 === RXWL TEST 1.9: simple full-restrictive regex ($args_var_x:^..$)
 --- user_files
 >>> buixor
@@ -375,6 +379,7 @@ location /RequestDenied {
 --- request
 GET /foz?bla=1999
 --- error_code: 412
+
 === RXWL TEST 2.2: simple half-restrictive regex ($args_var|$url)
 --- user_files
 >>> foo
@@ -403,6 +408,7 @@ location /RequestDenied {
 --- request
 GET /foo?blaz=1999
 --- error_code: 412
+
 === RXWL TEST 3.0: simple wide regex (url|args|name)
 --- user_files
 >>> foo
@@ -517,6 +523,7 @@ location /RequestDenied {
 --- request
 GET /?foo_1999_inject=x
 --- error_code: 412
+
 === RXWL TEST 5.0: file ext ($URL|NAME) XXX
 --- user_files
 >>> foo
@@ -574,3 +581,25 @@ location /RequestDenied {
 --- request
 GET /?foo_1999_=ABCD
 --- error_code: 200
+
+
+=== RXWL TEST 7.0: ensure pipes are accepted in matchzone
+--- main_config
+load_module $TEST_NGINX_NAXSI_MODULE_SO;
+--- http_config
+include $TEST_NGINX_NAXSI_RULES;
+MainRule "rx:^a$" "msg:foobar test pattern" "mz:$URL_X:/poooel|$ARGS_VAR_X:^(a|b)$|NAME" "s:$XYZ:5" id:2001;
+
+--- config
+location / {
+    SecRulesEnabled;
+    DeniedUrl "/RequestDenied";
+    CheckRule "$XYZ >= 5" BLOCK;
+    return 200;
+}
+location /RequestDenied {
+    return 412;
+}
+--- request
+GET /poooel?a=abc&b=xyz
+--- error_code: 412

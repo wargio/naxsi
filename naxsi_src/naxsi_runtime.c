@@ -496,6 +496,11 @@ ngx_http_naxsi_pcre_wrapper(ngx_regex_compile_t* rx, unsigned char* str, unsigne
   int match;
   int captures[30];
 
+  if (!rx) {
+    /* special check to ensure all regexes are compiled */
+    return 0;
+  }
+
 #if (NGX_PCRE2)
   match = ngx_pcre2_exec(rx->regex, str, len, 0, captures, 1);
 #elif defined nginx_version && (nginx_version >= 1002002 && nginx_version != 1003000)

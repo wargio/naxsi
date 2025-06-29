@@ -4,6 +4,16 @@
 #ifndef NAXSI_CONFIG_H
 #define NAXSI_CONFIG_H
 
+/* matchzone expected keywords */
+#define MZ_ANY_K      "ANY"
+#define MZ_RAW_BODY_K "RAW_BODY"
+#define MZ_BODY_K     "BODY"
+#define MZ_HEADERS_K  "HEADERS"
+#define MZ_URL_K      "URL"
+#define MZ_ARGS_K     "ARGS"
+#define MZ_NAME_K     "NAME"
+#define MZ_FILE_EXT_K "FILE_EXT"
+
 /* custom match  zones */
 #define MZ_GET_VAR_T      "$ARGS_VAR:"
 #define MZ_HEADER_VAR_T   "$HEADERS_VAR:"

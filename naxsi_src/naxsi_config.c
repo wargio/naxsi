@@ -176,23 +176,53 @@ naxsi_score(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
   return (NGX_CONF_OK);
 }
 
+static const char*
+naxsi_find_next_mz_keyword(const char* look, const char* end)
+{
+#define is_not_keyword(keyword) strncmp(look + 1, keyword, strlen(keyword))
+  if (!look || !*look) {
+    return NULL;
+  }
+  while (*look) {
+    if (!(look = strchr(look, '|'))) {
+      break;
+    }
+    if (is_not_keyword(MZ_ANY_K) && is_not_keyword(MZ_RAW_BODY_K) && is_not_keyword(MZ_BODY_K) &&
+        is_not_keyword(MZ_HEADERS_K) && is_not_keyword(MZ_URL_K) && is_not_keyword(MZ_ARGS_K) &&
+        is_not_keyword(MZ_NAME_K) && is_not_keyword(MZ_FILE_EXT_K) &&
+        is_not_keyword(MZ_GET_VAR_T) && is_not_keyword(MZ_GET_VAR_X) &&
+        is_not_keyword(MZ_HEADER_VAR_T) && is_not_keyword(MZ_HEADER_VAR_X) &&
+        is_not_keyword(MZ_POST_VAR_T) && is_not_keyword(MZ_POST_VAR_X) &&
+        is_not_keyword(MZ_SPECIFIC_URL_T) && is_not_keyword(MZ_SPECIFIC_URL_X)) {
+      look++;
+      continue;
+    }
+    return look;
+  }
+  /* not found or last char is `|` (pipe) */
+  return end;
+#undef is_not_keyword
+}
+
 void*
 naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 {
   int                              tmp_len, has_zone = 0, is_any = 0;
   ngx_http_custom_rule_location_t* custom_rule;
-  char *                           tmp_ptr, *tmp_end;
+  char*                            tmp_ptr;
+  const char*                      tmp_end;
 
   return_value_if(!rule->br, NGX_CONF_ERROR);
 
   tmp_ptr = (char*)tmp->data + strlen(MATCH_ZONE_T);
+  tmp_end = tmp_ptr + (tmp->len - strlen(MATCH_ZONE_T));
+
   while (*tmp_ptr) {
-    if (tmp_ptr[0] == '|') {
+    if (tmp_ptr > (char*)tmp->data && tmp_ptr[0] == '|') {
       tmp_ptr++;
     }
-
     /* match global zones */
-    if (!strncmp(tmp_ptr, "ANY", strlen("ANY"))) {
+    if (!strncmp(tmp_ptr, MZ_ANY_K, strlen(MZ_ANY_K))) {
       return_value_if(has_zone, NGX_CONF_ERROR); // ANY can only be joined with $URL/$URL_X
       rule->br->any       = 1;
       rule->br->raw_body  = 1;
@@ -202,47 +232,47 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
       rule->br->url       = 1;
       rule->br->args      = 1;
       rule->br->file_ext  = 1;
-      tmp_ptr += strlen("ANY");
+      tmp_ptr += strlen(MZ_ANY_K);
       is_any   = 1;
       has_zone = 1;
       continue;
-    } else if (!strncmp(tmp_ptr, "RAW_BODY", strlen("RAW_BODY"))) {
+    } else if (!strncmp(tmp_ptr, MZ_RAW_BODY_K, strlen(MZ_RAW_BODY_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->raw_body = 1;
-      tmp_ptr += strlen("RAW_BODY");
+      tmp_ptr += strlen(MZ_RAW_BODY_K);
       has_zone = 1;
       continue;
-    } else if (!strncmp(tmp_ptr, "BODY", strlen("BODY"))) {
+    } else if (!strncmp(tmp_ptr, MZ_BODY_K, strlen(MZ_BODY_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->body      = 1;
       rule->br->body_rule = 1;
-      tmp_ptr += strlen("BODY");
+      tmp_ptr += strlen(MZ_BODY_K);
       has_zone = 1;
       continue;
-    } else if (!strncmp(tmp_ptr, "HEADERS", strlen("HEADERS"))) {
+    } else if (!strncmp(tmp_ptr, MZ_HEADERS_K, strlen(MZ_HEADERS_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->headers = 1;
-      tmp_ptr += strlen("HEADERS");
+      tmp_ptr += strlen(MZ_HEADERS_K);
       has_zone = 1;
       continue;
-    } else if (!strncmp(tmp_ptr, "URL", strlen("URL"))) {
+    } else if (!strncmp(tmp_ptr, MZ_URL_K, strlen(MZ_URL_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->url = 1;
-      tmp_ptr += strlen("URL");
+      tmp_ptr += strlen(MZ_URL_K);
       has_zone = 1;
       continue;
-    } else if (!strncmp(tmp_ptr, "ARGS", strlen("ARGS"))) {
+    } else if (!strncmp(tmp_ptr, MZ_ARGS_K, strlen(MZ_ARGS_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->args = 1;
-      tmp_ptr += strlen("ARGS");
+      tmp_ptr += strlen(MZ_ARGS_K);
       has_zone = 1;
       continue;
     }
     /* match against variable name*/
-    else if (!strncmp(tmp_ptr, "NAME", strlen("NAME"))) {
+    else if (!strncmp(tmp_ptr, MZ_NAME_K, strlen(MZ_NAME_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->target_name = 1;
-      tmp_ptr += strlen("NAME");
+      tmp_ptr += strlen(MZ_NAME_K);
       has_zone = 1;
       continue;
     }
@@ -250,11 +280,11 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
        when multipart parsing comes in, it'll tag the zone as
        FILE_EXT as the rule will be pushed in body rules it'll be
        checked !*/
-    else if (!strncmp(tmp_ptr, "FILE_EXT", strlen("FILE_EXT"))) {
+    else if (!strncmp(tmp_ptr, MZ_FILE_EXT_K, strlen(MZ_FILE_EXT_K))) {
       return_value_if(is_any, NGX_CONF_ERROR);
       rule->br->file_ext = 1;
       rule->br->body     = 1;
-      tmp_ptr += strlen("FILE_EXT");
+      tmp_ptr += strlen(MZ_FILE_EXT_K);
       has_zone = 1;
       continue;
     }
@@ -271,7 +301,6 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
 
       return_value_if(NULL == (custom_rule = ngx_array_push(rule->br->custom_locations)),
                       NGX_CONF_ERROR);
-
       memset(custom_rule, 0, sizeof(ngx_http_custom_rule_location_t));
       if (!strncmp(tmp_ptr, MZ_GET_VAR_T, strlen(MZ_GET_VAR_T))) {
         return_value_if(is_any, NGX_CONF_ERROR);
@@ -292,6 +321,7 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
         rule->br->headers_var    = 1;
         tmp_ptr += strlen(MZ_HEADER_VAR_T);
       } else if (!strncmp(tmp_ptr, MZ_SPECIFIC_URL_T, strlen(MZ_SPECIFIC_URL_T))) {
+        return_value_if(rule->br->rx_mz, NGX_CONF_ERROR);
         custom_rule->specific_url = 1;
         tmp_ptr += strlen(MZ_SPECIFIC_URL_T);
       }
@@ -331,13 +361,9 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
         return (NGX_CONF_ERROR);
       }
 
-      /* else return (NGX_CONF_ERROR);*/
-      tmp_end = strchr((const char*)tmp_ptr, '|');
-      if (!tmp_end) {
-        tmp_end = tmp_ptr + strlen(tmp_ptr);
-      }
-
-      tmp_len = tmp_end - tmp_ptr;
+      const char* next = naxsi_find_next_mz_keyword(tmp_ptr, tmp_end);
+      return_value_if(!next, NGX_CONF_ERROR);
+      tmp_len = next - tmp_ptr;
       return_value_if(tmp_len <= 0, NGX_CONF_ERROR);
 
       custom_rule->target.data = ngx_pcalloc(r->pool, tmp_len + 1);
@@ -349,25 +375,26 @@ naxsi_zone(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
       ** pre-compile regex !
       */
       if (rule->br->rx_mz == 1) {
+        return_value_if(custom_rule->target_rx, NGX_CONF_ERROR);
 
-        custom_rule->target_rx = ngx_pcalloc(r->pool, sizeof(ngx_regex_compile_t));
-        return_value_if(!custom_rule->target_rx, NGX_CONF_ERROR);
-        custom_rule->target_rx->options  = NAXSI_REGEX_OPTIONS;
-        custom_rule->target_rx->pattern  = custom_rule->target;
-        custom_rule->target_rx->pool     = r->pool;
-        custom_rule->target_rx->err.len  = 0;
-        custom_rule->target_rx->err.data = NULL;
+        ngx_regex_compile_t* rgc = ngx_pcalloc(r->pool, sizeof(ngx_regex_compile_t));
+        return_value_if(!rgc, NGX_CONF_ERROR);
+        rgc->options  = NAXSI_REGEX_OPTIONS;
+        rgc->pattern  = custom_rule->target;
+        rgc->pool     = r->pool;
+        rgc->err.len  = 0;
+        rgc->err.data = NULL;
 
-        if (ngx_regex_compile(custom_rule->target_rx) != NGX_OK) {
+        if (ngx_regex_compile(rgc) != NGX_OK) {
           NX_LOG_DEBUG(_debug_rx, NGX_LOG_EMERG, r, 0, "XX-FAILED RX:%V", custom_rule->target);
           return (NGX_CONF_ERROR);
         }
+        custom_rule->target_rx = rgc;
       }
       custom_rule->hash = ngx_hash_key_lc(custom_rule->target.data, custom_rule->target.len);
 
       NX_LOG_DEBUG(_debug_zone, NGX_LOG_EMERG, r, 0, "XX- ZONE:[%V]", &(custom_rule->target));
       tmp_ptr += tmp_len;
-      continue;
     } else {
       return (NGX_CONF_ERROR);
     }
@@ -445,7 +472,7 @@ naxsi_whitelist(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
   wl_ar = ngx_array_create(r->pool, ct, sizeof(ngx_int_t));
   return_value_if(!wl_ar, NGX_CONF_ERROR);
 
-  NX_LOG_DEBUG(_debug_whitelist, NGX_LOG_EMERG, r, 0, "XX- allocated %d elems for WL", ct);
+  NX_LOG_DEBUG(_debug_whitelist, NGX_LOG_EMERG, r, 0, "XX-OK allocated %d elems for WL", ct);
   for (i = 0; i < str.len; i++) {
     if (i == 0 || str.data[i - 1] == ',') {
       id = (ngx_int_t*)ngx_array_push(wl_ar);
@@ -483,7 +510,7 @@ naxsi_rx(ngx_conf_t* r, ngx_str_t* tmp, ngx_http_rule_t* rule)
     return (NGX_CONF_ERROR);
   }
   rule->br->rx = rgc;
-  NX_LOG_DEBUG(_debug_rx, NGX_LOG_EMERG, r, 0, "XX- RX:[%V]", &(rule->br->rx->pattern));
+  NX_LOG_DEBUG(_debug_rx, NGX_LOG_EMERG, r, 0, "XX-OK RX:[%V]", &(rule->br->rx->pattern));
   return (NGX_CONF_OK);
 }
 
@@ -503,7 +530,6 @@ ngx_http_naxsi_cfg_parse_one_rule(ngx_conf_t*      cf,
   int   i, z;
   void* ret;
   int   valid;
-
   return_value_if(!value || !value[0].data, NGX_CONF_ERROR);
   /*
   ** parse basic rule
