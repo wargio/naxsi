@@ -34,6 +34,7 @@ location /RequestDenied {
 --- request
 GET /?a=foobar
 --- error_code: 200
+
 === WL TEST 1.0.1: [ARGS zone WhiteList] Adding a test rule in http_config (ARGS zone) and disable rule.
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -59,6 +60,7 @@ location /RequestDenied {
 --- request
 GET /?foobar=a
 --- error_code: 200
+
 === WL TEST 1.1: Adding a test rule in http_config (ARGS zone) and WL it on arg name only.
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -84,6 +86,7 @@ location /RequestDenied {
 --- request
 GET /?a=foobar
 --- error_code: 200
+
 === WL TEST 1.2: Adding a test rule in http_config (ARGS zone) and WL it on arg name only (case sensitiveness check).
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -109,6 +112,7 @@ location /RequestDenied {
 --- request
 GET /?abcd=foobar
 --- error_code: 200
+
 === WL TEST 1.3: Adding a test rule in http_config (ARGS zone) and WL it on arg name only (case sensitiveness check #2).
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -134,6 +138,7 @@ location /RequestDenied {
 --- request
 GET /?AbCd=foobar
 --- error_code: 200
+
 === WL TEST 1.4: Adding a test rule in http_config (ARGS zone) and WL it on $URL + ZONE.
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -159,6 +164,7 @@ location /RequestDenied {
 --- request
 GET /?a=foobar
 --- error_code: 200
+
 === WL TEST 1.5: Adding a test rule in http_config (ARGS zone) and WL it on $URL + ZONE (wrong URL).
 --- user_files
 >>> index2
@@ -187,6 +193,7 @@ location /RequestDenied {
 --- request
 GET /index2?a=foobar
 --- error_code: 412
+
 === WL TEST 1.6: Adding a test rule in http_config (ARGS zone) and WL it on $URL + $ARG_VAR.
 --- user_files
 >>> index2
@@ -215,6 +222,7 @@ location /RequestDenied {
 --- request
 GET /index2?ABCD=foobar
 --- error_code: 412
+
 === WL TEST 2.0: Adding a rule that will match on headers
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -241,6 +249,7 @@ Cookie: foobar
 --- request
 GET /
 --- error_code: 412
+
 === WL TEST 2.1: Adding a rule that will match on headers, WL it on $HEADERS_VAR
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -271,6 +280,7 @@ cookie: foobar
 --- request
 GET /another-page
 --- error_code: 200
+
 === WL TEST 2.2: Adding a rule that will match on headers specific header name
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -300,6 +310,7 @@ COOKIE: foobar
 --- request
 GET /another-page
 --- error_code: 412
+
 === WL TEST 2.3: Adding a rule that will match on headers, WL it by $URL + zone
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -330,6 +341,7 @@ COOKIE: foobar
 --- request
 GET /another-page
 --- error_code: 200
+
 === WL TEST 2.4 : Adding a rule that will match on headers, WL it by $URL + $HEADERS_VAR
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -360,6 +372,7 @@ cookie: foobar
 --- request
 GET /another-page
 --- error_code: 200
+
 === WL TEST 2.5 : Adding a rule that will match on headers, WL it by $URL + $HEADERS_VAR (WRONG URL)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -390,6 +403,7 @@ COOKIE: foobar
 --- request
 GET /another-pag
 --- error_code: 412
+
 === WL TEST 2.6 : Adding a rule that will match on headers, WL it by $URL + $HEADERS_VAR (WRONG HEADER NAME)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -420,6 +434,7 @@ COOKI: foobar
 --- request
 GET /another-page
 --- error_code: 412
+
 === URL WL TEST 3.0: Adding a test rule on ARGS (testing case sensitivness)
 --- user_files
 >>> foobar
@@ -447,6 +462,7 @@ location /RequestDenied {
 --- request
 GET /foobar?a=BrA
 --- error_code: 412
+
 === URL WL TEST 3.1: Adding a test rule on ARGS (testing case sensitivness #2)
 --- user_files
 >>> foobar
@@ -474,6 +490,7 @@ location /RequestDenied {
 --- request
 GET /foobar?a=bRa
 --- error_code: 412
+
 === URL WL TEST 3.2: Adding a test rule on URI (testing case sensitivness #2)
 --- user_files
 >>> foobar
@@ -501,6 +518,7 @@ location /RequestDenied {
 --- request
 GET /FoObar?a=bRa
 --- error_code: 412
+
 === WL TEST 5.0: Testing the POST content-type rule !
 --- user_files
 >>> foobar
@@ -534,6 +552,7 @@ use URI::Escape;
 "POST /foobar
 foo1=bar1&foo2=bar2"
 --- error_code: 200
+
 === WL TEST 5.1: Testing the POST content-type rule #2
 --- user_files
 >>> foobar
@@ -567,6 +586,7 @@ use URI::Escape;
 "POST /foobar
 foo1=bar1&foo2=bar2"
 --- error_code: 412
+
 === WL TEST 5.1: Testing the POST content-type rule #3
 --- user_files
 >>> foobar
@@ -600,6 +620,7 @@ use URI::Escape;
 "POST /foobar
 foo1=bar1&foo2=bar2"
 --- error_code: 412
+
 === WL TEST 5: Adding a test rule in http_config (ARGS zone) and WL it on url + wrong arg name.
 --- user_files
 >>> foobar
@@ -628,6 +649,7 @@ location /RequestDenied {
 --- request
 GET /foobar?baron=foobar
 --- error_code: 412
+
 === WL TEST 6: Adding a test rule in http_config (ARGS zone) and WL it.
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -653,6 +675,7 @@ location /RequestDenied {
 --- request
 GET /?a=foobar
 --- error_code: 200
+
 === WL TEST 7: Adding a test rule in http_config (URL zone) and WL it on url + zone.
 --- user_files
 >>> foobar
@@ -681,6 +704,7 @@ location /RequestDenied {
 --- request
 GET /foobar?aa
 --- error_code: 200
+
 === WL TEST 8: Adding a test rule in http_config (URL zone).
 --- user_files
 >>> foobar
@@ -708,6 +732,7 @@ location /RequestDenied {
 --- request
 GET /foobar?aa
 --- error_code: 412
+
 === WL TEST 8.1 : Adding a test rule in http_config (URL zone) and whitelist it with $URL:|URL.
 --- user_files
 >>> foobar
@@ -736,6 +761,7 @@ location /RequestDenied {
 --- request
 GET /foobar?aa
 --- error_code: 200
+
 === WL TEST 8.2 : Adding a test rule in http_config (URL zone) and whitelist it with URL and no $URL.
 --- user_files
 >>> foobar
@@ -764,6 +790,7 @@ location /RequestDenied {
 --- request
 GET /foobar?aa
 --- error_code: 200
+
 === WL TEST 8: Adding a test rule in http_config (ARGS zone) and WL it on url + arg name.
 --- user_files
 >>> foobar
@@ -792,6 +819,7 @@ location /RequestDenied {
 --- request
 GET /foobar?barone=foobar
 --- error_code: 200
+
 === WL TEST 9: Adding a test rule in http_config (ARGS zone) and WL it on $ARGS_VAR only.
 --- user_files
 >>> foobar
@@ -820,6 +848,7 @@ location /RequestDenied {
 --- request
 GET /foobar?barone=foobar
 --- error_code: 200
+
 === WL TEST 10: Adding a test rule in http_config (ARGS zone) and WL it on url + wrong arg name.
 --- user_files
 >>> foobar
@@ -848,6 +877,7 @@ location /RequestDenied {
 --- request
 GET /foobar?baron=foobar
 --- error_code: 412
+
 === WL TEST 11: Adding a test rule in http_config (ARGS zone) and WL it on url + wrong URL.
 --- user_files
 >>> foobar
@@ -876,6 +906,7 @@ location /RequestDenied {
 --- request
 GET /foobarx?baron=foobar
 --- error_code: 412
+
 === WL TEST 12: Adding a test rule in http_config (ARGS zone) and WL it on url + wrong arg name.
 --- user_files
 >>> foobar
@@ -904,6 +935,7 @@ location /RequestDenied {
 --- request
 GET /foobar?baron=foobar
 --- error_code: 412
+
 === WL TEST 13: Whitelisting multiple rules in one WL.
 --- user_files
 >>> foobar
@@ -932,6 +964,7 @@ location /RequestDenied {
 --- request
 GET /?a=yesone&b=yestwo
 --- error_code: 412
+
 === WL TEST 14 : Whitelist on ARG_NAME.
 --- user_files
 >>> foobar
@@ -960,6 +993,7 @@ location /RequestDenied {
 --- request
 GET /?b=yestwo
 --- error_code: 200
+
 === WL TEST 14.1 : Whitelist on ARG_NAME.
 --- user_files
 >>> foobar
@@ -988,6 +1022,7 @@ location /RequestDenied {
 --- request
 GET /?b=yesone
 --- error_code: 412
+
 === WL TEST 15 : Whitelisting multiple rules in one WL.
 --- user_files
 >>> foobar
@@ -1017,6 +1052,7 @@ location /RequestDenied {
 --- request
 GET /?a=yesone&b=yestwo
 --- error_code: 200
+
 === WL TEST 16 : Whitelisting all rules on one arg (wl:0).
 --- user_files
 >>> foobar
@@ -1046,6 +1082,7 @@ location /RequestDenied {
 --- request
 GET /?a=yesoneyestwo
 --- error_code: 200
+
 === WL TEST 17 : Whitelisting all rules on one arg (wl:0) NOT.
 --- user_files
 >>> foobar
@@ -1103,6 +1140,7 @@ location /RequestDenied {
 POST /
 
 --- error_code: 412
+
 === WL TEST 18.1 : Whitelisting internal rule
 --- user_files
 >>> foobar
@@ -1132,6 +1170,7 @@ location /RequestDenied {
 POST /
 
 --- error_code: 200
+
 === WL TEST 19.0 : Rule in variable name
 --- user_files
 >>> foobar
@@ -1159,6 +1198,7 @@ location /RequestDenied {
 --- request
 GET /?a123a=foobar
 --- error_code: 412
+
 === WL TEST 19.1 : Rule in variable name (whitelisted)
 --- user_files
 >>> foobar
@@ -1187,6 +1227,7 @@ location /RequestDenied {
 --- request
 GET /?a123a=lol
 --- error_code: 200
+
 === WL TEST 20.0 : wl:0 in cookies (#405)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -1212,6 +1253,7 @@ Cookie: 123
 --- request
 GET /
 --- error_code: 412
+
 === WL TEST 20.1 : wl:0 in cookies (#405)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
@@ -1237,6 +1279,7 @@ Cookie: 124
 --- request
 GET /
 --- error_code: 200
+
 === WL TEST 20.0 : wl:0 in cookies (#405)
 --- main_config
 load_module $TEST_NGINX_NAXSI_MODULE_SO;
