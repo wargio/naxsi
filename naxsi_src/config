@@ -49,7 +49,7 @@ if [ "$LIBINJECTION_FOUND" != "0" ]; then
 else
     echo "Using system libinjection"
     CFLAGS="$CFLAGS $LIBINJECTION_CFLAGS"
-    ngx_feature_libs="$LIBINJECTION_LIBS"
+    ngx_module_libs="$LIBINJECTION_LIBS"
 fi
 
 # NGINX module condfiguration.
