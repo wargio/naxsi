@@ -1,0 +1,113 @@
+# Jellyfin rules
+
+# /Users.*
+BasicRule wl:11 "mz:BODY|$URL_X:^/Users/[0-9a-f]{32}/FavoriteItems/[0-9a-f]{32}$";
+BasicRule wl:11 "mz:BODY|$URL_X:^/Users/[0-9a-f]{32}/PlayedItems/[0-9a-f]{32}$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Users.*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Users.*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^RememberAudioSelections$|NAME|$URL_X:^/Users/[0-9a-f]{32}.*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^RememberSubtitleSelections$|NAME|$URL_X:^/Users/[0-9a-f]{32}.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^SortBy$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^SortBy$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Ids$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^MediaTypes$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^SortOrder$|$URL_X:^/Users/[0-9a-f]{32}/Items$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^IncludeItemTypes$|$URL_X:^/Users/[0-9a-f]{32}/Items$";
+
+# /Users/authenticatebyname
+BasicRule wl:1010 "mz:$BODY_VAR:Pw|$URL:/Users/authenticatebyname";
+BasicRule wl:1011 "mz:$BODY_VAR:Pw|$URL:/Users/authenticatebyname";
+BasicRule wl:1012 "mz:$BODY_VAR:Pw|$URL:/Users/authenticatebyname";
+BasicRule wl:1302 "mz:$BODY_VAR:Pw|$URL:/Users/authenticatebyname";
+
+# /Shows.*
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f]{32}/Seasons$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f]{32}/Episodes$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f]{32}/Seasons$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f]{32}/Episodes$";
+
+# /Shows/NextUp.*
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^NextUpDateCutoff$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Shows/NextUp.*$";
+
+# /DisplayPreferences/usersettings
+BasicRule wl:2 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:15 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1000 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1001 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1101 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1015 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1205 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+
+# /Items.*
+BasicRule wl:2 "mz:BODY|$URL_X:^/Items/[0-9a-f]{32}/Images/[a-z]*$";
+BasicRule wl:11 "mz:BODY|$URL_X:^/Items/[0-9a-f]{32}/Images/[a-z]*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Items.*$";
+BasicRule wl:1005 "mz:$BODY_VAR_X:^Value$|$URL_X:^/Items/[0-9a-f]{32}/PlaybackInfo$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Items.*$";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^VideoCodec$|$URL_X:^/Items/[0-9a-f]{32}/PlaybackInfo$";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^AudioCodec$|$URL_X:^/Items/[0-9a-f]{32}/PlaybackInfo$";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^Container$|$URL_X:^/Items/[0-9a-f]{32}/PlaybackInfo$";
+
+# /Shows/Upcoming
+BasicRule wl:1000 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Shows/Upcoming";
+BasicRule wl:1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Shows/Upcoming";
+
+# /Movies/Recommendations
+BasicRule wl:1000 "mz:$ARGS_VAR:Fields|$URL:/Movies/Recommendations";
+BasicRule wl:1000 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Movies/Recommendations";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/Movies/Recommendations";
+BasicRule wl:1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Movies/Recommendations";
+
+# /ScheduledTasks/Running.*
+BasicRule wl:11 "mz:BODY|$URL_X:^/ScheduledTasks/Running.*$";
+
+# /System/Configuration
+BasicRule wl:1000 "mz:$BODY_VAR:LibraryUpdateDuration|$URL:/System/Configuration";
+BasicRule wl:1000 "mz:$BODY_VAR:Name|$URL:/System/Configuration";
+BasicRule wl:1013 "mz:$BODY_VAR:SortRemoveCharacters|$URL:/System/Configuration";
+BasicRule wl:1015 "mz:$BODY_VAR:SortRemoveCharacters|$URL:/System/Configuration";
+BasicRule wl:1101 "mz:$BODY_VAR:Url|$URL:/System/Configuration";
+BasicRule wl:50000006 "mz:$BODY_VAR:LibraryMonitorDelay|$URL:/System/Configuration";
+
+# /System/Configuration/branding
+BasicRule wl:1302 "mz:$BODY_VAR:LoginDisclaimer|$URL:/System/Configuration/branding";
+
+# /Collections
+BasicRule wl:11 "mz:BODY|$URL_X:^/Collections/[0-9a-f]{32}/Items$";
+
+# /Library
+BasicRule wl:1005 "mz:$BODY_VAR_X:^CustomTagDelimiters$|$URL_X:^/Library/VirtualFolders/LibraryOptions$";
+BasicRule wl:1008 "mz:$BODY_VAR_X:^CustomTagDelimiters$|$URL_X:^/Library/VirtualFolders/LibraryOptions$";
+BasicRule wl:1205 "mz:$BODY_VAR_X:^CustomTagDelimiters$|$URL_X:^/Library/VirtualFolders/LibraryOptions$";
+
+# /Playlists
+BasicRule wl:11 "mz:BODY|$URL_X:^/Playlists/[0-9a-f]{32}/Items$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Playlists/[0-9a-f]{32}/Items$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Playlists/[0-9a-f]{32}/Items$";
+
+# /SyncPlay
+BasicRule wl:11 "mz:BODY|$URL:/SyncPlay/Leave";
+BasicRule wl:1013 "mz:$BODY_VAR:GroupName|$URL:/SyncPlay/New";
+
+# /Videos.*
+BasicRule wl:12 "mz:ARGS|$URL_X:^/videos/.*$";
+BasicRule wl:17 "mz:$HEADERS_VAR_X:^accept$|$URL_X:^/Videos/.*$";
+BasicRule wl:1015 "mz:ARGS|$URL_X:^/videos/.*$";
+
+# /LiveTv
+BasicRule wl:1000 "mz:$ARGS_VAR:EnableImageTypes|$URL:/LiveTv/Programs/Recommended";
+BasicRule wl:1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/LiveTv/Programs/Recommended";
+
+# Playback Reporting Plugin
+
+# /user_usage_stats
+
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/PlayActivity";
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/HourlyReport";
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/DurationHistogramReport";
