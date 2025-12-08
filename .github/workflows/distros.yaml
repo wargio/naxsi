@@ -26,7 +26,7 @@ jobs:
     name: "Release Tarball"
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: recursive
         persist-credentials: false
@@ -56,7 +56,7 @@ jobs:
     name: "Release Zip"
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         submodules: recursive
         persist-credentials: false
@@ -152,7 +152,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install required dependencies
       run: /bin/sh .scripts/ci-install-deps.sh
