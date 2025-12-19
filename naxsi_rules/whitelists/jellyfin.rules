@@ -1,0 +1,124 @@
+# Jellyfin rules
+
+# global
+BasicRule wl:2,11 "mz:BODY";
+BasicRule wl:17 "mz:$HEADERS_VAR:accept";
+BasicRule wl:1000 "mz:URL";
+BasicRule wl:1000,1002 "mz:$HEADERS_VAR:cookie";
+
+# /Users.*
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Users.*$";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Users.*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^RememberAudioSelections$|NAME|$URL_X:^/Users/[0-9a-f-]*.*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^RememberSubtitleSelections$|NAME|$URL_X:^/Users/[0-9a-f-]*.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^SortBy$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Ids$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^MediaTypes$|$URL_X:^/Users.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^SortOrder$|$URL_X:^/Users/[0-9a-f-]*/Items$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^IncludeItemTypes$|$URL_X:^/Users/[0-9a-f-]*/Items$";
+
+# /Users/authenticatebyname
+BasicRule wl:1010,1011,1012,1302 "mz:$BODY_VAR:Pw|$URL:/Users/authenticatebyname";
+
+# /UserItems/Resume
+BasicRule wl:1015 "mz:$ARGS_VAR:fields|$URL:/UserItems/Resume";
+
+# /Shows.*
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f-]*/Seasons$";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/[0-9a-f-]*/Episodes$";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^NextUpDateCutoff$|$URL_X:^/Shows/NextUp.*$";
+BasicRule wl:1015 "mz:$ARGS_VAR:StartIndex|$URL:/Shows/NextUp?";
+
+# /DisplayPreferences
+BasicRule wl:15,1000,1001,1101,1015,1205 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^chromecastVersion$|$URL_X:^/DisplayPreferences/[0-9a-f-]*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^ShowBackdrop$|NAME|$URL_X:^/DisplayPreferences/[0-9a-f-]*$";
+BasicRule wl:1101 "mz:BODY|NAME|$URL:/DisplayPreferences/usersettings";
+
+# /Items.*
+BasicRule wl:17 "mz:$HEADERS_VAR_X:^accept$|$URL_X:^/Items/[0-9a-f-]*/.*$";
+BasicRule wl:1000 "mz:URL|$URL_X:^/Items/[0-9a-f-]*/.*$";
+BasicRule wl:1000 "mz:$ARGS_VAR_X:^inheritFromParent$|NAME|$URL_X:^/Items/[0-9a-f-]*/ThemeMedia$";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Items.*$";
+BasicRule wl:1005 "mz:$BODY_VAR_X:^Value$|$URL_X:^/Items/[0-9a-f-]*/PlaybackInfo$";
+BasicRule wl:1013,1100 "mz:$ARGS_VAR:searchTerm|$URL:/Items";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^VideoCodec$|$URL_X:^/Items/[0-9a-f-]*/PlaybackInfo$";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^AudioCodec$|$URL_X:^/Items/[0-9a-f-]*/PlaybackInfo$";
+BasicRule wl:1015 "mz:$BODY_VAR_X:^Container$|$URL_X:^/Items/[0-9a-f-]*/PlaybackInfo$";
+BasicRule wl:1015 "mz:$ARGS_VAR:ExcludeLocationTypes|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:Filters|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:ImageTypes|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:IncludeItemTypes|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:Recursive|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortBy|$URL:/Items?";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortOrder|$URL:/Items?";
+
+# /Shows/Upcoming
+BasicRule wl:1000,1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Shows/Upcoming";
+
+# /Movies/Recommendations
+BasicRule wl:1000,1015 "mz:$ARGS_VAR:Fields|$URL:/Movies/Recommendations";
+BasicRule wl:1000,1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/Movies/Recommendations";
+
+# /System/Configuration
+BasicRule wl:1013,1015 "mz:$BODY_VAR:SortRemoveCharacters|$URL:/System/Configuration";
+BasicRule wl:1000 "mz:$BODY_VAR:LibraryUpdateDuration|$URL:/System/Configuration";
+BasicRule wl:1000 "mz:$BODY_VAR:Name|$URL:/System/Configuration";
+BasicRule wl:1101 "mz:$BODY_VAR:Url|$URL:/System/Configuration";
+BasicRule wl:50000006 "mz:$BODY_VAR:LibraryMonitorDelay|$URL:/System/Configuration";
+BasicRule wl:50000006 "mz:$BODY_VAR:ThrottleDelaySeconds|NAME|$URL:/System/Configuration/encoding";
+
+# /System/Configuration/branding
+BasicRule wl:1000,1001,1002,1003,1004,1008,1009,1010,1011,1015,1016,1205 "mz:$BODY_VAR:CustomCss|$URL:/System/Configuration/branding";
+BasicRule wl:1302 "mz:$BODY_VAR:LoginDisclaimer|$URL:/System/Configuration/branding";
+
+# /Sessions
+BasicRule wl:1000 "mz:$BODY_VAR:EventName|$URL:/Sessions/Playing/Progress";
+BasicRule wl:1000 "mz:$BODY_VAR:SupportedCommands|$URL:/Sessions/Capabilities";
+BasicRule wl:1000 "mz:$BODY_VAR:SupportedCommands|$URL:/Sessions/Capabilities/Full";
+BasicRule wl:1015 "mz:$BODY_VAR:AudioCodec|$URL:/Sessions/Capabilities/Full";
+BasicRule wl:1015 "mz:$BODY_VAR:VideoCodec|$URL:/Sessions/Capabilities/Full";
+BasicRule wl:1200 "mz:$HEADERS_VAR:cookie|$URL:/Sessions/Logout";
+
+# Branding
+BasicRule wl:1015 "mz:$BODY_VAR:Splashscreen|$URL:/Branding/Splashscreen";
+
+# /Library
+BasicRule wl:1005,1008,1205 "mz:$BODY_VAR:CustomTagDelimiters|$URL:/Library/VirtualFolders/LibraryOptions";
+
+# /Playlists
+BasicRule wl:1000,1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Playlists/[0-9a-f-]*/Items$";
+BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Playlists/[0-9a-f-]*/Items$";
+
+# /SyncPlay
+BasicRule wl:1013 "mz:$BODY_VAR:GroupName|$URL:/SyncPlay/New";
+
+# /Videos.*
+BasicRule wl:12 "mz:ARGS|$URL_X:^/videos/.*$";
+BasicRule wl:17 "mz:$HEADERS_VAR_X:^accept$|$URL_X:^/Videos/.*$";
+BasicRule wl:1015 "mz:ARGS|$URL_X:^/videos/.*$";
+
+# /LiveTv
+BasicRule wl:1000,1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/LiveTv/Programs/Recommended";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/LiveTv/Programs";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/LiveTv/Programs/Recommended";
+
+# Playback Reporting Plugin
+
+# /user_usage_stats
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/PlayActivity";
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/HourlyReport";
+BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/DurationHistogramReport";
+
+# Artist
+BasicRule wl:1000,1015 "mz:$ARGS_VAR:fields|$URL:/Artists";
+BasicRule wl:1013,1100 "mz:$ARGS_VAR:searchTerm|$URL:/Artists";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortBy|$URL:/Artists";
+
+# Persons
+BasicRule wl:1000,1013 "mz:$ARGS_VAR:fields|$URL:/Persons";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortBy|$URL:/Persons";
+BasicRule wl:1100 "mz:$ARGS_VAR:searchTerm|$URL:/Persons";
