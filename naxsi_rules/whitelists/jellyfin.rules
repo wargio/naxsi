@@ -3,6 +3,7 @@
 # global
 BasicRule wl:17 "mz:$HEADERS_VAR:accept";
 BasicRule wl:1000 "mz:URL";
+BasicRule wl:1000 "mz:$HEADERS_VAR:cookie";
 BasicRule wl:1002 "mz:$HEADERS_VAR:cookie"; 
 BasicRule wl:11 "mz:BODY";
 BasicRule wl:2 "mz:BODY";
@@ -42,11 +43,14 @@ BasicRule wl:1015 "mz:$ARGS_VAR_X:^Fields$|$URL_X:^/Shows/NextUp.*$";
 BasicRule wl:1015 "mz:$ARGS_VAR_X:^EnableImageTypes$|$URL_X:^/Shows/NextUp.*$";
 BasicRule wl:1015 "mz:$ARGS_VAR:StartIndex|$URL:/Shows/NextUp?";
 
-# /DisplayPreferences/usersettings
+# /DisplayPreferences
 BasicRule wl:15 "mz:BODY|$URL:/DisplayPreferences/usersettings";
 BasicRule wl:1000 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^chromecastVersion$|$URL_X:^/DisplayPreferences/[0-9a-f-]*$";
+BasicRule wl:1000 "mz:$BODY_VAR_X:^ShowBackdrop$|NAME|$URL_X:^§/DisplayPreference/[0-9a-f-]*$";
 BasicRule wl:1001 "mz:BODY|$URL:/DisplayPreferences/usersettings";
 BasicRule wl:1101 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:1101 "mz:BODY|NAME|$URL:/DisplayPreferences/usersettings";
 BasicRule wl:1015 "mz:BODY|$URL:/DisplayPreferences/usersettings";
 BasicRule wl:1205 "mz:BODY|$URL:/DisplayPreferences/usersettings";
 
@@ -88,6 +92,7 @@ BasicRule wl:1013 "mz:$BODY_VAR:SortRemoveCharacters|$URL:/System/Configuration"
 BasicRule wl:1015 "mz:$BODY_VAR:SortRemoveCharacters|$URL:/System/Configuration";
 BasicRule wl:1101 "mz:$BODY_VAR:Url|$URL:/System/Configuration";
 BasicRule wl:50000006 "mz:$BODY_VAR:LibraryMonitorDelay|$URL:/System/Configuration";
+BasicRule wl:50000006 "mz:$BODY_VAR:ThrottleDelaySeconds|NAME|$URL:/System/Configuration/encoding";
 
 # /System/Configuration/branding
 BasicRule wl:1000 "mz:$BODY_VAR:CustomCss|$URL:/System/Configuration/branding";
@@ -108,6 +113,8 @@ BasicRule wl:1302 "mz:$BODY_VAR:LoginDisclaimer|$URL:/System/Configuration/brand
 BasicRule wl:1000 "mz:$BODY_VAR:EventName|$URL:/Sessions/Playing/Progress";
 BasicRule wl:1000 "mz:$BODY_VAR:SupportedCommands|$URL:/Sessions/Capabilities";
 BasicRule wl:1000 "mz:$BODY_VAR:SupportedCommands|$URL:/Sessions/Capabilities/Full";
+BasicRule wl:1015 "mz:$BODY_VAR:AudioCodec|$URL:/Sessions/Capabilities/Full";
+BasicRule wl:1015 "mz:$BODY_VAR:VideoCodec|$URL:/Sessions/Capabilities/Full";
 BasicRule wl:1200 "mz:$HEADERS_VAR:cookie|$URL:/Sessions/Logout";
 
 # Branding
@@ -134,6 +141,8 @@ BasicRule wl:1015 "mz:ARGS|$URL_X:^/videos/.*$";
 # /LiveTv
 BasicRule wl:1000 "mz:$ARGS_VAR:EnableImageTypes|$URL:/LiveTv/Programs/Recommended";
 BasicRule wl:1015 "mz:$ARGS_VAR:EnableImageTypes|$URL:/LiveTv/Programs/Recommended";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/LiveTv/Programs";
+BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/LiveTv/Programs/Recommended";
 
 # Playback Reporting Plugin
 
@@ -145,10 +154,12 @@ BasicRule wl:1015 "mz:$ARGS_VAR:filter|$URL:/user_usage_stats/DurationHistogramR
 # Artist
 BasicRule wl:1000 "mz:$ARGS_VAR:fields|$URL:/Artists";
 BasicRule wl:1013 "mz:$ARGS_VAR:searchTerm|$URL:/Artists";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortBy|$URL:/Artists";
 BasicRule wl:1015 "mz:$ARGS_VAR:Fields|$URL:/Artists";
 BasicRule wl:1100 "mz:$ARGS_VAR:searchTerm|$URL:/Artists";
 
 # Persons
 BasicRule wl:1000 "mz:$ARGS_VAR:fields|$URL:/Persons";
 BasicRule wl:1013 "mz:$ARGS_VAR:fields|$URL:/Persons";
+BasicRule wl:1015 "mz:$ARGS_VAR:SortBy|$URL:/Persons";
 BasicRule wl:1100 "mz:$ARGS_VAR:searchTerm|$URL:/Persons";
