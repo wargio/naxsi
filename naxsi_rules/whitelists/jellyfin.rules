@@ -32,7 +32,7 @@ BasicRule wl:1000 "mz:$ARGS_VAR_X:^NextUpDateCutoff$|$URL_X:^/Shows/NextUp.*$";
 BasicRule wl:1015 "mz:$ARGS_VAR:StartIndex|$URL:/Shows/NextUp?";
 
 # /DisplayPreferences
-BasicRule wl:15,1000,1001,1101,1015,1205 "mz:BODY|$URL:/DisplayPreferences/usersettings";
+BasicRule wl:15,1000,1001,1015,1101,1205 "mz:BODY|$URL:/DisplayPreferences/usersettings";
 BasicRule wl:1000 "mz:$BODY_VAR_X:^chromecastVersion$|$URL_X:^/DisplayPreferences/[0-9a-f-]*$";
 BasicRule wl:1000 "mz:$BODY_VAR_X:^ShowBackdrop$|NAME|$URL_X:^/DisplayPreferences/[0-9a-f-]*$";
 BasicRule wl:1101 "mz:BODY|NAME|$URL:/DisplayPreferences/usersettings";
