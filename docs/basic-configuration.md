@@ -47,8 +47,10 @@ location /RequestDenied {
 The last steps are create whitelists and configure the logging.
 
 ```nginx
-# example of whitelist (global and location-defined)
+# Example of whitelist global
 MainRule wl:1000,1009,1315 "mz:$BODY_VAR:_wp_http_referer";
+
+# Example of whitelist location-defined
 BasicRule wl:1000,1009,1315 "mz:$BODY_VAR:_wp_http_referer";
 
 # Enable JSON logs for Naxsi
@@ -63,51 +65,55 @@ This NGINX configuration for `/etc/nginx/nginx.conf` where we define a reverse p
 # load module
 load_module /etc/nginx/modules/ngx_http_naxsi_module.so;
 
-server {
-	listen 80;
-	server_name example.com;
+http {
+	# Include core rules (see below)
+	include /etc/nginx/naxsi/naxsi_core.rules;
+	
+	# Include additional rules
+	include /etc/nginx/naxsi/blocking/*.rules;
 
-	set $naxsi_json_log 1; # Enable JSON logs for Naxsi
-	include /etc/nginx/naxsi/naxsi_core.rules; # Include core rules (see below)
+	server {
+		listen 80;
+		server_name example.com;
 
-	location / {
-		proxy_pass http://internal-ip-address:80;
-		proxy_set_header Host $host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
+		set $naxsi_json_log 1; # Enable JSON logs for Naxsi
 
-		SecRulesEnabled; #enable naxsi for this `location`
-		# LearningMode;  #When enable, BLOCK CheckRule are considered as LOG.
-		LibInjectionSql; #enable libinjection support for SQL injection detection
-		LibInjectionXss; #enable libinjection support for XSS detection
+		location / {
+			proxy_pass http://internal-ip-address:80;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
 
-		# Internal denied request.
-		DeniedUrl "/RequestDenied";
+			SecRulesEnabled; # Enables naxsi for this `location`
+			# LearningMode;  # When set, BLOCK CheckRule are considered as LOG.
+			LibInjectionSql; # Enables libinjection support for SQL injection detection
+			LibInjectionXss; # Enables libinjection support for XSS detection
 
-		# Include additional rules
-		include /etc/nginx/naxsi/blocking/*.rules;
+			# Internal denied request.
+			DeniedUrl "/RequestDenied";
 
-		# The following CheckRules are mandatory when using the rules found in the naxsi repository.
-		# For more info, please check:
-		# - https://github.com/wargio/naxsi/tree/main/naxsi_rules/blocking
-		# - https://github.com/wargio/naxsi/blob/main/naxsi_rules/naxsi_core.rules
+			# The following CheckRules are mandatory when using the rules found in the naxsi repository.
+			# For more info, please check:
+			# - https://github.com/wargio/naxsi/tree/main/naxsi_rules/blocking
+			# - https://github.com/wargio/naxsi/blob/main/naxsi_rules/naxsi_core.rules
 
-		CheckRule "$SQL >= 8" BLOCK; # SQL injection action (unrelated to libinjection)
-		CheckRule "$XSS >= 8" BLOCK; # XSS action (unrelated to libinjection)
-		CheckRule "$RFI >= 8" BLOCK; # Remote File Inclusion action
-		CheckRule "$UWA >= 8" BLOCK; # Unwanted Access action
-		CheckRule "$EVADE >= 8" BLOCK; # Evade action (some tools may try to avoid detection).
-		CheckRule "$UPLOAD >= 5" BLOCK; # Malicious upload action
-		CheckRule "$TRAVERSAL >= 5" BLOCK; # Traversal access action
-		CheckRule "$LIBINJECTION_XSS >= 8" BLOCK; # libinjection XSS action
-		CheckRule "$LIBINJECTION_SQL >= 8" BLOCK; # libinjection SQLi action
-	}
+			CheckRule "$SQL >= 8" BLOCK; # SQL injection action (unrelated to libinjection)
+			CheckRule "$XSS >= 8" BLOCK; # XSS action (unrelated to libinjection)
+			CheckRule "$RFI >= 8" BLOCK; # Remote File Inclusion action
+			CheckRule "$UWA >= 8" BLOCK; # Unwanted Access action
+			CheckRule "$EVADE >= 8" BLOCK; # Evade action (some tools may try to avoid detection).
+			CheckRule "$UPLOAD >= 5" BLOCK; # Malicious upload action
+			CheckRule "$TRAVERSAL >= 5" BLOCK; # Traversal access action
+			CheckRule "$LIBINJECTION_XSS >= 8" BLOCK; # libinjection XSS action
+			CheckRule "$LIBINJECTION_SQL >= 8" BLOCK; # libinjection SQLi action
+		}
 
-	# The location where all the blocked request will be internally redirected.
-	location /RequestDenied {
-		internal;
-		return 403;
+		# The location where all the blocked request will be internally redirected.
+		location /RequestDenied {
+			internal;
+			return 403;
+		}
 	}
 }
 ```
