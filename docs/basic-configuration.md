@@ -127,7 +127,7 @@ This configuration enables NAXSI and sets up basic rules for blocking requests b
 Some key directives used in this example include:
 
 * `LearningMode`: if enabled, `BLOCK` CheckRule will be considered as `LOG`, thus not blocking the requests.
-* `LibInjectionXss` and `LibInjectionSql`: When defined, enables libinjection support for SQLi & XSS and requires to define `$LIBINJECTION_XSS` & `$LIBINJECTION_SQL` **`**CheckRules**.
+* `LibInjectionXss` and `LibInjectionSql`: When defined, enables libinjection support for SQLi & XSS and requires to define `$LIBINJECTION_XSS` & `$LIBINJECTION_SQL` **CheckRules**.
 * `include`: This directive allows to include other configuration files within the current scope, this can be useful if the system owner wants to have the same configuration for multiple websites without copy-pasting the same lines.
 
 Additionally, this configuration includes directives for enabling libinjection's XSS and SQLi detection features.
