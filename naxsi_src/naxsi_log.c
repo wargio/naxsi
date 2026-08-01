@@ -57,8 +57,20 @@ naxsi_log_as_text_string_ex(naxsi_log_t* log,
     return;
 
   // we always add 2 chars "&<key>="
-  if ((log->length + val_len + key_len + 2) >= NAXSI_LOG_MAX) {
+  if ((log->length + len + key_len + 2) >= NAXSI_LOG_MAX) {
     naxsi_log_as_text_flush(log, 1);
+  }
+
+  /* still too big for a fresh line: shorten the value until it fits */
+  while (val_len > 1 && (log->length + len + key_len + 2) >= NAXSI_LOG_MAX) {
+    truncate = 1;
+    val_len /= 2;
+    len = val_len + (2 * ngx_escape_uri(NULL, val, val_len, NGX_ESCAPE_URI_COMPONENT));
+  }
+
+  if ((log->length + len + key_len + 2) >= NAXSI_LOG_MAX) {
+    log->buffer[log->length] = 0;
+    return;
   }
 
   log->length += snprintf(
