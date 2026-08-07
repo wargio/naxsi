@@ -1887,7 +1887,7 @@ nx_content_disposition_parse(unsigned char*      str,
 
       varn_end = varn_start = str + 6;
       do {
-        varn_end = (unsigned char*)strnchr((const char*)varn_end, '"', line_end - varn_start);
+        varn_end = (unsigned char*)strnchr((const char*)varn_end, '"', line_end - varn_end);
         if (!varn_end || (varn_end && *(varn_end - 1) != '\\')) {
           break;
         }
@@ -1913,7 +1913,7 @@ nx_content_disposition_parse(unsigned char*      str,
       }
       filen_end = filen_start = str + 10;
       do {
-        filen_end = (unsigned char*)strnchr((const char*)filen_end, '"', line_end - filen_start);
+        filen_end = (unsigned char*)strnchr((const char*)filen_end, '"', line_end - filen_end);
         if (!filen_end) {
           break;
         }
